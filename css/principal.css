@@ -1,0 +1,114 @@
+html{
+    height:100%;
+}
+body{
+    margin:0;
+    padding:0;
+    height:100%;
+    display:flex;
+    flex-direction:column;
+}
+
+main{
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+
+    min-width:100%;
+
+    margin-bottom:20px;
+    margin-top:20px;
+}
+main > #principal{
+    width:65%;
+}
+main > section{
+    width:20%;
+
+    margin-left:20px;
+
+    display:flex;
+    flex-direction:column;
+}
+@media all and (max-width:990px){
+    #menu-lateral{
+        display:none;
+    }
+    main > .pagina{
+        min-width:calc(100% - 20px);
+        margin:0 auto;
+    }
+    main > section{
+        width:0;
+        margin:0;
+    }
+}
+
+#boton-actualizar{
+    display:none;
+    text-align:center;
+}
+#boton-actualizar button{
+    padding:8px 20px 8px 20px;
+    margin-bottom:5px;
+}
+/* input radio de las fichas */
+.color-fichas input{
+    visibility:hidden;
+    position:absolute;
+}
+.color-fichas label{
+    cursor:pointer;
+    border-radius:50%;
+    margin:0 3px;
+}
+.color-fichas input:checked + label{
+    margin:0 1px;
+    border-width:2px;
+    border-style:solid;
+    border-color: #82b486;
+}
+/* Slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input {display:none;}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+.slider:before {
+    content:'No';
+    line-height:26px;
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+input:checked + .slider {
+    background-color: #000000;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #000000;
+}
+input:checked + .slider:before {
+    content:'Sí';
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}

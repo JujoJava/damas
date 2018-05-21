@@ -1,0 +1,2 @@
+﻿Cada casilla será de 32px mínimo y 90px máximo
+El tablero será de 320x320 píxeles mínimo y 900x900 máximo

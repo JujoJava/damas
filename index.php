@@ -1,0 +1,47 @@
+<?php include("includes/back/variables.php"); ?>
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <base href="/damas/">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Damas Online</title>
+        <meta name="description" content="Juego online para jugar a las damas">
+        <meta name="author" content="Juanjo">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="js/jquery-3.3.1.min.js"><\/script>')</script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <!-- Introducir aquí scripts -->
+        <script type="text/javascript" src="js/funciones.js"></script>
+        <script type="text/javascript" src="js/juego.js"></script>
+        <script type="text/javascript" src="js/conexion.js"></script>
+        <script type="text/javascript" src="js/carga_info.js"></script>
+        <script type="text/javascript" src="js/events.js"></script>
+
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/fontawesome/css/fontawesome-all.min.css">
+        <!-- Introducir aquí hojas de estilo -->
+        <link rel="stylesheet" href="css/principal.css">
+        <link rel="stylesheet" href="css/tabla.css">
+        <link rel="stylesheet" href="css/menu.css">
+        <link rel="stylesheet" href="css/modal.css">
+        <link rel="stylesheet" href="css/footer.css">
+        <link rel="stylesheet" href="css/juego.css">
+    </head>
+    <body>
+        <header>
+            <?php include("includes/front/menu-superior.php"); ?>
+        </header>
+        <main> <?php //separado en dos mitades, la página actual, y la sección (section) de la derecha ?>
+            <?php include("includes/back/pages.php"); ?>
+            <section>
+                <?php include("includes/front/menu-lateral.php"); ?>
+                <?php // ¿publicidad...? // ?>
+            </section>
+        </main>
+        <footer>
+            <?php include("includes/front/footer.html"); ?>
+        </footer>
+    </body>
+</html>

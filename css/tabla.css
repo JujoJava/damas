@@ -1,0 +1,78 @@
+/* LISTA DE SALAS */
+
+#lista_salas{
+    overflow-x:auto;
+}
+#lista_salas table{
+    table-layout:fixed;
+}
+#lista_salas table tbody td{
+    vertical-align:baseline;
+    padding-top:0.4em;
+    padding-bottom:0.4em;
+}
+#lista_salas table th.boton-actualizar{
+    text-align:center;
+}
+#lista_salas table td.acciones{
+    text-align:center;
+    margin-left:3px;
+    margin-right:3px;
+}
+#lista_salas table button[name=actualizar-lista]{
+    border:none;
+    padding:0;
+    margin:0;
+    font-size:14px;
+    background:none;
+    color:royalblue;
+}
+#lista_salas table button[name=actualizar-lista]:hover{
+    padding:0;
+    margin:0;
+    color: #2d4aa1;
+    cursor:pointer;
+}
+#lista_salas table th, #lista_salas table td{
+     width:15%;
+}
+#lista_salas table .espectadores,
+#lista_salas table .pass,
+#lista_salas table .numsala{
+    width:10%;
+}
+#lista_salas table .descripcion{
+    width:25%;
+}
+#lista_salas table .descripcion div{
+    overflow-x:hidden;
+    white-space:nowrap;
+}
+@media all and (max-width:768px){
+    #lista_salas table .pass,
+    #lista_salas table .numsala,
+    #lista_salas table .espectadores{
+        display:none;
+    }
+    #lista_salas table th, #lista_salas table td{
+        width:25%;
+    }
+    #lista_salas table .descripcion div{
+        overflow-x:auto;
+    }
+}
+@media all and (max-width:480px){
+    #lista_salas table th.boton-actualizar,
+    #lista_salas table td.acciones{
+        display:none;
+    }
+    #boton-actualizar{
+        display:block;
+    }
+    #lista_salas table th, #lista_salas table td{
+        width:33.33%;
+    }
+    #lista_salas table .descripcion{
+        text-align:right;
+    }
+}

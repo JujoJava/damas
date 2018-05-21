@@ -1,0 +1,15 @@
+﻿
+# HTID:4217457: DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES BELOW
+php_value display_errors 1
+# DO NOT REMOVE OR MODIFY THIS LINE AND THE LINES ABOVE HTID:4217457:
+
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteRule ^([a-zA-Z0-9_-]+)(|/)$ index.php?page=$1
+RewriteRule ^([a-zA-Z0-9_-]+)/([0-9_-]+)?/([a-zA-Z0-9_-]+)?$ index.php?page=$1&cod=$2&pass=$3
+Rewriterule ^$ index.php?page=principal
+#Rewriterule ^index.php$ index.php?page=principal
+
+</IfModule>
