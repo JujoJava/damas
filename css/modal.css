@@ -10,18 +10,21 @@
     font-size: 28px;
     font-weight: bold;
 }
-.modal .modal-footer{
-    display:flex;
-    flex-direction:row;
-    justify-content:space-between;
+.modal .modal-footer {
+    min-width:100%
 }
-.modal .modal-footer button.btn-secondary{
+.modal .modal-footer button.btn-secondary {
+    float:left;
+    margin-right:auto;
     background:#6a6a6a;
     color:white;
     border-color:#484848;
 }
-.modal .modal-footer button.btn-secondary:hover{
+.modal .modal-footer button.btn-secondary:hover {
     background:#484848;
+}
+.modal .modal-footer button.btn-primary {
+    float:right;
 }
 .modal-content{
     border-width:0 1px 4px 1px;

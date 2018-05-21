@@ -279,8 +279,7 @@ function addMovimiento(comidas, movimiento, ficha){
 }
 
 function ajaxMovimiento(movimiento, ficha){
-    console.log(movimiento);
-    /*$.ajax({
+    $.ajax({
         data: {
             comidas: movimiento.comidas,
             movimiento: movimiento.posicion,
@@ -290,7 +289,7 @@ function ajaxMovimiento(movimiento, ficha){
         type: 'POST',
         dataType: 'json',
         url: 'ajax/insert.php'
-    });*/
+    });
 }
 
 function restaFicha(color){
@@ -548,6 +547,7 @@ $(window).ready(function() {
         if(canvas[0].getContext('2d')){
 
             ctx = canvas[0].getContext('2d');
+
 
             $(window).resize(function(){
                 if(mis_datos !== null) {

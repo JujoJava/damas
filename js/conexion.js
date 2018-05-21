@@ -1,5 +1,5 @@
 $(window).ready(function(){
-    estaConectado(true);
+    estaConectado();
 });
 
 function estaConectado(){
@@ -28,25 +28,35 @@ function estaConectado(){
                             $('#juego .anfitrion').html("Sala de " + respuesta.partida.anfitrion.nick);
                             if (respuesta.partida.anfitrion.cod == respuesta.partida.colores.codblanco) {
                                 $('#juego .color .blancas').html(respuesta.partida.anfitrion.nick);
-                                if(respuesta.partida.visitante)
+                                if(respuesta.partida.visitante) {
                                     $('#juego .color .negras').html(respuesta.partida.visitante.nick);
-                                else
+                                }
+                                else {
                                     $('#juego .color .negras').html('');
+                                }
                             } else {
                                 $('#juego .color .negras').html(respuesta.partida.anfitrion.nick);
-                                if(respuesta.partida.visitante)
+                                if(respuesta.partida.visitante) {
                                     $('#juego .color .blancas').html(respuesta.partida.visitante.nick);
-                                else
-                                    $('#juego .color .blanas').html('');
+                                }
+                                else {
+                                    $('#juego .color .blancas').html('');
+                                }
                             }
                             mis_datos = respuesta.partida.mis_datos;
                             anfitrion = respuesta.partida.anfitrion;
                             visitante = respuesta.partida.visitante;
-                            inicializaJuego();
-                            actualizaJuego();
-                            if(anfitrion && visitante && estado === 'no_jugando'){
-                                estado = 'jugando';
-                                turno = 'blancas';
+                            if(anfitrion && visitante){
+                                if(estado === 'no_jugando') {
+                                    inicializaJuego();
+                                    actualizaJuego();
+                                    estado = 'jugando';
+                                    turno = 'blancas';
+                                }
+                            }
+                            else {
+                                estado = 'no_jugando';
+                                turno = '';
                             }
                             if (mis_datos.rol !== 'espectador') {
                                 if (mis_datos.cod == respuesta.partida.colores.codblanco) {
@@ -55,9 +65,12 @@ function estaConectado(){
                                     mis_datos['color'] = 'negras';
                                 }
                             }
+
                             if (respuesta.partida.movimientos) {
                                 hayNuevosMovimientos(respuesta.partida.movimientos);
                             }
+                            inicializaJuego();
+                            actualizaJuego();
                         }
                         else { //no está en la sala de juego. Mensaje de aviso si hay nuevos movimientos.
                             if (respuesta.partida.movimientos) {

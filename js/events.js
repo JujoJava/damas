@@ -146,6 +146,11 @@ $(document).ready(function(){
                     var input_espectar = $('#modal_jugar_nueva input[name=puede_espectar]');
                     var input_color = $('#modal_jugar_nueva input[name=color-fichas]:checked');
 
+                    input_descripcion.attr('disabled', true);
+                    input_pass.attr('disabled', true);
+                    input_espectar.attr('disabled', true);
+                    $('#modal_jugar_nueva input[name=color-fichas]').attr('disabled', true);
+
                     ajaxModal = $.ajax({
                         data : {
                             descripcion: input_descripcion.val(),
@@ -167,10 +172,10 @@ $(document).ready(function(){
                         },
                         beforeSend: function(){
                             botonRueda(boton);
-                            input_descripcion.attr('disabled', true);
-                            input_pass.attr('disabled', true);
-                            input_espectar.attr('disabled', true);
-                            $('#modal_jugar_nueva input[name=color-fichas]').attr('disabled', true);
+                            input_descripcion.attr('disabled', false);
+                            input_pass.attr('disabled', false);
+                            input_espectar.attr('disabled', false);
+                            $('#modal_jugar_nueva input[name=color-fichas]').attr('disabled', false);
                         }
                     });
                 }

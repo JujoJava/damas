@@ -4,17 +4,11 @@ function botonRueda(elem) {
     });
     $(elem).html("<i class='fas fa-spinner fa-spin'></i>");
     $(elem).attr("disabled", true);
-
-    $(elem).children("img").css("padding-left", "8px");
 }
 
 function botonNormal(elem,texto) {
     $(elem).html("<span>"+texto+"</span>");
-    $(elem).css({
-        'min-width': 0
-    });
     $(elem).attr("disabled", false);
-    $(elem).children("span").css("padding-left", "0");
 }
 
 function mostrarError(elem, texto) {

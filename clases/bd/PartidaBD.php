@@ -119,11 +119,13 @@ class PartidaBD
 
     public static function creaSala($anfitrion,$pass,$descripcion,$puede_espectar,$color_anfit){
         $codpartida = '';
-        if($color_anfit == 'blanco')
+        if($color_anfit == 'blancas')
             $codpartida = self::creaPartida(null, $anfitrion->getCod());
-        else if($color_anfit == 'negro')
+        else if($color_anfit == 'negras')
             $codpartida = self::creaPartida($anfitrion->getCod(), null);
         else {
+            echo rand(0,1);
+            die();
             switch(rand(0,1)) {
                 case 0:
                     $codpartida = self::creaPartida($anfitrion->getCod(), null);
@@ -214,7 +216,7 @@ class PartidaBD
             return $datos;
         }
         ManejoBBDD::desconectar();
-        return false;
+        return array();
     }
 
     public static function addComidas($codmov, $comidas){
@@ -283,7 +285,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.anfitrion, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.anfitrion = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE) and s.jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) and s.jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -307,7 +309,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.visitante, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.visitante = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE) and s.jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) and s.jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
