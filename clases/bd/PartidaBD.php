@@ -124,8 +124,6 @@ class PartidaBD
         else if($color_anfit == 'negras')
             $codpartida = self::creaPartida($anfitrion->getCod(), null);
         else {
-            echo rand(0,1);
-            die();
             switch(rand(0,1)) {
                 case 0:
                     $codpartida = self::creaPartida($anfitrion->getCod(), null);
@@ -236,11 +234,11 @@ class PartidaBD
         return false;
     }
 
-    public static function addMovimiento($codpartida, $codusu, $numficha, $mov_dest, $comidas){
+    public static function addMovimiento($codpartida, $codusu, $numficha, $mov_orig, $mov_dest, $comidas){
         $codmov = self::obtieneIdDisponibleMovimiento();
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO movimiento VALUES(?,?,?,?,?)");
-        ManejoBBDD::ejecutar(array($codmov, $codpartida, $codusu, $numficha, $mov_dest));
+        ManejoBBDD::preparar("INSERT INTO movimiento VALUES(?,?,?,?,?,?)");
+        ManejoBBDD::ejecutar(array($codmov, $codpartida, $codusu, $numficha, $mov_orig, $mov_dest));
         if(ManejoBBDD::filasAfectadas() > 0){
             ManejoBBDD::desconectar();
             if(self::addComidas($codmov, $comidas)) {

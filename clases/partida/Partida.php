@@ -25,4 +25,19 @@ abstract class Partida
     public function getMovimientos(){
         return $this->movimientos;
     }
+    public function getMovimientosArray(){
+        $array = array();
+        foreach($this->movimientos as $movimiento){
+            if($movimiento instanceof Movimiento){
+                $array[] = array(
+                    'codusu' => $movimiento->getJugador(),
+                    'numficha' => $movimiento->getNumFicha(),
+                    'posicion' => $movimiento->getMovDest(),
+                    'comidas' => $movimiento->getComidas(),
+                    'color' => $movimiento->getColor()
+                );
+            }
+        }
+        return $array;
+    }
 }

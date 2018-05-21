@@ -55,8 +55,9 @@ if (isset($_SESSION['login'])) {
                             $datos['alerta'] = 'Has sido expulsado de la sala';
                         }
                         else {
-                            if ($sala->addMovimientos(PartidaBD::getMovimientos($sala->getCodPartida()))) {
-                                $movimientos = $sala->getMovimientos();
+                            $movimientos = $sala->addMovimientos(PartidaBD::getMovimientos($sala->getCodPartida()));
+                            if ($movimientos) {
+                                $movimientos = $sala->getMovimientosArray();
                             }
                             foreach ($sala->getEspectadores() as $espectador) {
                                 if ($espectador instanceof Usuario) {
@@ -71,8 +72,7 @@ if (isset($_SESSION['login'])) {
                                 'espectadores' => $espectadores,
                                 'mis_datos' => array('cod' => $usuario->getCod(), 'rol' => $sala->getTipoUsuario($usuario->getCod())),
                                 'colores' => PartidaBD::getColores($sala->getCodPartida()),
-                                'movimientos' => $movimientos,
-                                ''
+                                'movimientos' => $movimientos
                             );
                         }
                     } else {

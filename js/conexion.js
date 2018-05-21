@@ -65,9 +65,10 @@ function estaConectado(){
                                     mis_datos['color'] = 'negras';
                                 }
                             }
-
+                            console.log(respuesta.partida.movimientos);
                             if (respuesta.partida.movimientos) {
-                                hayNuevosMovimientos(respuesta.partida.movimientos);
+                                console.log(respuesta.partida.movimientos);
+                                //hayNuevosMovimientos(respuesta.partida.movimientos);
                             }
                             inicializaJuego();
                             actualizaJuego();

@@ -282,7 +282,7 @@ function ajaxMovimiento(movimiento, ficha){
     $.ajax({
         data: {
             comidas: movimiento.comidas,
-            movimiento: movimiento.posicion,
+            movimiento: movimiento.movimiento.posicion,
             ficha: ficha,
             modo: 'movimiento'
         },

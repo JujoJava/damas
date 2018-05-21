@@ -73,10 +73,20 @@ if(isset($_POST['modo'])){
                         $codmovimiento = PartidaBD::addMovimiento(
                             $sala->getCodPartida(),
                             $usuario->getCod(),
-                            $_POST['ficha'],
+                            $_POST['ficha']['numFicha'],
+                            $_POST['ficha']['posicion'],
                             $_POST['movimiento'],
-                            $_POST['comida']
+                            $_POST['comidas']
                         );
+                        $sala->addMovimiento(new Movimiento(
+                            $codmovimiento,
+                            $_POST['ficha']['numFicha'],
+                            $_POST['movimiento'],
+                            $_POST['ficha']['posicion'],
+                            $usuario->getCod(),
+                            $_POST['ficha']['color'],
+                            $_POST['comidas']
+                        ));
                     }
                 }
             }

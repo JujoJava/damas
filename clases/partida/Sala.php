@@ -78,22 +78,26 @@ class Sala extends Partida
         return "";
     }
     public function addMovimientos($movimientosBD){
-        if(count($movimientosBD) > count($this->movimientos)){
-            $diferencia = count($movimientosBD) - (count($movimientosBD) - count($this->movimientos));
-            $colores = PartidaBD::getColores($this->getCodPartida());
-            for($i = $diferencia ; $i < count($movimientosBD) ; $i++){
-                $color = 'blancas';
-                if($colores['codnegro'] == $movimientosBD[$i]['codusu']) $color = 'negras';
-                $this->movimientos[] = new Movimiento(
-                    $movimientosBD[$i]['codmov'],
-                    $movimientosBD[$i]['numficha'],
-                    $movimientosBD[$i]['mov_dest'],
-                    $movimientosBD[$i]['codusu'],
-                    $color,
-                    self::generaComidas(PartidaBD::getComidasMovimiento($movimientosBD[$i]['codmov']))
-                );
+        if($movimientosBD) {
+            if (count($movimientosBD) > count($this->movimientos)) {
+                $diferencia = count($movimientosBD) - (count($movimientosBD) - count($this->movimientos));
+                $colores = PartidaBD::getColores($this->getCodPartida());
+                for ($i = $diferencia; $i < count($movimientosBD); $i++) {
+                    $color = 'blancas';
+                    if ($colores['codnegro'] == $movimientosBD[$i]['codusu']) $color = 'negras';
+                    $this->movimientos[] = new Movimiento(
+                        $movimientosBD[$i]['codmov'],
+                        $movimientosBD[$i]['numficha'],
+                        $movimientosBD[$i]['mov_dest'],
+                        $movimientosBD[$i]['mov_orig'],
+                        $movimientosBD[$i]['codusu'],
+                        $color,
+                        self::generaComidas(PartidaBD::getComidasMovimiento($movimientosBD[$i]['codmov']))
+                    );
+                }
+                return true;
             }
-            return true;
+            return false;
         }
         return false;
     }
