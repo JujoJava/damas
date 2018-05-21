@@ -64,6 +64,17 @@ if(isset($_POST['modo'])){
                 $datos['error'] = 'No puedes crear una partida sin tener un nombre';
             }
             break;
+        case 'movimiento':
+            if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
+                $usuario = $_SESSION['login'];
+                if($usuario instanceof Usuario){
+                    $sala = $_SESSION['partida'];
+                    if($sala instanceof Sala){
+                        $sala->addMovimiento()
+                    }
+                }
+            }
+            break;
     }
 }
 else{

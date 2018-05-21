@@ -217,6 +217,7 @@ function defineEventos(){
                 for (var k = 0; k < posibles_movimientos.length; k++) {
                     if (posibles_movimientos[k].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
                         addMovimiento(posibles_movimientos[k].comidas, posibles_movimientos[k].movimiento, ficha_seleccionada);
+                        ajaxMovimiento(posibles_movimientos[k], ficha_seleccionada);
                     }
                 }
             }
@@ -241,6 +242,7 @@ function defineEventos(){
             for(var i = 0 ; i < posibles_movimientos.length ; i++){
                 if(posibles_movimientos[i].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)){
                     addMovimiento(posibles_movimientos[i].comidas, posibles_movimientos[i].movimiento, ficha_seleccionada);
+                    ajaxMovimiento(posibles_movimientos[i], ficha_seleccionada);
                     ficha_seleccionada = false;
                     posibles_movimientos = [];
                 }
@@ -274,6 +276,20 @@ function addMovimiento(comidas, movimiento, ficha){
     }
     movimientos.push({comidas:comidas, movimiento:movimiento});
     cambiaTurno();
+}
+
+function ajaxMovimiento(movimiento, ficha){
+    $.ajax({
+        data: {
+            comidas: movimiento.comidas,
+            movimiento: movimiento.movimiento,
+            ficha: ficha,
+            modo: 'movimiento'
+        },
+        type: 'POST',
+        dataType: 'json',
+        url: 'ajax/insert.php'
+    });
 }
 
 function restaFicha(color){
