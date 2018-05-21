@@ -43,8 +43,8 @@ create table movimiento
 	codmov int NOT NULL, -- PK
 	codpartida int NOT NULL, -- clave ajena de partida -- PK
 	codusu int NOT NULL, -- clave ajena de usuario
-	mov_orig char(2) NOT NULL, -- desde donde mueve
-	mov_dest char(2) NOT NULL -- hasta donde mueve
+	numficha int NOT NULL, -- número de ficha
+	mov_dest char(2) NOT NULL -- donde mueve
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 

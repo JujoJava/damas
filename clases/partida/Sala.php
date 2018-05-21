@@ -86,7 +86,7 @@ class Sala extends Partida
                 if($colores['codnegro'] == $movimientosBD[$i]['codusu']) $color = 'negras';
                 $this->movimientos[] = new Movimiento(
                     $movimientosBD[$i]['codmov'],
-                    $movimientosBD[$i]['mov_orig'],
+                    $movimientosBD[$i]['numficha'],
                     $movimientosBD[$i]['mov_dest'],
                     $movimientosBD[$i]['codusu'],
                     $color
