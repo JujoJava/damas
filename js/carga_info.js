@@ -117,8 +117,7 @@ $(document).ready(function(){
                     $('#principal button[name=actualizar-lista] i').removeClass('fa-spin');
                     cargaSalas(data);
                 },
-                beforeSend: function(e){
-                    console.log(e);
+                beforeSend: function(){
                     boton.attr('disabled', true);
                     $("#principal button[name=actualizar-lista] i").addClass('fa-spin');
                 }
@@ -139,7 +138,6 @@ $(document).ready(function(){
             dataType: 'json',
             url: 'ajax/get.php',
             success: function(data){
-                console.log(data);
                 if(data.correcto) {
                     window.location = 'juego';
                 } else {
