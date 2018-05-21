@@ -13,12 +13,14 @@ class Movimiento
     private $movDest;
     private $jugador;
     private $color;
+    private $comidas;
 
-    public function __construct($cod,$numFicha,$movDest,$jugador,$color){
+    public function __construct($cod,$numFicha,$movDest,$jugador,$color,$comidas){
         $this->cod = $cod;
         $this->jugador = $jugador;
         $this->numFicha = $numFicha;
         $this->movDest = $movDest;
         $this->color = $color;
+        $this->comidas = $comidas;
     }
 }

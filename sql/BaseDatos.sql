@@ -48,6 +48,15 @@ create table movimiento
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+-- representa una ficha que ha sido comida tras un movimiento
+-- un movimiento puede tener varias comidas
+create table comida
+(
+	numficha int NOT NULL, -- número de ficha --PK
+	codmov int NOT NULL -- clave ajena de movimiento PK
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
 -- la partida tendrá información básica de una partida, y se puede utilizar como repetición --
 create table partida
 (
@@ -77,6 +86,7 @@ alter table jugador add constraint cp_jugador primary key (codusu);
 alter table invitado add constraint cp_invitado primary key (codusu);
 alter table espectador add constraint cp_espectador primary key (codsala,codusu);
 alter table movimiento add constraint cp_movimiento primary key (codmov,codpartida);
+alter table comida add constraint cp_comida primary key (numficha, codmov);
 alter table partida add constraint cp_partida primary key (codpartida);
 alter table sala add constraint cp_sala primary key (codsala,codpartida);
 
@@ -85,6 +95,7 @@ alter table invitado add constraint ca_jugador_invitado foreign key (codusu) ref
 alter table espectador add constraint ca_espectador_sala foreign key (codsala) references sala (codsala) on delete cascade;
 alter table espectador add constraint ca_espectador_usuario foreign key (codusu) references usuario (codusu) on delete cascade;
 alter table movimiento add constraint ca_movimiento_partida foreign key (codpartida) references partida (codpartida);
+alter table comida add constraint ca_comida_movimiento foreign key (codmov) references movimiento (codmov);
 alter table sala add constraint ca_sala_partida foreign key (codpartida) references partida (codpartida);
 alter table sala add constraint ca_sala_anfitrion foreign key (anfitrion) references usuario (codusu);
 alter table sala add constraint ca_sala_visitante foreign key (visitante) references usuario (codusu);

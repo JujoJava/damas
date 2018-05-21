@@ -204,6 +204,51 @@ class PartidaBD
         return false;
     }
 
+    public static function getComidasMovimiento($codmovimiento){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM comida WHERE codmov = ?");
+        ManejoBBDD::ejecutar(array($codmovimiento));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function addComidas($codmov, $comidas){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("INSERT INTO comida VALUES(?,?)");
+        ManejoBBDD::iniTransaction();
+        try{
+            foreach($comidas as $comida){
+                ManejoBBDD::ejecutar(array($comida['numFicha'], $codmov));
+            }
+            ManejoBBDD::commit();
+            return true;
+        } catch(PDOException $e) {
+            ManejoBBDD::rollback();
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function addMovimiento($codpartida, $codusu, $numficha, $mov_dest, $comidas){
+        $codmov = self::obtieneIdDisponibleMovimiento();
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("INSERT INTO movimiento VALUES(?,?,?,?,?)");
+        ManejoBBDD::ejecutar(array($codmov, $codpartida, $codusu, $numficha, $mov_dest));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            if(self::addComidas($codmov, $comidas)) {
+                return $codmov;
+            }
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
     public static function entrarSalaRedirect($codsala, $pass, $codusu, $tipo) {
         if(self::obtienePass($codsala) == $pass) { //uso directamente la variable sin SHA, porque ya está codificada
             ManejoBBDD::conectar();
@@ -412,6 +457,26 @@ class PartidaBD
             $e = false;
             for($i = 0 ; $i < count($datos) ; $i++){
                 if($datos[$i]['codpartida']*1 == $contador)
+                    $e = true;
+            }
+            if($e == false)
+                return $contador;
+            $contador++;
+        }
+        ManejoBBDD::desconectar();
+        return $contador;
+    }
+    public static function obtieneIdDisponibleMovimiento(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT codmov FROM movimiento");
+        ManejoBBDD::ejecutar(array());
+        $datos = ManejoBBDD::getDatos();
+        $contador = 1;
+        $e = true;
+        while($e == true){
+            $e = false;
+            for($i = 0 ; $i < count($datos) ; $i++){
+                if($datos[$i]['codmov']*1 == $contador)
                     $e = true;
             }
             if($e == false)

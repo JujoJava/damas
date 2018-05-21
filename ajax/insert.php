@@ -70,7 +70,13 @@ if(isset($_POST['modo'])){
                 if($usuario instanceof Usuario){
                     $sala = $_SESSION['partida'];
                     if($sala instanceof Sala){
-                        $sala->addMovimiento()
+                        $codmovimiento = PartidaBD::addMovimiento(
+                            $sala->getCodPartida(),
+                            $usuario->getCod(),
+                            $_POST['ficha'],
+                            $_POST['movimiento'],
+                            $_POST['comida']
+                        );
                     }
                 }
             }

@@ -279,17 +279,18 @@ function addMovimiento(comidas, movimiento, ficha){
 }
 
 function ajaxMovimiento(movimiento, ficha){
-    $.ajax({
+    console.log(movimiento);
+    /*$.ajax({
         data: {
             comidas: movimiento.comidas,
-            movimiento: movimiento.movimiento,
+            movimiento: movimiento.posicion,
             ficha: ficha,
             modo: 'movimiento'
         },
         type: 'POST',
         dataType: 'json',
         url: 'ajax/insert.php'
-    });
+    });*/
 }
 
 function restaFicha(color){

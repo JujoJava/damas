@@ -155,8 +155,7 @@ $(document).ready(function(){
                     }
                 }
             },
-            beforeSend: function(e){
-                console.log(e);
+            beforeSend: function(){
                 $('#modal_inv_red .modal-body').append("<i class='fas fa-spinner fa-spin'></i>");
             }
         });

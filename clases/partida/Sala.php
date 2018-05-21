@@ -89,12 +89,23 @@ class Sala extends Partida
                     $movimientosBD[$i]['numficha'],
                     $movimientosBD[$i]['mov_dest'],
                     $movimientosBD[$i]['codusu'],
-                    $color
+                    $color,
+                    self::generaComidas(PartidaBD::getComidasMovimiento($movimientosBD[$i]['codmov']))
                 );
             }
             return true;
         }
         return false;
+    }
+    public static function generaComidas($comidasBD){
+        $comidas = array();
+        foreach($comidasBD as $comida){
+            $comidas[] = $comida['numficha'];
+        }
+        return $comidas;
+    }
+    public function addMovimiento($movimiento){
+        $this->movimientos[] = $movimiento;
     }
     public function updateVisitante(){
         $datos = PartidaBD::getVisitante($this->codSala);
