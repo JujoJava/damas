@@ -9,15 +9,15 @@
 class Movimiento
 {
     private $cod;
-    private $movOrig;
+    private $numFicha;
     private $movDest;
     private $jugador;
     private $color;
 
-    public function __construct($cod,$movOrig,$movDest,$jugador,$color){
+    public function __construct($cod,$numFicha,$movDest,$jugador,$color){
         $this->cod = $cod;
         $this->jugador = $jugador;
-        $this->movOrig = $movOrig;
+        $this->numFicha = $numFicha;
         $this->movDest = $movDest;
         $this->color = $color;
     }

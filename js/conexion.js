@@ -65,7 +65,7 @@ function estaConectado(){
                             }
                         }
                     }
-                    setTimeout(estaConectado, 30000);
+                    setTimeout(estaConectado, 5000); //cada 5 segundos
                 }
             }
         }
