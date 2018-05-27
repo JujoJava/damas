@@ -110,20 +110,22 @@ function getMovIzq(orientacion, posicion){
 
 function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas){
     var casillaLibre, mov;
-    casillaLibre = getMovIzq(fichaMov, fichaComer.posicion);
-    if(casillaLibre.numFicha === -1){ //se la puede comer
-        mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
-        if(mov) {
-            if (mov.color !== fichaMov.color) { //posibilidad de comerse otra ficha
-                movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                movimientos.push(comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas));
+    casillaLibre = getMovIzq(fichaMov.color, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+            mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
+                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas);
+                }
             }
-        }
-        mov = getMovDer(fichaMov.color, casillaLibre.posicion);
-        if(mov) {
-            if (mov.color !== fichaMov.color) { //posibilidad de comerse otra ficha
-                movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                movimientos.push(comidaEnCadenaDer(fichaMov, mov, movimientos, comidas));
+            mov = getMovDer(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
+                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas);
+                }
             }
         }
     }
@@ -131,20 +133,22 @@ function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas){
 }
 function comidaEnCadenaDer(fichaMov, fichaComer, movimientos, comidas){
     var casillaLibre, mov;
-    casillaLibre = getMovDer(fichaMov, fichaComer.posicion);
-    if(casillaLibre.numFicha === -1){ //se la puede comer
-        mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
-        if(mov) {
-            if (mov.color !== fichaMov.color) { //posibilidad de comerse otra ficha
-                movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                movimientos.push(comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas));
+    casillaLibre = getMovDer(fichaMov.color, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+            mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
+                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas);
+                }
             }
-        }
-        mov = getMovDer(fichaMov.color, casillaLibre.posicion);
-        if(mov) {
-            if (mov.color !== fichaMov.color) { //posibilidad de comerse otra ficha
-                movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                movimientos.push(comidaEnCadenaDer(fichaMov, mov, movimientos, comidas));
+            mov = getMovDer(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
+                    movimientos.push = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas);
+                }
             }
         }
     }
@@ -212,24 +216,31 @@ function defineEventos(){
         actualizaJuego();
     });
     canvas.on('mousedown', function() {
+        var otra_ficha = true;
         if(miTurno()) {
             if (ficha_seleccionada) {
                 for (var k = 0; k < posibles_movimientos.length; k++) {
                     if (posibles_movimientos[k].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
                         addMovimiento(posibles_movimientos[k].comidas, posibles_movimientos[k].movimiento, ficha_seleccionada);
+                        cambiaTurno();
                         ajaxMovimiento(posibles_movimientos[k], ficha_seleccionada);
+                        ficha_seleccionada = false;
+                        posibles_movimientos = [];
+                        otra_ficha = false;
                     }
                 }
             }
-            ficha_seleccionada = false;
-            posibles_movimientos = [];
-            for (var i = 0; i < NUM_CASILLAS; i++) {
-                for (var j = 0; j < NUM_CASILLAS; j++) {
-                    if (fichas[i][j].posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
-                        if (fichas[i][j].color === mis_datos.color) {
-                            ficha_seleccionada = fichas[i][j];
-                            generaPosiblesMovimientos();
-                            raton_down = true;
+            if(otra_ficha) {
+                ficha_seleccionada = false;
+                posibles_movimientos = [];
+                for (var i = 0; i < NUM_CASILLAS; i++) {
+                    for (var j = 0; j < NUM_CASILLAS; j++) {
+                        if (fichas[i][j].posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
+                            if (fichas[i][j].color === mis_datos.color) {
+                                ficha_seleccionada = fichas[i][j];
+                                generaPosiblesMovimientos();
+                                raton_down = true;
+                            }
                         }
                     }
                 }
@@ -242,6 +253,7 @@ function defineEventos(){
             for(var i = 0 ; i < posibles_movimientos.length ; i++){
                 if(posibles_movimientos[i].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)){
                     addMovimiento(posibles_movimientos[i].comidas, posibles_movimientos[i].movimiento, ficha_seleccionada);
+                    cambiaTurno();
                     ajaxMovimiento(posibles_movimientos[i], ficha_seleccionada);
                     ficha_seleccionada = false;
                     posibles_movimientos = [];
@@ -251,6 +263,33 @@ function defineEventos(){
         raton_down = false;
         actualizaJuego();
     });
+}
+
+function obtieneFicha(numficha, color){
+    for(var i = 0 ; i < fichas.length ; i++){
+        for(var j = 0 ; j < fichas[i].length ; j++){
+            if(fichas[i][j].numFicha == numficha && fichas[i][j].color == color){
+                return fichas[i][j];
+            }
+        }
+    }
+    return false;
+}
+
+function hayNuevoMovimiento(mov){
+    var comidas = [];
+    for(var i = 0 ; i < mov.length ; i++){
+        comidas = mov[i].comidas;
+        var movimiento = {
+            posicion: mov[i].posicion,
+            color: mov[i].color,
+            numFicha: mov[i].numficha
+        };
+        var ficha = obtieneFicha(mov[i].numficha, mov[i].color);
+        addMovimiento(comidas, movimiento, ficha);
+    }
+    actualizaJuego();
+    cambiaTurno();
 }
 
 function addMovimiento(comidas, movimiento, ficha){
@@ -275,7 +314,6 @@ function addMovimiento(comidas, movimiento, ficha){
         }
     }
     movimientos.push({comidas:comidas, movimiento:movimiento});
-    cambiaTurno();
 }
 
 function ajaxMovimiento(movimiento, ficha){
@@ -321,10 +359,6 @@ function espacioVacio(posicion){
         color : '',
         tipo : ''
     };
-}
-
-function hayNuevosMovimientos(mov){
-    movimientos = mov;
 }
 
 function generaPosicion(fila,columna){
@@ -548,9 +582,8 @@ $(window).ready(function() {
 
             ctx = canvas[0].getContext('2d');
 
-
             $(window).resize(function(){
-                if(mis_datos !== null) {
+                if(mis_datos !== null && estado === 'jugando') {
                     inicializaJuego();
                     actualizaJuego();
                 }

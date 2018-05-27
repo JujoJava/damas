@@ -24,7 +24,6 @@ class Sala extends Partida
     public function __construct($codPartida, $codSala, $espectadores, $anfitrion, $visitante, $pass){
         parent::__construct($codPartida);
         $this->codSala = $codSala;
-        $this->movimientos = array();
         $this->espectadores = $espectadores;
         // introducimos el anfitrion como objeto (jugador o invitado) //
         if ($datos = UsuarioBD::obtieneJugador($anfitrion)) {
@@ -121,6 +120,7 @@ class Sala extends Partida
             }
         } else {
             $this->visitante = null;
+            $this->movimientos = array();
         }
     }
     public function updateEspectadores(){

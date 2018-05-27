@@ -26,7 +26,7 @@ echo "<a class='navbar-brand d-flex w-100 mr-auto' href='principal'><img src='im
 echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-center'>";
 
 if($partida instanceof Partida){
-    echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
+    echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i><span id='mensaje_aviso'>!</span></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
 } else {
     echo "<li class='nav-item jugar-ya'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</a>";
 }

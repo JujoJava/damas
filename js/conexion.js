@@ -16,7 +16,10 @@ function estaConectado(){
 
                 if (respuesta.accion === 'salpartida') {
                     if ($('#juego').length > 0) {
-                        window.location = 'principal';
+                        if(window.location !== 'principal')
+                            window.location = 'principal';
+                        else
+                            location.reload();
                     }
                 } else if (respuesta.accion === 'actualiza') {
                     location.reload();
@@ -65,17 +68,13 @@ function estaConectado(){
                                     mis_datos['color'] = 'negras';
                                 }
                             }
-                            console.log(respuesta.partida.movimientos);
-                            if (respuesta.partida.movimientos) {
-                                console.log(respuesta.partida.movimientos);
-                                //hayNuevosMovimientos(respuesta.partida.movimientos);
-                            }
+                            hayNuevoMovimiento(respuesta.partida.movimientos);
                             inicializaJuego();
                             actualizaJuego();
                         }
                         else { //no está en la sala de juego. Mensaje de aviso si hay nuevos movimientos.
-                            if (respuesta.partida.movimientos) {
-                                //mensaje de aviso
+                            if (respuesta.partida.nuevos_movimientos) {
+                                $('#mensaje_aviso').show();
                             }
                         }
                     }

@@ -37,3 +37,18 @@
     border-color:#484848;
     border-radius:10px;
 }
+#mensaje_aviso {
+    display:none;
+}
+#mensaje_aviso {
+    position: relative;
+    top: -25px;
+    border-radius: 50%;
+    background: red;
+    line-height: 8px;
+    font-size: 8px;
+    padding: 2px 6px;
+    font-weight: bold;
+    color: white;
+    left: 6px;
+}

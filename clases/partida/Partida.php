@@ -18,6 +18,7 @@ abstract class Partida
 
     public function __construct($cod){
         $this->codPartida = $cod;
+        $this->movimientos = array();
     }
     public function getCodPartida(){
         return $this->codPartida;

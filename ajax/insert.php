@@ -70,22 +70,29 @@ if(isset($_POST['modo'])){
                 if($usuario instanceof Usuario){
                     $sala = $_SESSION['partida'];
                     if($sala instanceof Sala){
+                        if(isset($_POST['comidas'])){
+                            $comidas = $_POST['comidas'];
+                        } else { $comidas = array(); }
+                        $movimiento = $_POST['movimiento'];
+                        $numficha = $_POST['ficha']['numFicha'];
+                        $posicion = $_POST['ficha']['posicion'];
+                        $color = $_POST['ficha']['color'];
                         $codmovimiento = PartidaBD::addMovimiento(
                             $sala->getCodPartida(),
                             $usuario->getCod(),
-                            $_POST['ficha']['numFicha'],
-                            $_POST['ficha']['posicion'],
-                            $_POST['movimiento'],
-                            $_POST['comidas']
+                            $numficha,
+                            $posicion,
+                            $movimiento,
+                            $comidas
                         );
                         $sala->addMovimiento(new Movimiento(
                             $codmovimiento,
-                            $_POST['ficha']['numFicha'],
-                            $_POST['movimiento'],
-                            $_POST['ficha']['posicion'],
+                            $numficha,
+                            $movimiento,
+                            $posicion,
                             $usuario->getCod(),
-                            $_POST['ficha']['color'],
-                            $_POST['comidas']
+                            $color,
+                            $comidas
                         ));
                     }
                 }
