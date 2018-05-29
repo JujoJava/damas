@@ -219,11 +219,11 @@ class PartidaBD
 
     public static function addComidas($codmov, $comidas){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO comida VALUES(?,?)");
+        ManejoBBDD::preparar("INSERT INTO comida VALUES(?,?,?,?)");
         ManejoBBDD::iniTransaction();
         try{
             foreach($comidas as $comida){
-                ManejoBBDD::ejecutar(array($comida['numFicha'], $codmov));
+                ManejoBBDD::ejecutar(array($comida['numFicha'], $codmov, $comida['color'], $comida['posicion']));
             }
             ManejoBBDD::commit();
             return true;
@@ -283,7 +283,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.anfitrion, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.anfitrion = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) and s.jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -307,7 +307,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.visitante, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.visitante = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) and s.jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();

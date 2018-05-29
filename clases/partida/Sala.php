@@ -11,7 +11,7 @@
  * Se comportará como una partida normal, pero la sala se borrará una vez termine
  */
 
-define('MAIN_URI', 'localhost/damas');
+define('MAIN_URI', '192.168.1.36/damas');
 
 class Sala extends Partida
 {
@@ -103,7 +103,11 @@ class Sala extends Partida
     public static function generaComidas($comidasBD){
         $comidas = array();
         foreach($comidasBD as $comida){
-            $comidas[] = $comida['numficha'];
+            $comidas[] = array(
+                'numFicha' => $comida['numficha'],
+                'color' => $comida['color'],
+                'posicion' => $comida['posicion']
+            );
         }
         return $comidas;
     }

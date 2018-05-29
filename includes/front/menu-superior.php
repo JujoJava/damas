@@ -21,7 +21,7 @@ if(isset($_GET['page']))
 
 echo "<nav id='menu-superior' class='navbar navbar-expand navbar-dark bg-dark'>";
 
-echo "<a class='navbar-brand d-flex w-100 mr-auto' href='principal'><img src='img/logo.png' alt='Damas Online'/></a>"; //logo de la página
+echo "<a class='navbar-brand d-flex w-100 mr-auto' href='principal'><img width='30' height='30' src='img/logo.png' alt='Damas Online'/></a>"; //logo de la página
 
 echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-center'>";
 

@@ -34,6 +34,7 @@ var posibles_movimientos = [];
 var ficha_seleccionada = false;
 var raton_down = false;
 var cuadro_hover = false;
+var movimientos_generados = false;
 var mousePos = {};
 
 var fichas_blancas = 12;
@@ -108,46 +109,58 @@ function getMovIzq(orientacion, posicion){
     return false;
 }
 
-function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas){
+function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas, orientacion){
     var casillaLibre, mov;
     casillaLibre = getMovIzq(fichaMov.color, fichaComer.posicion);
     if(casillaLibre) {
         if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
             mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas);
+                    comidas.push(fichaComer);
+                    movimientos.push({comidas: comidas, movimiento: casillaLibre});
+                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas, 'ambos');
                 }
             }
-            mov = getMovDer(fichaMov.color, casillaLibre.posicion);
-            if (mov) {
-                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas);
+            if(orientacion === 'ambos') {
+                mov = getMovDer(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                        movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas, 'ambos');
+                    }
                 }
             }
         }
     }
     return movimientos;
 }
-function comidaEnCadenaDer(fichaMov, fichaComer, movimientos, comidas){
+function comidaEnCadenaDer(fichaMov, fichaComer, movimientos, comidas, orientacion){
     var casillaLibre, mov;
     casillaLibre = getMovDer(fichaMov.color, fichaComer.posicion);
     if(casillaLibre) {
         if (casillaLibre.numFicha === -1) { //se la puede comer
-            mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
-            if (mov) {
-                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas);
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            if(orientacion === 'ambos') {
+                mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                        comidas.push(fichaComer);
+                        movimientos.push({comidas: comidas, movimiento: casillaLibre});
+                        movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas, 'ambos');
+                    }
                 }
             }
             mov = getMovDer(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    movimientos.push({comidas: comidas.push(fichaComer), movimiento: casillaLibre});
-                    movimientos.push = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas);
+                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas, 'ambos');
                 }
             }
         }
@@ -163,7 +176,7 @@ function generaPosiblesMovimientos(){
             if(mov) {
                 if (mov.numFicha !== -1) { //hay una ficha enfrente
                     if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = comidaEnCadenaIzq(ficha_seleccionada, mov, [], []);
+                        mov = comidaEnCadenaIzq(ficha_seleccionada, mov, [], [], '');
                         for (var i = 0; i < mov.length; i++) {
                             posibles_movimientos.push(mov[i]);
                         }
@@ -177,7 +190,7 @@ function generaPosiblesMovimientos(){
             if(mov) {
                 if (mov.numFicha !== -1) { //hay una ficha enfrente
                     if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = comidaEnCadenaDer(ficha_seleccionada, mov, [], []);
+                        mov = comidaEnCadenaDer(ficha_seleccionada, mov, [], [], '');
                         for (var j = 0; j < mov.length; j++) {
                             posibles_movimientos.push(mov[j]);
                         }
@@ -268,7 +281,7 @@ function defineEventos(){
 function obtieneFicha(numficha, color){
     for(var i = 0 ; i < fichas.length ; i++){
         for(var j = 0 ; j < fichas[i].length ; j++){
-            if(fichas[i][j].numFicha == numficha && fichas[i][j].color == color){
+            if(fichas[i][j].numFicha == numficha && fichas[i][j].color === color){
                 return fichas[i][j];
             }
         }
@@ -277,19 +290,20 @@ function obtieneFicha(numficha, color){
 }
 
 function hayNuevoMovimiento(mov){
-    var comidas = [];
+    var comidas;
+    var color_comida = '';
+    movimientos = []; //vaciamos el array para volverlo a llenar
     for(var i = 0 ; i < mov.length ; i++){
         comidas = mov[i].comidas;
+        var ficha = obtieneFicha(Number(mov[i].numficha), mov[i].color);
         var movimiento = {
+            numFicha: Number(mov[i].numficha),
             posicion: mov[i].posicion,
             color: mov[i].color,
-            numFicha: mov[i].numficha
+            tipo: ficha.tipo
         };
-        var ficha = obtieneFicha(mov[i].numficha, mov[i].color);
         addMovimiento(comidas, movimiento, ficha);
     }
-    actualizaJuego();
-    cambiaTurno();
 }
 
 function addMovimiento(comidas, movimiento, ficha){

@@ -31,8 +31,8 @@ abstract class Partida
         foreach($this->movimientos as $movimiento){
             if($movimiento instanceof Movimiento){
                 $array[] = array(
-                    'codusu' => $movimiento->getJugador(),
-                    'numficha' => $movimiento->getNumFicha(),
+                    'codusu' => $movimiento->getJugador()*1,
+                    'numficha' => $movimiento->getNumFicha()*1,
                     'posicion' => $movimiento->getMovDest(),
                     'comidas' => $movimiento->getComidas(),
                     'color' => $movimiento->getColor()

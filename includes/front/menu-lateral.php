@@ -80,7 +80,7 @@
                     <div class='form-group por-enlace'>
                         <label for="invitar_por_enlace">Invitar por enlace</label><br>
                         <div class="row input-boton">
-                            <input type="text" id="invitar_por_enlace" class="form-control col-md-10" readonly value="<?php if($partida instanceof Partida) echo $partida->getEnlaceSala() ?>">
+                            <input type="text" id="invitar_por_enlace" class="form-control col-md-10" readonly value="<?php if($partida instanceof Sala) echo $partida->getEnlaceSala() ?>">
                             <button type="button" class="btn btn-info col-md-2" name="copiar">Copiar</button>
                         </div>
                         <small class="form-text text-muted">Copia este enlace para que tu amigo lo pegue en su navegador</small>

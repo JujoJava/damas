@@ -68,9 +68,27 @@ function estaConectado(){
                                     mis_datos['color'] = 'negras';
                                 }
                             }
-                            hayNuevoMovimiento(respuesta.partida.movimientos);
-                            inicializaJuego();
-                            actualizaJuego();
+                            // se ha actualizado la página o se ha entrado desde otro sitio //
+                            if(respuesta.partida.movimientos.length > 0 && movimientos.length === 0) {
+                                console.log(respuesta.partida.movimientos);
+                                hayNuevoMovimiento(respuesta.partida.movimientos);
+                                inicializaJuego();
+                                actualizaJuego();
+                                switch(respuesta.partida.movimientos[respuesta.partida.movimientos.length - 1].color) {
+                                    case 'blancas':
+                                        turno = 'negras';
+                                        break;
+                                    case 'negras':
+                                        turno = 'blancas';
+                                        break;
+                                }
+                            }
+                            else if(respuesta.partida.nuevos_movimientos) {
+                                hayNuevoMovimiento(respuesta.partida.movimientos);
+                                inicializaJuego();
+                                actualizaJuego();
+                                cambiaTurno();
+                            }
                         }
                         else { //no está en la sala de juego. Mensaje de aviso si hay nuevos movimientos.
                             if (respuesta.partida.nuevos_movimientos) {

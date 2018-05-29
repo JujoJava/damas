@@ -54,7 +54,9 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 create table comida
 (
 	numficha int NOT NULL, -- número de ficha --PK
-	codmov int NOT NULL -- clave ajena de movimiento PK
+	codmov int NOT NULL, -- clave ajena de movimiento PK
+	color varchar(250) NOT NULL, -- color de la ficha
+	posicion char(2) NOT NULL -- posicion de la ficha en el tablero
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
