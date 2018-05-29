@@ -217,13 +217,13 @@ class PartidaBD
         return array();
     }
 
-    public static function addComidas($codmov, $comidas){
+    public static function addComidas($codmov, $codpartida, $comidas){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO comida VALUES(?,?,?,?)");
+        ManejoBBDD::preparar("INSERT INTO comida VALUES(?,?,?,?,?)");
         ManejoBBDD::iniTransaction();
         try{
             foreach($comidas as $comida){
-                ManejoBBDD::ejecutar(array($comida['numFicha'], $codmov, $comida['color'], $comida['posicion']));
+                ManejoBBDD::ejecutar(array($comida['numFicha'], $codmov, $codpartida, $comida['color'], $comida['posicion']));
             }
             ManejoBBDD::commit();
             return true;
@@ -235,13 +235,13 @@ class PartidaBD
     }
 
     public static function addMovimiento($codpartida, $codusu, $numficha, $mov_orig, $mov_dest, $comidas){
-        $codmov = self::obtieneIdDisponibleMovimiento();
+        $codmov = self::obtieneIdDisponibleMovimiento($codpartida);
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("INSERT INTO movimiento VALUES(?,?,?,?,?,?)");
         ManejoBBDD::ejecutar(array($codmov, $codpartida, $codusu, $numficha, $mov_orig, $mov_dest));
         if(ManejoBBDD::filasAfectadas() > 0){
             ManejoBBDD::desconectar();
-            if(self::addComidas($codmov, $comidas)) {
+            if(self::addComidas($codmov, $codpartida, $comidas)) {
                 return $codmov;
             }
         }
@@ -466,10 +466,10 @@ class PartidaBD
         ManejoBBDD::desconectar();
         return $contador;
     }
-    public static function obtieneIdDisponibleMovimiento(){
+    public static function obtieneIdDisponibleMovimiento($codpartida){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT codmov FROM movimiento");
-        ManejoBBDD::ejecutar(array());
+        ManejoBBDD::preparar("SELECT codmov FROM movimiento WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
         $datos = ManejoBBDD::getDatos();
         $contador = 1;
         $e = true;
