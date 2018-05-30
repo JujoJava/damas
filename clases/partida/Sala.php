@@ -80,7 +80,7 @@ class Sala extends Partida
         if($movimientosBD) {
             if (count($movimientosBD) > count($this->movimientos)) {
                 $diferencia = count($movimientosBD) - (count($movimientosBD) - count($this->movimientos));
-                $colores = PartidaBD::getColores($this->getCodPartida());
+                $colores = PartidaBD::getColores($this->codPartida);
                 for ($i = $diferencia; $i < count($movimientosBD); $i++) {
                     $color = 'blancas';
                     if ($colores['codnegro'] == $movimientosBD[$i]['codusu']) $color = 'negras';
@@ -91,7 +91,7 @@ class Sala extends Partida
                         $movimientosBD[$i]['mov_orig'],
                         $movimientosBD[$i]['codusu'],
                         $color,
-                        self::generaComidas(PartidaBD::getComidasMovimiento($movimientosBD[$i]['codmov']))
+                        self::generaComidas(PartidaBD::getComidasMovimiento($movimientosBD[$i]['codmov'], $this->codPartida))
                     );
                 }
                 return true;

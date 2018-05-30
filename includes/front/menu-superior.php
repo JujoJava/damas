@@ -19,14 +19,16 @@ $punto_activo = array(
 if(isset($_GET['page']))
     $punto_activo[$_GET['page']] = 'active';
 
-echo "<nav id='menu-superior' class='navbar navbar-expand navbar-dark bg-dark'>";
+echo "<nav id='menu-superior' class='navbar navbar-expand-lg navbar-dark bg-dark'>";
 
-echo "<a class='navbar-brand d-flex w-100 mr-auto' href='principal'><img width='30' height='30' src='img/logo.png' alt='Damas Online'/></a>"; //logo de la página
-
-echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-center'>";
+echo "<a class='navbar-brand d-flex w-50 mr-auto' href='principal'><img width='30' height='30' src='img/logo.png' alt='Damas Online'/></a>"; //logo de la página
+echo "<button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target='#opciones-menu' aria-controls='opciones-menu' aria-expanded=\"false\">
+        <span class=\"navbar-toggler-icon\"></span>
+    </button>";
+echo "<div class='collapse navbar-collapse w-100' id='opciones-menu'><ul class='nav navbar-nav mr-auto w-100 justify-content-center'>";
 
 if($partida instanceof Partida){
-    echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i><span id='mensaje_aviso'>!</span></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
+    echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i><span id='mensaje_aviso'>!</span><span class='label-menu-icon'>Partida en curso</span></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
 } else {
     echo "<li class='nav-item jugar-ya'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</a>";
 }
@@ -52,7 +54,7 @@ else{
     echo "<li class='nav-item'><a href='' title='Registrarse' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 
-echo "</ul>";
+echo "</ul></div>";
 echo "</nav>";
 
 ?>

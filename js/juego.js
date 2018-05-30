@@ -13,6 +13,8 @@ var FICHA_BLANCA = new Image();
 FICHA_BLANCA.src = "img/ficha_blanca.png";
 var FICHA_SELECT = new Image();
 FICHA_SELECT.src = "img/ficha_select.png";
+var FICHA_COMIDA = new Image();
+FICHA_COMIDA.src = "img/ficha_comida.png";
 var FICHA_MOV = new Image();
 FICHA_MOV.src = "img/ficha_mov.png";
 var CUADRO_SELECT = new Image();
@@ -34,8 +36,10 @@ var posibles_movimientos = [];
 var ficha_seleccionada = false;
 var raton_down = false;
 var cuadro_hover = false;
-var movimientos_generados = false;
 var mousePos = {};
+var touch_activado = false;
+var mostrar_hover_touch = -1;
+var mov_hover_touch = null;
 
 var fichas_blancas = 12;
 var fichas_negras = 12;
@@ -85,11 +89,11 @@ function getMousePos(canvas, evt) {
 function getMovDer(orientacion, posicion){
     var numPos = generaNumPosicion(posicion);
     if (orientacion === 'blancas') {
-        if(typeof fichas[numPos.y-1][numPos.x+1] !== 'undefined'){
+        if(numPos.y - 1 >= 0 && numPos.x + 1 <= 7){
             return fichas[numPos.y-1][numPos.x+1];
         }
     } else {
-        if(typeof fichas[numPos.y+1][numPos.x-1] !== 'undefined'){
+        if(numPos.x - 1 >= 0 && numPos.y + 1 <= 7){
             return fichas[numPos.y+1][numPos.x-1];
         }
     }
@@ -98,19 +102,27 @@ function getMovDer(orientacion, posicion){
 function getMovIzq(orientacion, posicion){
     var numPos = generaNumPosicion(posicion);
     if (orientacion === 'blancas') {
-        if(typeof fichas[numPos.y-1][numPos.x-1] !== 'undefined') {
-            return fichas[numPos.y - 1][numPos.x - 1];
+        if(numPos.x - 1 >= 0 && numPos.y - 1 >= 0) {
+            return fichas[numPos.y-1][numPos.x-1];
         }
     } else {
-        if(typeof fichas[numPos.y+1][numPos.x+1]) {
+        if(numPos.x + 1 <= 7 && numPos.y + 1 <= 7) {
             return fichas[numPos.y+1][numPos.x+1];
         }
     }
     return false;
 }
 
-function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas, orientacion){
+function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos){
     var casillaLibre, mov;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
     casillaLibre = getMovIzq(fichaMov.color, fichaComer.posicion);
     if(casillaLibre) {
         if (casillaLibre.numFicha === -1) { //se la puede comer
@@ -121,25 +133,29 @@ function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos, comidas, orientaci
             mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    comidas.push(fichaComer);
-                    movimientos.push({comidas: comidas, movimiento: casillaLibre});
-                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas, 'ambos');
+                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos);
                 }
             }
-            if(orientacion === 'ambos') {
-                mov = getMovDer(fichaMov.color, casillaLibre.posicion);
-                if (mov) {
-                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                        movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas, 'ambos');
-                    }
+            mov = getMovDer(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos);
                 }
             }
         }
     }
     return movimientos;
 }
-function comidaEnCadenaDer(fichaMov, fichaComer, movimientos, comidas, orientacion){
+function comidaEnCadenaDer(fichaMov, fichaComer, movimientos){
     var casillaLibre, mov;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
     casillaLibre = getMovDer(fichaMov.color, fichaComer.posicion);
     if(casillaLibre) {
         if (casillaLibre.numFicha === -1) { //se la puede comer
@@ -147,20 +163,16 @@ function comidaEnCadenaDer(fichaMov, fichaComer, movimientos, comidas, orientaci
             comidas.push(fichaComer);
             movimientos.push({comidas: comidas, movimiento: casillaLibre});
 
-            if(orientacion === 'ambos') {
-                mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
-                if (mov) {
-                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                        comidas.push(fichaComer);
-                        movimientos.push({comidas: comidas, movimiento: casillaLibre});
-                        movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos, comidas, 'ambos');
-                    }
+            mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos);
                 }
             }
             mov = getMovDer(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
-                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos, comidas, 'ambos');
+                    movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos);
                 }
             }
         }
@@ -176,7 +188,7 @@ function generaPosiblesMovimientos(){
             if(mov) {
                 if (mov.numFicha !== -1) { //hay una ficha enfrente
                     if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = comidaEnCadenaIzq(ficha_seleccionada, mov, [], [], '');
+                        mov = comidaEnCadenaIzq(ficha_seleccionada, mov, []);
                         for (var i = 0; i < mov.length; i++) {
                             posibles_movimientos.push(mov[i]);
                         }
@@ -190,7 +202,7 @@ function generaPosiblesMovimientos(){
             if(mov) {
                 if (mov.numFicha !== -1) { //hay una ficha enfrente
                     if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = comidaEnCadenaDer(ficha_seleccionada, mov, [], [], '');
+                        mov = comidaEnCadenaDer(ficha_seleccionada, mov, []);
                         for (var j = 0; j < mov.length; j++) {
                             posibles_movimientos.push(mov[j]);
                         }
@@ -203,7 +215,62 @@ function generaPosiblesMovimientos(){
         }
     }
 }
-
+// función que llamará el evento mousedown, o, en caso de tener un dispositivo táctil, touchstart //
+function pulsarTouchMouse(){
+    var otra_ficha = true;
+    if(miTurno()) {
+        if (ficha_seleccionada) {
+            for (var k = 0; k < posibles_movimientos.length; k++) {
+                if (posibles_movimientos[k].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
+                    if(touch_activado && mostrar_hover_touch === -1) mostrar_hover_touch = 0;
+                    else if(touch_activado && mov_hover_touch !== posibles_movimientos[k].movimiento.posicion) mostrar_hover_touch = 0;
+                    if(mostrar_hover_touch !== 0) {
+                        addMovimiento(posibles_movimientos[k].comidas, posibles_movimientos[k].movimiento, ficha_seleccionada);
+                        cambiaTurno();
+                        ajaxMovimiento(posibles_movimientos[k], ficha_seleccionada);
+                        ficha_seleccionada = false;
+                        posibles_movimientos = [];
+                        otra_ficha = false;
+                        mostrar_hover_touch = -1;
+                        mov_hover_touch = null;
+                    } else {
+                        otra_ficha = false;
+                        mov_hover_touch = posibles_movimientos[k].movimiento.posicion;
+                        canvas.trigger('mousemove');
+                    }
+                }
+            }
+        }
+        if(otra_ficha) {
+            mostrar_hover_touch = -1;
+            mov_hover_touch = null;
+            ficha_seleccionada = false;
+            posibles_movimientos = [];
+            for (var i = 0; i < NUM_CASILLAS; i++) {
+                for (var j = 0; j < NUM_CASILLAS; j++) {
+                    if (fichas[i][j].posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
+                        if (fichas[i][j].color === mis_datos.color) {
+                            ficha_seleccionada = fichas[i][j];
+                            generaPosiblesMovimientos();
+                            raton_down = true;
+                        }
+                    }
+                }
+            }
+        }
+        actualizaJuego();
+    }
+}
+function limpiaEventos(){
+    canvas.off('selectstart');
+    canvas.off('mouseleave');
+    canvas.off('touchstart');
+    canvas.off('touchmove');
+    canvas.off('touchend');
+    canvas.off('mousedown');
+    canvas.off('mousemove');
+    canvas.off('mouseup');
+}
 function defineEventos(){
     canvas.on('selectstart', function(e) { e.preventDefault(); return false; }, false);
     canvas.on('mouseleave', function(){
@@ -211,11 +278,39 @@ function defineEventos(){
         cuadro_hover = false;
         actualizaJuego();
     });
+
+    canvas.on('touchstart', function(e) {
+        touch_activado = true;
+        mousePos = getMousePos(canvas, e.touches[0]);
+        pulsarTouchMouse();
+        // elimina el evento de mousedown, para que no haya acumulación y se pueda hacer el movimiento en 2 pasos
+        canvas.off('mousedown');
+        if (e.target === canvas[0]) {
+            e.preventDefault();
+        }
+    });
+    canvas.on('touchmove', function(e) {
+        mousePos = getMousePos(canvas, e.touches[0]);
+        canvas.trigger('mousemove');
+        if (e.target === canvas[0]) {
+            e.preventDefault();
+        }
+    });
+    canvas.on('touchend', function(e) {
+        canvas.trigger('mouseup');
+        touch_activado = false;
+        if (e.target === canvas[0]) {
+            e.preventDefault();
+        }
+    });
+
+    canvas.on('mousedown', pulsarTouchMouse);
     canvas.on('mousemove', function(e) {
         cuadro_hover = false;
         for(var i = 0 ; i < NUM_CASILLAS ; i++){
             for(var j = 0 ; j < NUM_CASILLAS ; j++){
-                mousePos= getMousePos(canvas, e);
+                if(!touch_activado)
+                    mousePos= getMousePos(canvas, e);
                 if(fichas[i][j].posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
                     cuadro_hover = fichas[i][j];
                     if (miTurno() && fichas[i][j].color === mis_datos.color && fichas[i][j].numFicha !== -1) {
@@ -228,40 +323,8 @@ function defineEventos(){
         }
         actualizaJuego();
     });
-    canvas.on('mousedown', function() {
-        var otra_ficha = true;
-        if(miTurno()) {
-            if (ficha_seleccionada) {
-                for (var k = 0; k < posibles_movimientos.length; k++) {
-                    if (posibles_movimientos[k].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
-                        addMovimiento(posibles_movimientos[k].comidas, posibles_movimientos[k].movimiento, ficha_seleccionada);
-                        cambiaTurno();
-                        ajaxMovimiento(posibles_movimientos[k], ficha_seleccionada);
-                        ficha_seleccionada = false;
-                        posibles_movimientos = [];
-                        otra_ficha = false;
-                    }
-                }
-            }
-            if(otra_ficha) {
-                ficha_seleccionada = false;
-                posibles_movimientos = [];
-                for (var i = 0; i < NUM_CASILLAS; i++) {
-                    for (var j = 0; j < NUM_CASILLAS; j++) {
-                        if (fichas[i][j].posicion === obtieneCasilla(mousePos.x, mousePos.y)) {
-                            if (fichas[i][j].color === mis_datos.color) {
-                                ficha_seleccionada = fichas[i][j];
-                                generaPosiblesMovimientos();
-                                raton_down = true;
-                            }
-                        }
-                    }
-                }
-            }
-            actualizaJuego();
-        }
-    });
     canvas.on('mouseup', function() {
+        if(mostrar_hover_touch === 0) mostrar_hover_touch = 1;
         if(raton_down && ficha_seleccionada){
             for(var i = 0 ; i < posibles_movimientos.length ; i++){
                 if(posibles_movimientos[i].movimiento.posicion === obtieneCasilla(mousePos.x, mousePos.y)){
@@ -289,13 +352,14 @@ function obtieneFicha(numficha, color){
     return false;
 }
 
+// los movimientos se calcularán TODOS desde cero //
 function hayNuevoMovimiento(mov){
     var comidas;
-    var color_comida = '';
     movimientos = []; //vaciamos el array para volverlo a llenar
+    inicializaFichas(); //reiniciamos el array de fichas para realizar el proceso de movimientos
     for(var i = 0 ; i < mov.length ; i++){
         comidas = mov[i].comidas;
-        var ficha = obtieneFicha(Number(mov[i].numficha), mov[i].color);
+        var ficha = obtieneFicha(mov[i].numficha, mov[i].color);
         var movimiento = {
             numFicha: Number(mov[i].numficha),
             posicion: mov[i].posicion,
@@ -495,6 +559,7 @@ function dibujaFicha(color, x, y, w, h){
 
 function dibujaFichas(){
     var ficha_drag = false;
+    var comidas = [];
     for(var i = 0 ; i < NUM_CASILLAS ; i++){
         for(var j = 0 ; j < NUM_CASILLAS ; j++){
             // dibujos sobre todas las fichas, excepto la que esté siendo arrastrada //
@@ -523,6 +588,16 @@ function dibujaFichas(){
                     if(cuadro_hover){
                         if(fichas[i][j].posicion === cuadro_hover.posicion){
                             ctx.drawImage(CUADRO_SELECT, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                            comidas = posibles_movimientos[k].comidas;
+                            for(var n = 0 ; n < comidas.length ; n++){
+                                for(var i2 = 0 ; i2 < fichas.length ; i2++){
+                                    for(var j2 = 0 ; j2 < fichas[i2].length ; j2++){
+                                        if(fichas[i2][j2].posicion === comidas[n].posicion){
+                                            ctx.drawImage(FICHA_COMIDA, j2*TAM_CUADROS, i2*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -583,6 +658,7 @@ function inicializaJuego(){
     TAM_CUADROS = TAM_TABLERO/NUM_CASILLAS; //10 casillas
     ctx = canvas[0].getContext("2d");
     defineCasillas();
+    limpiaEventos();
     defineEventos();
 }
 

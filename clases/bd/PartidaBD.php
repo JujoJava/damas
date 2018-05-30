@@ -204,10 +204,10 @@ class PartidaBD
         return false;
     }
 
-    public static function getComidasMovimiento($codmovimiento){
+    public static function getComidasMovimiento($codmovimiento, $codpartida){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT * FROM comida WHERE codmov = ?");
-        ManejoBBDD::ejecutar(array($codmovimiento));
+        ManejoBBDD::preparar("SELECT * FROM comida WHERE codmov = ? and codpartida = ?");
+        ManejoBBDD::ejecutar(array($codmovimiento, $codpartida));
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
             ManejoBBDD::desconectar();

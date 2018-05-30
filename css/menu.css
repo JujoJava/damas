@@ -3,6 +3,15 @@
         display:none;
     }
 }
+#menu-superior .label-menu-icon {
+    display:inline-block;
+    padding-left:5px;
+}
+@media (min-width:992px) {
+    #menu-superior .label-menu-icon {
+        display:none;
+    }
+}
 #menu-superior .nombre-usuario {
     color:rgba(255,255,255,0.5);
     padding-right:1rem;
@@ -10,6 +19,7 @@
     padding-bottom:0.5rem;
     font-weight:bold;
 }
+
 
 #menu-lateral{
     background: #555;
@@ -41,8 +51,7 @@
     display:none;
 }
 #mensaje_aviso {
-    position: relative;
-    top: -25px;
+    position: absolute;
     border-radius: 50%;
     background: red;
     line-height: 8px;
@@ -50,5 +59,5 @@
     padding: 2px 6px;
     font-weight: bold;
     color: white;
-    left: 6px;
+    left: 50%;
 }

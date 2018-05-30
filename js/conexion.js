@@ -70,7 +70,6 @@ function estaConectado(){
                             }
                             // se ha actualizado la página o se ha entrado desde otro sitio //
                             if(respuesta.partida.movimientos.length > 0 && movimientos.length === 0) {
-                                console.log(respuesta.partida.movimientos);
                                 hayNuevoMovimiento(respuesta.partida.movimientos);
                                 inicializaJuego();
                                 actualizaJuego();
