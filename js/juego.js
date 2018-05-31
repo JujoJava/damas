@@ -19,10 +19,15 @@ var FICHA_MOV = new Image();
 FICHA_MOV.src = "img/ficha_mov.png";
 var CUADRO_SELECT = new Image();
 CUADRO_SELECT.src = "img/cuadro_select.png";
+var DAMA_NEGRA = new Image();
+DAMA_NEGRA.src = "img/dama_negra.png";
+var DAMA_BLANCA = new Image();
+DAMA_BLANCA.src = "img/dama_blanca.png";
 
 // variables //
 var estado = 'no_jugando';
 var fichas = []; //array con las posiciones de las fichas
+var fichas_ant = []; //array con las posiciones de las fichas con un movimiento previo
 var movimientos = []; //array de objetos
 var casillas = []; //diccionario de las casillas y sus posiciones reales en el cliente
 var canvas;
@@ -32,7 +37,7 @@ var anfitrion = false;
 var visitante = false;
 var turno = '';
 
-var posibles_movimientos = [];
+var posibles_movimientos = []; //array con los posibles movimientos de una ficha seleccionada
 var ficha_seleccionada = false;
 var raton_down = false;
 var cuadro_hover = false;
@@ -40,6 +45,8 @@ var mousePos = {};
 var touch_activado = false;
 var mostrar_hover_touch = -1;
 var mov_hover_touch = null;
+var num_comidas_ult_mov = 0;
+var puede_castigar = false;
 
 var fichas_blancas = 12;
 var fichas_negras = 12;
@@ -84,6 +91,25 @@ function getMousePos(canvas, evt) {
         x: evt.clientX - rect.left,
         y: evt.clientY - rect.top
     };
+}
+
+function castigaFicha(movimiento){
+    var mov = {
+        comidas:[ficha_seleccionada],
+        movimiento:movimiento
+    };
+    addMovimiento([ficha_seleccionada], movimiento, espacioVacio(ficha_seleccionada.posicion));
+    ajaxMovimiento(mov, espacioVacio(ficha_seleccionada.posicion));
+}
+function compruebaCastigoFicha(){
+    for(var i = 0 ; i < posibles_movimientos.length ; i++){
+        if(posibles_movimientos[i].comidas.length > num_comidas_ult_mov){
+            if(puede_castigar){
+                castigaFicha(posibles_movimientos[i].movimiento);
+                puede_castigar = false;
+            }
+        }
+    }
 }
 
 function getMovDer(orientacion, posicion){
@@ -212,9 +238,167 @@ function generaPosiblesMovimientos(){
                 }
             }
 
+        } else if (ficha_seleccionada.tipo === 'dama') { //si es una dama...
+            /*mov = getMovIzq('blancas', ficha_seleccionada.posicion);
+            if(mov) {
+                if(mov.numFicha !== -1) { //hay una ficha enfrente
+                    if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
+                        mov = movimientoEnCadenaIzq
+                    }
+                }
+            }*/
         }
     }
 }
+
+// FUNCIONES DE MOVIMIENTO ANTERIOR //
+function getMovDerAnt(orientacion, posicion){
+    var numPos = generaNumPosicion(posicion);
+    if (orientacion === 'blancas') {
+        if(numPos.y - 1 >= 0 && numPos.x + 1 <= 7){
+            return fichas_ant[numPos.y-1][numPos.x+1];
+        }
+    } else {
+        if(numPos.x - 1 >= 0 && numPos.y + 1 <= 7){
+            return fichas_ant[numPos.y+1][numPos.x-1];
+        }
+    }
+    return false;
+}
+function getMovIzqAnt(orientacion, posicion){
+    var numPos = generaNumPosicion(posicion);
+    if (orientacion === 'blancas') {
+        if(numPos.x - 1 >= 0 && numPos.y - 1 >= 0) {
+            return fichas_ant[numPos.y-1][numPos.x-1];
+        }
+    } else {
+        if(numPos.x + 1 <= 7 && numPos.y + 1 <= 7) {
+            return fichas_ant[numPos.y+1][numPos.x+1];
+        }
+    }
+    return false;
+}
+
+function comidaEnCadenaIzqAnt(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    casillaLibre = getMovIzqAnt(fichaMov.color, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzqAnt(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqAnt(fichaMov, mov, movimientos);
+                }
+            }
+            mov = getMovDerAnt(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerAnt(fichaMov, mov, movimientos);
+                }
+            }
+        }
+    }
+    return movimientos;
+}
+function comidaEnCadenaDerAnt(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    casillaLibre = getMovDerAnt(fichaMov.color, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzqAnt(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqAnt(fichaMov, mov, movimientos);
+                }
+            }
+            mov = getMovDerAnt(fichaMov.color, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerAnt(fichaMov, mov, movimientos);
+                }
+            }
+        }
+    }
+    return movimientos;
+}
+
+function generaPosiblesMovimientosAnt(){
+    var mov, ficha_ant;
+    if(ficha_seleccionada){
+        for(var i2 = 0 ; i2 < fichas_ant.length ; i2++){
+            for(var j2 = 0 ; j2 < fichas_ant[i2].length ; j2++){
+                if(ficha_seleccionada.color === fichas_ant[i2][j2].color && ficha_seleccionada.numFicha == fichas_ant[i2][j2].numFicha){
+                    ficha_ant = fichas_ant[i2][j2];
+                }
+            }
+        }
+        if(ficha_ant.tipo === 'normal'){ //si es un peón...
+            mov = getMovIzqAnt(ficha_ant.color, ficha_ant.posicion);
+            if(mov) {
+                if (mov.numFicha !== -1) { //hay una ficha enfrente
+                    if (mov.color !== ficha_ant.color) { //posibilidad de comerse una ficha
+                        mov = comidaEnCadenaIzqAnt(ficha_ant, mov, []);
+                        for (var i = 0; i < mov.length; i++) {
+                            posibles_movimientos.push(mov[i]);
+                        }
+                    }
+                } else { //hay un espacio enfrente
+                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                }
+            }
+
+            mov = getMovDerAnt(ficha_ant.color, ficha_ant.posicion);
+            if(mov) {
+                if (mov.numFicha !== -1) { //hay una ficha enfrente
+                    if (mov.color !== ficha_ant.color) { //posibilidad de comerse una ficha
+                        mov = comidaEnCadenaDerAnt(ficha_ant, mov, []);
+                        for (var j = 0; j < mov.length; j++) {
+                            posibles_movimientos.push(mov[j]);
+                        }
+                    }
+                } else { //hay un espacio enfrente
+                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                }
+            }
+
+        } else if (ficha_seleccionada.tipo === 'dama') { //si es una dama...
+            /*mov = getMovIzq('blancas', ficha_seleccionada.posicion);
+            if(mov) {
+                if(mov.numFicha !== -1) { //hay una ficha enfrente
+                    if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
+                        mov = movimientoEnCadenaIzq
+                    }
+                }
+            }*/
+        }
+    }
+}
+// /FUNCIONES DE MOVIMIENTO ANTERIOR //
+
 // función que llamará el evento mousedown, o, en caso de tener un dispositivo táctil, touchstart //
 function pulsarTouchMouse(){
     var otra_ficha = true;
@@ -233,7 +417,7 @@ function pulsarTouchMouse(){
                         otra_ficha = false;
                         mostrar_hover_touch = -1;
                         mov_hover_touch = null;
-                    } else {
+                    } else { //simulación del mousemove en disp. táctiles cuando se pulsa un cuadro
                         otra_ficha = false;
                         mov_hover_touch = posibles_movimientos[k].movimiento.posicion;
                         canvas.trigger('mousemove');
@@ -253,6 +437,12 @@ function pulsarTouchMouse(){
                             ficha_seleccionada = fichas[i][j];
                             generaPosiblesMovimientos();
                             raton_down = true;
+                        } else if(fichas_ant.length > 0) {
+                            ficha_seleccionada = fichas[i][j];
+                            generaPosiblesMovimientosAnt();
+                            compruebaCastigoFicha();
+                            posibles_movimientos = [];
+                            ficha_seleccionada = false;
                         }
                     }
                 }
@@ -352,9 +542,20 @@ function obtieneFicha(numficha, color){
     return false;
 }
 
+function convertirDama(ficha, posicion){
+    var tipo = 'dama';
+    if(ficha.tipo === 'normal'){
+        if(getMovDer(ficha.color, posicion) || getMovIzq(ficha.color, posicion)){
+            tipo = 'normal';
+        }
+    }
+    return tipo;
+}
+
 // los movimientos se calcularán TODOS desde cero //
 function hayNuevoMovimiento(mov){
     var comidas;
+    num_comidas_ult_mov = mov[mov.length-1].comidas.length;
     movimientos = []; //vaciamos el array para volverlo a llenar
     inicializaFichas(); //reiniciamos el array de fichas para realizar el proceso de movimientos
     for(var i = 0 ; i < mov.length ; i++){
@@ -380,7 +581,7 @@ function addMovimiento(comidas, movimiento, ficha){
             }
             if(ficha_aux.posicion === movimiento.posicion){
                 fichas[i][j].color = ficha.color;
-                fichas[i][j].tipo = ficha.tipo;
+                fichas[i][j].tipo = convertirDama(ficha, movimiento.posicion);
                 fichas[i][j].numFicha = ficha.numFicha;
             }
             for(var k = 0 ; k < comidas.length ; k++){
@@ -428,6 +629,7 @@ function cambiaTurno(){
             turno = 'blancas';
             break;
     }
+    puede_castigar = true;
 }
 
 function espacioVacio(posicion){
@@ -465,6 +667,9 @@ function generaNumPosicion(posicion){
 }
 
 function inicializaFichas(){
+    fichas_blancas = 12;
+    fichas_negras = 12;
+    fichas_ant = fichas;
     fichas = [];
     var numFichasBlancas = 0;
     var numFichasNegras = 0;
@@ -546,14 +751,19 @@ function inicializaFichas(){
     }
 }
 
-function dibujaFicha(color, x, y, w, h){
-    switch(color){
-        case 'blancas':
+function dibujaFicha(color, tipo, x, y, w, h){
+    if(color === 'blancas'){
+        if(tipo === 'dama'){
+            ctx.drawImage(DAMA_BLANCA, x, y, w, h);
+        } else {
             ctx.drawImage(FICHA_BLANCA, x, y, w, h);
-            break;
-        case 'negras':
+        }
+    } else if(color === 'negras') {
+        if(tipo === 'dama'){
+            ctx.drawImage(DAMA_NEGRA, x, y, w, h);
+        } else {
             ctx.drawImage(FICHA_NEGRA, x, y, w, h);
-            break;
+        }
     }
 }
 
@@ -565,10 +775,10 @@ function dibujaFichas(){
             // dibujos sobre todas las fichas, excepto la que esté siendo arrastrada //
             if(ficha_seleccionada && raton_down){
                 if(ficha_seleccionada.color !== fichas[i][j].color || ficha_seleccionada.numFicha !== fichas[i][j].numFicha){
-                    dibujaFicha(fichas[i][j].color, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                    dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
                 }
             } else {
-                dibujaFicha(fichas[i][j].color, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
             }
 
             // dibujos sobre la ficha seleccionada //
@@ -607,7 +817,7 @@ function dibujaFichas(){
     // dibujo de arrastre de la ficha seleccionada //
     if(ficha_drag) {
         var diferencia = (TAM_CUADROS/2);
-        dibujaFicha(ficha_drag.color, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
+        dibujaFicha(ficha_drag.color, ficha_drag.tipo, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
         ctx.drawImage(FICHA_SELECT, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
     }
 }

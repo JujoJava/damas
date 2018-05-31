@@ -70,23 +70,32 @@ function estaConectado(){
                             }
                             // se ha actualizado la página o se ha entrado desde otro sitio //
                             if(respuesta.partida.movimientos.length > 0 && movimientos.length === 0) {
+                                var ultimo_mov = respuesta.partida.movimientos[respuesta.partida.movimientos.length-1];
                                 hayNuevoMovimiento(respuesta.partida.movimientos);
                                 inicializaJuego();
                                 actualizaJuego();
-                                switch(respuesta.partida.movimientos[respuesta.partida.movimientos.length - 1].color) {
-                                    case 'blancas':
+                                if(ultimo_mov.color === 'blancas') {
+                                    if(ultimo_mov.numficha !== -1) {
                                         turno = 'negras';
-                                        break;
-                                    case 'negras':
+                                    } else {
                                         turno = 'blancas';
-                                        break;
+                                    }
+                                } else if(ultimo_mov.color === 'negras'){
+                                    if(ultimo_mov.numficha !== -1) {
+                                        turno = 'blancas';
+                                    } else {
+                                        turno = 'negras';
+                                    }
                                 }
                             }
                             else if(respuesta.partida.nuevos_movimientos) {
                                 hayNuevoMovimiento(respuesta.partida.movimientos);
                                 inicializaJuego();
                                 actualizaJuego();
-                                cambiaTurno();
+                                if(respuesta.partida.movimientos[respuesta.partida.movimientos.length-1].numficha !== -1){
+                                    cambiaTurno();
+                                }
+                                console.log(fichas);
                             }
                         }
                         else { //no está en la sala de juego. Mensaje de aviso si hay nuevos movimientos.
