@@ -95,7 +95,6 @@ function estaConectado(){
                                 if(respuesta.partida.movimientos[respuesta.partida.movimientos.length-1].numficha !== -1){
                                     cambiaTurno();
                                 }
-                                console.log(fichas);
                             }
                         }
                         else { //no está en la sala de juego. Mensaje de aviso si hay nuevos movimientos.

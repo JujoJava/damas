@@ -139,14 +139,212 @@ function getMovIzq(orientacion, posicion){
     return false;
 }
 
-function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos){
-    var casillaLibre, mov;
+function comidaEnCadenaIzqInv(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
     var comidas = [];
 
     if(movimientos.length > 0) {
         for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
             comidas.push(movimientos[movimientos.length - 1].comidas[i]);
         }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
+    }
+
+    casillaLibre = getMovIzq(color_inverso, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzq(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqInv(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzq(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqInv(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+            mov = getMovDer(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerInv(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDer(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerInv(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovDer(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaDerInv(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovDer(fichaMov.color, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaDerInv(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return movimientos;
+}
+function comidaEnCadenaDerInv(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
+    }
+
+    casillaLibre = getMovDer(color_inverso, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzq(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqInv(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzq(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqInv(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+            mov = getMovDer(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerInv(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDer(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerInv(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovIzq(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovIzq(fichaMov.color, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaIzq(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return movimientos;
+}
+
+function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
     }
 
     casillaLibre = getMovIzq(fichaMov.color, fichaComer.posicion);
@@ -161,25 +359,86 @@ function comidaEnCadenaIzq(fichaMov, fichaComer, movimientos){
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzq(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzq(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
             mov = getMovDer(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDer(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDer(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovDer(color_inverso, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaDerInv(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovDer(color_inverso, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaDerInv(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
         }
     }
     return movimientos;
 }
 function comidaEnCadenaDer(fichaMov, fichaComer, movimientos){
-    var casillaLibre, mov;
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
     var comidas = [];
 
     if(movimientos.length > 0) {
         for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
             comidas.push(movimientos[movimientos.length - 1].comidas[i]);
         }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
     }
 
     casillaLibre = getMovDer(fichaMov.color, fichaComer.posicion);
@@ -194,13 +453,65 @@ function comidaEnCadenaDer(fichaMov, fichaComer, movimientos){
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaIzq(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzq(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzq(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
             mov = getMovDer(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaDer(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDer(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDer(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovIzq(color_inverso, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaIzqInv(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovIzq(color_inverso, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaIzqInv(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
         }
     }
     return movimientos;
@@ -209,7 +520,7 @@ function comidaEnCadenaDer(fichaMov, fichaComer, movimientos){
 function generaPosiblesMovimientos(){
     var mov;
     if(ficha_seleccionada){
-        if(ficha_seleccionada.tipo === 'normal'){ //si es un peón...
+        if(ficha_seleccionada.tipo === 'normal'){
             mov = getMovIzq(ficha_seleccionada.color, ficha_seleccionada.posicion);
             if(mov) {
                 if (mov.numFicha !== -1) { //hay una ficha enfrente
@@ -220,7 +531,7 @@ function generaPosiblesMovimientos(){
                         }
                     }
                 } else { //hay un espacio enfrente
-                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                    posibles_movimientos.push({comidas: [], movimiento: mov});
                 }
             }
 
@@ -234,19 +545,120 @@ function generaPosiblesMovimientos(){
                         }
                     }
                 } else { //hay un espacio enfrente
-                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                    posibles_movimientos.push({comidas: [], movimiento: mov});
                 }
             }
+        } else if(ficha_seleccionada.tipo === 'dama'){
+            var color_inverso;
+            switch(ficha_seleccionada.color){
+                case 'blancas':
+                    color_inverso = 'negras';
+                    break;
+                case 'negras':
+                    color_inverso = 'blancas';
+                    break;
+            }
 
-        } else if (ficha_seleccionada.tipo === 'dama') { //si es una dama...
-            /*mov = getMovIzq('blancas', ficha_seleccionada.posicion);
-            if(mov) {
-                if(mov.numFicha !== -1) { //hay una ficha enfrente
-                    if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = movimientoEnCadenaIzq
+            var hay_hueco = true;
+            var ficha_state = ficha_seleccionada;
+            while(hay_hueco) {
+                mov = getMovIzq(ficha_seleccionada.color, ficha_state.posicion);
+                if(mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if(mov.color !== ficha_seleccionada.color){ //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaIzq(ficha_state, mov, []);
+                            for (var i2 = 0 ; i2 < mov.length ; i2++){
+                                posibles_movimientos.push(mov[i2]);
+                            }
+                        }
+                    } else {
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_seleccionada.numFicha,
+                            color: ficha_seleccionada.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_seleccionada.tipo
+                        }
                     }
-                }
-            }*/
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_seleccionada;
+            while(hay_hueco) {
+                mov = getMovDer(ficha_seleccionada.color, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaDer(ficha_state, mov, []);
+                            for (var j2 = 0; j2 < mov.length; j2++) {
+                                posibles_movimientos.push(mov[j2]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_seleccionada.numFicha,
+                            color: ficha_seleccionada.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_seleccionada.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_seleccionada;
+            while(hay_hueco) {
+                mov = getMovIzq(color_inverso, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaIzqInv(ficha_state, mov, []);
+                            for (var k = 0; k < mov.length; k++) {
+                                posibles_movimientos.push(mov[k]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_seleccionada.numFicha,
+                            color: ficha_seleccionada.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_seleccionada.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_seleccionada;
+            while(hay_hueco) {
+                mov = getMovDer(color_inverso, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaDerInv(ficha_state, mov, []);
+                            for (var n = 0; n < mov.length; n++) {
+                                posibles_movimientos.push(mov[n]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_seleccionada.numFicha,
+                            color: ficha_seleccionada.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_seleccionada.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
         }
     }
 }
@@ -278,15 +690,211 @@ function getMovIzqAnt(orientacion, posicion){
     }
     return false;
 }
-
-function comidaEnCadenaIzqAnt(fichaMov, fichaComer, movimientos){
-    var casillaLibre, mov;
+function comidaEnCadenaIzqInvAnt(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
     var comidas = [];
 
     if(movimientos.length > 0) {
         for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
             comidas.push(movimientos[movimientos.length - 1].comidas[i]);
         }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
+    }
+
+    casillaLibre = getMovIzqAnt(color_inverso, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzqAnt(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqInvAnt(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzqAnt(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqInvAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+            mov = getMovDerAnt(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerInvAnt(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDerAnt(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerInvAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovDerAnt(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaDerInvAnt(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovDerAnt(fichaMov.color, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaDerInvAnt(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return movimientos;
+}
+function comidaEnCadenaDerInvAnt(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
+    }
+
+    casillaLibre = getMovDerAnt(color_inverso, fichaComer.posicion);
+    if(casillaLibre) {
+        if (casillaLibre.numFicha === -1) { //se la puede comer
+
+            comidas.push(fichaComer);
+            movimientos.push({comidas: comidas, movimiento: casillaLibre});
+
+            mov = getMovIzqAnt(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaIzqInvAnt(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzqAnt(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqInvAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+            mov = getMovDerAnt(color_inverso, casillaLibre.posicion);
+            if (mov) {
+                if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
+                    movimientos = comidaEnCadenaDerInvAnt(fichaMov, mov, movimientos);
+                }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDerAnt(color_inverso, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerInvAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
+            }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovIzqAnt(fichaMov.color, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaIzqAnt(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovIzqAnt(fichaMov.color, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaIzqAnt(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+    return movimientos;
+}
+function comidaEnCadenaIzqAnt(fichaMov, fichaComer, movimientos){
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
+    var comidas = [];
+
+    if(movimientos.length > 0) {
+        for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
+            comidas.push(movimientos[movimientos.length - 1].comidas[i]);
+        }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
     }
 
     casillaLibre = getMovIzqAnt(fichaMov.color, fichaComer.posicion);
@@ -301,25 +909,86 @@ function comidaEnCadenaIzqAnt(fichaMov, fichaComer, movimientos){
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaIzqAnt(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzqAnt(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
             mov = getMovDerAnt(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaDerAnt(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDerAnt(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovDerAnt(color_inverso, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaDerInvAnt(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovDerAnt(color_inverso, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaDerInvAnt(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
         }
     }
     return movimientos;
 }
 function comidaEnCadenaDerAnt(fichaMov, fichaComer, movimientos){
-    var casillaLibre, mov;
+    var casillaLibre, mov, color_inverso, hay_hueco, ficha_state;
     var comidas = [];
 
     if(movimientos.length > 0) {
         for (var i = 0; i < movimientos[movimientos.length - 1].comidas.length; i++) {
             comidas.push(movimientos[movimientos.length - 1].comidas[i]);
         }
+    }
+
+    switch(fichaMov.color){
+        case 'blancas':
+            color_inverso = 'negras';
+            break;
+        case 'negras':
+            color_inverso = 'blancas';
+            break;
     }
 
     casillaLibre = getMovDerAnt(fichaMov.color, fichaComer.posicion);
@@ -334,13 +1003,65 @@ function comidaEnCadenaDerAnt(fichaMov, fichaComer, movimientos){
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaIzqAnt(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovIzqAnt(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaIzqAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
             mov = getMovDerAnt(fichaMov.color, casillaLibre.posicion);
             if (mov) {
                 if (mov.color !== fichaMov.color && mov.numFicha !== -1) { //posibilidad de comerse otra ficha
                     movimientos = comidaEnCadenaDerAnt(fichaMov, mov, movimientos);
                 }
+                else if(fichaMov.tipo === 'dama'){
+                    hay_hueco = true;
+                    ficha_state = fichaMov;
+                    while(hay_hueco){
+                        mov = getMovDerAnt(fichaMov.color, mov.posicion);
+                        if (mov) {
+                            if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                movimientos = comidaEnCadenaDerAnt(ficha_state, mov, movimientos);
+                                hay_hueco = false;
+                            }
+                            ficha_state.posicion = mov.posicion;
+                        } else { hay_hueco = false; }
+                    }
+                }
             }
+
+            if(fichaMov.tipo === 'dama'){
+                mov = getMovIzqAnt(color_inverso, casillaLibre.posicion);
+                if (mov) {
+                    if (mov.color !== fichaMov.color && mov.numFicha !== -1) {
+                        movimientos = comidaEnCadenaIzqInvAnt(fichaMov, mov, movimientos);
+                    }
+                    else if(fichaMov.tipo === 'dama'){
+                        hay_hueco = true;
+                        ficha_state = fichaMov;
+                        while(hay_hueco){
+                            mov = getMovIzqAnt(color_inverso, mov.posicion);
+                            if (mov) {
+                                if (mov.color !== fichaMov.color && mov.numFicha !== -1){
+                                    movimientos = comidaEnCadenaIzqInvAnt(ficha_state, mov, movimientos);
+                                    hay_hueco = false;
+                                }
+                                ficha_state.posicion = mov.posicion;
+                            } else { hay_hueco = false; }
+                        }
+                    }
+                }
+            }
+
         }
     }
     return movimientos;
@@ -367,7 +1088,7 @@ function generaPosiblesMovimientosAnt(){
                         }
                     }
                 } else { //hay un espacio enfrente
-                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                    posibles_movimientos.push({comidas: [], movimiento: mov});
                 }
             }
 
@@ -381,19 +1102,121 @@ function generaPosiblesMovimientosAnt(){
                         }
                     }
                 } else { //hay un espacio enfrente
-                    posibles_movimientos.push({comidas: [], movimiento: mov})
+                    posibles_movimientos.push({comidas: [], movimiento: mov});
                 }
             }
 
-        } else if (ficha_seleccionada.tipo === 'dama') { //si es una dama...
-            /*mov = getMovIzq('blancas', ficha_seleccionada.posicion);
-            if(mov) {
-                if(mov.numFicha !== -1) { //hay una ficha enfrente
-                    if (mov.color !== ficha_seleccionada.color) { //posibilidad de comerse una ficha
-                        mov = movimientoEnCadenaIzq
+        } else if(ficha_seleccionada.tipo === 'dama'){
+            var color_inverso;
+            switch(ficha_seleccionada.color){
+                case 'blancas':
+                    color_inverso = 'negras';
+                    break;
+                case 'negras':
+                    color_inverso = 'blancas';
+                    break;
+            }
+
+            var hay_hueco = true;
+            var ficha_state = ficha_ant;
+            while(hay_hueco) {
+                mov = getMovIzqAnt(ficha_ant.color, ficha_state.posicion);
+                if(mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if(mov.color !== ficha_ant.color){ //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaIzqAnt(ficha_state, mov, []);
+                            for (var m = 0 ; m < mov.length ; m++){
+                                posibles_movimientos.push(mov[m]);
+                            }
+                        }
+                    } else {
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_ant.numFicha,
+                            color: ficha_ant.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_ant.tipo
+                        }
                     }
-                }
-            }*/
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_ant;
+            while(hay_hueco) {
+                mov = getMovDerAnt(ficha_ant.color, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_ant.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaDerAnt(ficha_state, mov, []);
+                            for (var l = 0; l < mov.length; l++) {
+                                posibles_movimientos.push(mov[l]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_ant.numFicha,
+                            color: ficha_ant.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_ant.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_ant;
+            while(hay_hueco) {
+                mov = getMovIzqAnt(color_inverso, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_ant.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaIzqInvAnt(ficha_state, mov, []);
+                            for (var k = 0; k < mov.length; k++) {
+                                posibles_movimientos.push(mov[k]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_ant.numFicha,
+                            color: ficha_ant.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_ant.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
+            hay_hueco = true;
+            ficha_state = ficha_ant;
+            while(hay_hueco) {
+                mov = getMovDerAnt(color_inverso, ficha_state.posicion);
+                if (mov) {
+                    if (mov.numFicha !== -1) { //hay una ficha enfrente
+                        hay_hueco = false;
+                        if (mov.color !== ficha_ant.color) { //posibilidad de comerse una ficha
+                            mov = comidaEnCadenaDerInvAnt(ficha_state, mov, []);
+                            for (var n = 0; n < mov.length; n++) {
+                                posibles_movimientos.push(mov[n]);
+                            }
+                        }
+                    } else { //hay un espacio enfrente
+                        posibles_movimientos.push({comidas: [], movimiento: mov});
+                        ficha_state = {
+                            numFicha: ficha_ant.numFicha,
+                            color: ficha_ant.color,
+                            posicion: mov.posicion,
+                            tipo: ficha_ant.tipo
+                        }
+                    }
+                } else { hay_hueco = false; }
+            }
+
         }
     }
 }
