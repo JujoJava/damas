@@ -21,6 +21,21 @@ class UsuarioBD
         return false;
     }
 
+    public static function loginJugador($nick, $pass){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM jugador j 
+                              INNER JOIN usuario u ON u.codusu = j.codusu
+                              WHERE u.nick = ? AND j.pass = SHA(?)");
+        ManejoBBDD::ejecutar(array($nick, $pass));
+        $datos = ManejoBBDD::getDatos();
+        if(count($datos) > 0){
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return null;
+    }
+
     public static function borraInvitadosNoConectados(){
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("DELETE u.* FROM usuario u 
@@ -53,6 +68,45 @@ class UsuarioBD
         }
         ManejoBBDD::desconectar();
         return false;
+    }
+
+    public static function transformaInvitadoEnJugador($cod, $nick, $pass){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("DELETE FROM invitado WHERE codusu = ?");
+        ManejoBBDD::ejecutar(array($cod));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::preparar("UPDATE usuario SET nick = ? WHERE codusu = ?");
+            ManejoBBDD::ejecutar(array($nick, $cod));
+            if(ManejoBBDD::filasAfectadas() > 0) {
+                ManejoBBDD::preparar("INSERT INTO jugador VALUES(?,?,1)");
+                ManejoBBDD::ejecutar(array($cod, $pass));
+                if(ManejoBBDD::filasAfectadas() > 0){
+                    ManejoBBDD::desconectar();
+                    return true;
+                }
+            }
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function registraJugador($nick, $pass){
+        $codusu = self::obtieneIdDisponibleUsuario();
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("INSERT INTO usuario VALUES(?,?,NOW())");
+        ManejoBBDD::ejecutar(array($codusu, $nick));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::preparar("INSERT INTO jugador VALUES(?,?,1)");
+            ManejoBBDD::ejecutar(array($codusu, $pass));
+            if(ManejoBBDD::filasAfectadas() > 0){
+                ManejoBBDD::desconectar();
+                return $codusu;
+            }
+            ManejoBBDD::desconectar();
+            return null;
+        }
+        ManejoBBDD::desconectar();
+        return null;
     }
 
     public static function obtieneJugador($codusu) {

@@ -86,11 +86,25 @@ if(isset($_POST['modo'])){
                         $datos['accion'] = 'login';
                     }
                 } else {
-                    $daots['accion'] = 'redirigir';
+                    $datos['accion'] = 'redirigir';
                 }
 
             } else {
                 $datos['accion'] = 'redirigir';
+            }
+            break;
+        case 'login':
+            $datos = array(
+                'correcto' => false,
+                'error' => ''
+            );
+            $nick = $_POST['nick'];
+            $pass = $_POST['pass'];
+            if($datos_usuario = UsuarioBD::loginJugador($nick, $pass) != null){
+                $_SESSION['login'] = new Jugador($datos_usuario[0]['codusu'], $nick);
+                $datos['correcto'] = true;
+            } else {
+                $datos['error'] = 'El nombre de usuario o la contraseña no son correctos.';
             }
             break;
     }
