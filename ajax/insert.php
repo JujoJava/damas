@@ -112,6 +112,7 @@ if(isset($_POST['modo'])){
             }
             break;
         case 'tablas':
+            $datos = array('correcto' => false);
             if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
                 $usuario = $_SESSION['login'];
                 if($usuario instanceof Usuario){
@@ -121,6 +122,53 @@ if(isset($_POST['modo'])){
                             PartidaBD::proponerTablas($sala->getCodPartida(), $usuario->getCod());
                             $datos['correcto'] = true;
                         }
+                    }
+                }
+            }
+            break;
+        case 'registro':
+            $datos = array(
+                'correcto' => false,
+                'error' => array(
+                    'error_nombre' => '',
+                    'error_pass' => ''
+                )
+            );
+            $nick = $_POST['nick'];
+            $pass = $_POST['pass'];
+            if(!empty($nick)){
+                $datos['error']['error_nombre'] = '¡El nick está vacío!';
+                if(strlen($nick)){
+                    $datos['error']['error_nombre'] = '¡El nick es demasiado largo!';
+                }
+            }
+            if(!empty($pass)){
+                $datos['error']['error_pass'] = '¡La contraseña está vacía!';
+                if(strlen($pass)){
+                    $datos['error']['error_pass'] = '¡La contraseña es demasiado larga!';
+                }
+            }
+            if(empty($datos['error']['error_nombre']) && empty($datos['error']['error_pass'])){
+                if(isset($_SESSION['login'])) {
+                    $usuario = $_SESSION['login'];
+                    if ($usuario instanceof Invitado) {
+                        if (UsuarioBD::existeNickJugador($_POST['nick'])) {
+                            UsuarioBD::transformaInvitadoEnJugador($usuario->getCod(), $_POST['nick'], $_POST['pass']);
+                            $_SESSION['login'] = new Jugador($usuario->getCod(), $_POST['nick']);
+                            $datos['correcto'] = true;
+                        } else {
+                            $datos['error']['error_nombre'] = '¡El nick ya existe!';
+                        }
+                    }
+                } else {
+                    if (UsuarioBD::existeNickJugador($_POST['nick'])) {
+                        $cod = UsuarioBD::registraJugador($_POST['nick'], $_POST['pass']);
+                        if($cod != null) {
+                            $_SESSION['login'] = new Jugador($cod, $_POST['nick']);
+                            $datos['correcto'] = true;
+                        }
+                    } else {
+                        $datos['error']['error_nombre'] = '¡El nick ya existe!';
                     }
                 }
             }

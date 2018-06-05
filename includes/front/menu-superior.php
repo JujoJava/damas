@@ -1,10 +1,69 @@
+<div id='modal_registro' class='modal fade' role='dialog'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Registrarse</h4>
+                <button type='button' class='close' data-dismiss='modal'>&times;</button>
+            </div>
+            <div class='modal-body'>
+
+                <?php
+                $nomUsu = '';
+                if ($user instanceof Invitado) {
+                    $nomUsu = $user->getNickPuro();
+                }
+                ?>
+
+                <form>
+                    <div class="form-group has-danger">
+                        <input placeholder="Nombre de usuario" value="<?= $nomUsu ?>" class="form-control" type="text" name="nomUsu">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                    <div class="form-group has-danger">
+                        <input placeholder="Constraseña" class="form-control" type="password" name="passUsu">
+                        <div class="invalid-feedback"></div>
+                    </div>
+                </form>
+
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-lg btn-secondary' data-dismiss='modal'>Cerrar</button>
+                <button type='button' disabled='disabled' name='registro-usuario' class='btn btn-lg btn-primary'>Registrar</button>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id='modal_login' class='modal fade' role='dialog'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Iniciar sesión</h4>
+                <button type='button' class='close' data-dismiss='modal'>&times;</button>
+            </div>
+            <div class='modal-body'>
+
+                <form>
+                    <div class="form-group">
+                        <input placeholder="Nombre de usuario" class="form-control" type="text" name="nomUsu">
+                    </div>
+                    <div class="form-group">
+                        <input placeholder="Constraseña" class="form-control" type="password" name="passUsu">
+                    </div>
+                </form>
+
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-lg btn-secondary' data-dismiss='modal'>Cerrar</button>
+                <button type='button' name='iniciar-sesion' class='btn btn-lg btn-primary'>Iniciar sesión</button>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
-/**
- * Created by PhpStorm.
- * User: Juanjo
- * Date: 03/04/2018
- * Time: 20:08
- */
 
 // menú superior //
 
@@ -45,13 +104,13 @@ if($user instanceof Jugador){
 else if($user instanceof Invitado){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>"; //Usuario invitado con nombre provisional. No enlaza a nada.
-    echo "<li class='nav-item ".$punto_activo['login']."'><a href='' title='Iniciar sesión' class='nav-link'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
-    echo "<li class='nav-item ".$punto_activo['registro']."'><a href='' title='Registrarse' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
+    echo "<li class='nav-item ".$punto_activo['login']."'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
+    echo "<li class='nav-item ".$punto_activo['registro']."'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 else{
     echo "<li class='nav-item mostrar-invitado nombre-usuario' style='display:none;'></li>";
-    echo "<li class='nav-item'><a href='' title='Iniciar sesión' class='nav-link'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
-    echo "<li class='nav-item'><a href='' title='Registrarse' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
+    echo "<li class='nav-item ".$punto_activo['login']."'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
+    echo "<li class='nav-item ".$punto_activo['registro']."'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 
 if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){

@@ -88,6 +88,141 @@ $(document).ready(function(){
             }
         });
 
+        //activar o desactivar el botón de registro según lo escrito en los inputs
+        var nomUsuCorrecto = false;
+        var passUsuCorrecto = false;
+        //nick
+        $('#modal_registro input[name=nomUsu]').keyup(function(){
+            if($(this).val() !== '') {
+                if($(this).val().length <= 16) {
+                    nomUsuCorrecto = true;
+                    ocultarError($(this));
+                    if(passUsuCorrecto) {
+                        $('#modal_registro button[name=registro-usuario]').attr('disabled', false); //correcto
+                    }
+                }
+                else{
+                    nomUsuCorrecto = false;
+                    mostrarError($(this), '¡El nick es demasiado largo!');
+                    $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+                }
+            } else{
+                nomUsuCorrecto = false;
+                ocultarError($(this));
+                $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+            }
+        });
+        //pass
+        $('#modal_registro input[name=passUsu]').keyup(function(){
+            if($(this).val() !== '') {
+                if($(this).val().length <= 250) {
+                    passUsuCorrecto = true;
+                    ocultarError($(this));
+                    if(nomUsuCorrecto) {
+                        $('#modal_registro button[name=registro-usuario]').attr('disabled', false); //correcto
+                    }
+                }
+                else{
+                    passUsuCorrecto = false;
+                    mostrarError($(this), '¡La contraseña es demasiado larga!');
+                    $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+                }
+            } else{
+                passUsuCorrecto = false;
+                ocultarError($(this));
+                $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+            }
+        });
+
+        //al pulsar el botón para registrar el usuario
+        $('#modal_registro button[name=registro-usuario]').click(function(){
+            var boton = $(this);
+            var input_nombre = $('#modal_registro input[name=nomUsu]');
+            var input_pass = $('#modal_registro input[name=passUsu]');
+            if(input_nombre.val() !== ''){
+                if(input_nombre.val().length <= 16){
+                    if(input_pass.val() !== ''){
+                        if(input_pass.val().length <= 250){
+
+                            ajaxModal = $.ajax({
+                                data: {
+                                    nick: input_nombre.val(),
+                                    pass: input_pass.val(),
+                                    modo: 'registro'
+                                },
+                                type: 'POST',
+                                dataType: 'json',
+                                url: 'ajax/insert.php',
+                                success: function(response){
+                                    botonNormal(boton, 'Registrar');
+                                    if (response.correcto === false) {
+                                        input_nombre.attr('disabled', false);
+                                        input_pass.attr('disabled', false);
+                                        mostrarError(input_nombre, response.error.error_nombre);
+                                        mostrarError(input_pass, response.error.error_pass);
+                                    }
+                                    else { //usuario registrado
+                                        location.reload();
+                                    }
+                                },
+                                beforeSend: function(){
+                                    botonRueda(boton);
+                                    input_nombre.attr('disabled', true);
+                                    input_pass.attr('disabled', true);
+                                }
+                            });
+
+                        } else {
+                            mostrarError(input_pass, '¡La contraseña es demasiado larga!');
+                            $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+                        }
+                    } else {
+                        mostrarError(input_pass, '¡La contraseña está vacía!');
+                        $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+                    }
+                } else {
+                    mostrarError(input_nombre, '¡El nick es demasiado largo!');
+                    $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+                }
+            } else {
+                mostrarError(input_nombre, '¡El nick está vacío!');
+                $('#modal_registro button[name=registro-usuario]').attr('disabled', true);
+            }
+        });
+
+        //al pulsar el botón de iniciar sesión
+        $('#modal_login button[name=iniciar-sesion]').click(function(){
+            var boton = $(this);
+            var input_nombre = $('#modal_login input[name=nomUsu]');
+            var input_pass = $('#modal_login input[name=passUsu]');
+
+            ajaxModal = $.ajax({
+                data: {
+                    nick: input_nombre.val(),
+                    pass: input_pass.val()
+                },
+                type: 'POST',
+                dataType: 'json',
+                url: 'ajax/get.php',
+                success: function(response){
+                    if(response.correcto){
+                        location.reload();
+                    } else {
+                        botonNormal(boton, 'Iniciar sesión');
+                        input_nombre.attr('disabled', false);
+                        input_pass.attr('disabled', false);
+                        mostrarError(boton, response.error);
+                    }
+                },
+                beforeSend: function(){
+                    botonRueda(boton);
+                    input_nombre.attr('disabled', true);
+                    input_pass.attr('disabled', true);
+                }
+            });
+
+        });
+
         //al pulsar el botón de crear partida
         $('#modal_jugar_nueva button[name=crear-partida]').click(function(){
             // crear invitado

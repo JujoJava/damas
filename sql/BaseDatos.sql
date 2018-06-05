@@ -17,7 +17,6 @@ create table jugador
 (
 	codusu int NOT NULL, -- clave ajena de usuario
 	pass varchar(250) NOT NULL,
-	email varchar(250) NOT NULL,
 	conectado tinyint NOT NULL
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
