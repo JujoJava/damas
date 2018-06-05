@@ -98,6 +98,33 @@ if(isset($_POST['modo'])){
                 }
             }
             break;
+        case 'resultados':
+            if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
+                $usuario = $_SESSION['login'];
+                if($usuario instanceof Usuario){
+                    $sala = $_SESSION['partida'];
+                    if($sala instanceof Sala){
+                        if($sala->getTipoUsuario($usuario->getCod()) == 'anfitrion'){
+                            PartidaBD::setGanador($sala->getCodPartida(), $_POST['ganador']);
+                        }
+                    }
+                }
+            }
+            break;
+        case 'tablas':
+            if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
+                $usuario = $_SESSION['login'];
+                if($usuario instanceof Usuario){
+                    $sala = $_SESSION['partida'];
+                    if($sala instanceof Sala){
+                        if($sala->getTipoUsuario($usuario->getCod()) != 'espectador'){
+                            PartidaBD::proponerTablas($sala->getCodPartida(), $usuario->getCod());
+                            $datos['correcto'] = true;
+                        }
+                    }
+                }
+            }
+            break;
     }
 }
 else{

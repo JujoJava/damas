@@ -128,7 +128,14 @@
     }
 
     if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){
-        echo "<div><button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";
+        echo "<div>";
+        if($partida instanceof Sala) {
+            $tipousu = $partida->getTipoUsuario($user->getCod());
+            if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
+                echo "<button type='button' class='btn btn-default btn-lg' name='proponer-tablas'>Proponer tablas</button>";
+            }
+        }
+        echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";
     }
     ?>
 </div>

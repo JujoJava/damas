@@ -11,6 +11,10 @@ function botonNormal(elem,texto) {
     $(elem).attr("disabled", false);
 }
 
+function botonNormalDisabled(elem, texto){
+    $(elem).html("<span>"+texto+"</span>");
+}
+
 function mostrarError(elem, texto) {
     var el = elem.siblings('div.invalid-feedback');
     el.html(texto);

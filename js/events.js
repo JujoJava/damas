@@ -262,6 +262,29 @@ $(document).ready(function(){
                 beforeSend: function(){
                     botonRueda(boton);
                 }
+            });
+
+        });
+
+        $('#menu-lateral button[name=proponer-tablas]').click(function(){
+
+            var boton = $(this);
+
+            $.ajax({
+                data: {modo: 'tablas'},
+                type: 'POST',
+                dataType: 'json',
+                url: 'ajax/insert.php',
+                success: function(response){
+                    if(response.correcto){
+                        botonNormalDisabled(boton, 'Proponiendo tablas...');
+                    } else {
+                        botonNormal(boton, 'Proponer tablas');
+                    }
+                },
+                beforeSend: function(){
+                    botonRueda(boton);
+                }
             })
 
         });

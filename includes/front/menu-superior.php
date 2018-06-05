@@ -30,7 +30,7 @@ echo "<div class='collapse navbar-collapse w-100' id='opciones-menu'><ul class='
 if($partida instanceof Partida){
     echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i><span id='mensaje_aviso'>!</span><span class='label-menu-icon'>Partida en curso</span></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
 } else {
-    echo "<li class='nav-item jugar-ya'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</a>";
+    echo "<li class='nav-item menu-movil'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</a>";
 }
 
 echo "</ul>";
@@ -52,6 +52,22 @@ else{
     echo "<li class='nav-item mostrar-invitado nombre-usuario' style='display:none;'></li>";
     echo "<li class='nav-item'><a href='' title='Iniciar sesión' class='nav-link'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
     echo "<li class='nav-item'><a href='' title='Registrarse' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
+}
+
+if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){
+    if($partida instanceof Sala) {
+        $anfitrionPartida = $partida->getAnfitrion();
+        if($anfitrionPartida instanceof Usuario) {
+            if($anfitrionPartida->getCod() == $user->getCod()) {
+                echo "<li><button type='button' class='btn btn-info btn-lg' name='invitar_partida' data-toggle='modal' data-target='#modal_invitar_partida'>Invitar a partida</button></li>";
+            }
+        }
+        $tipousu = $partida->getTipoUsuario($user->getCod());
+        if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
+            echo "<li class='nav-item menu-movil'><button type='button' class='btn btn-default btn-lg' name='proponer-tablas'>Proponer tablas</button></li>";
+        }
+    }
+    echo "<li class='nav-item menu-movil'><button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></li>";
 }
 
 echo "</ul></div>";

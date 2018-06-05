@@ -46,6 +46,42 @@ function estaConectado(){
                                     $('#juego .color .blancas').html('');
                                 }
                             }
+                            if(respuesta.partida.tablas === 'tablas') {
+                                estado = 'tablas';
+                                turno = '';
+                                if ($('#menu-lateral').length > 0){
+                                    $('#menu-lateral button[name=proponer-tablas]').html('<span>Proponer tablas</span>');
+                                    $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
+                                } else {
+                                    if($('#juego').length > 0){
+                                        $('#juego .aviso').html('');
+                                    }
+                                }
+                                $('[name=proponer-tablas]').attr('disabled', true);
+                                actualizaJuego();
+                            } else if(respuesta.partida.tablas === 'propuesta') {
+                                if ($('#menu-lateral').length > 0){
+                                    $('#menu-lateral button[name=proponer-tablas]').html('<span>El oponente propone tablas</span>');
+                                    $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-warning btn-lg');
+                                } else {
+                                    if($('#juego').length > 0){
+                                        $('#juego .aviso').html('<span>El oponente propone tablas. Pulsa \'Proponer tablas\' en el menú o sigue jugando.</span>');
+                                    }
+                                }
+                                $('[name=proponer-tablas]').attr('disabled', false);
+                            } else {
+                                if (respuesta.partida.tablas !== 'proponiendo') {
+                                    if ($('#menu-lateral').length > 0){
+                                        $('#menu-lateral button[name=proponer-tablas]').html('Proponer tablas');
+                                        $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
+                                    } else {
+                                        if($('#juego').length > 0){
+                                            $('#juego .aviso').html('');
+                                        }
+                                    }
+                                    $('[name=proponer-tablas]').attr('disabled', false);
+                                }
+                            }
                             mis_datos = respuesta.partida.mis_datos;
                             anfitrion = respuesta.partida.anfitrion;
                             visitante = respuesta.partida.visitante;
@@ -55,11 +91,17 @@ function estaConectado(){
                                     actualizaJuego();
                                     estado = 'jugando';
                                     turno = 'blancas';
+                                    $('[name=proponer-tablas]').attr('disabled', false);
+                                } else if(estado === 'tablas' || estado === 'resultados'){
+                                    inicializaJuego();
+                                    actualizaJuego();
+                                    $('[name=proponer-tablas]').attr('disabled', true);
                                 }
                             }
                             else {
                                 estado = 'no_jugando';
                                 turno = '';
+                                $('[name=proponer-tablas]').attr('disabled', true);
                             }
                             if (mis_datos.rol !== 'espectador') {
                                 if (mis_datos.cod == respuesta.partida.colores.codblanco) {

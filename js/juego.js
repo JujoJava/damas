@@ -1411,6 +1411,7 @@ function addMovimiento(comidas, movimiento, ficha){
                 if(ficha_aux.posicion === comidas[k].posicion){
                     restaFicha(ficha_aux.color);
                     fichas[i][j] = espacioVacio(comidas[k].posicion);
+                    comprobarPuntos();
                 }
             }
         }
@@ -1441,6 +1442,32 @@ function restaFicha(color){
             fichas_negras--;
             break;
     }
+}
+
+function comprobarPuntos(){
+    if(fichas_blancas === 0 || fichas_negras === 0) {
+        setTimeout(function(){
+            estado = 'resultados';
+            turno = '';
+            guardaResultados();
+        }, 1000);
+    }
+}
+
+function guardaResultados(){
+    var ganador = 'blancas';
+    if(fichas_blancas === 0){
+        ganador = 'negras';
+    }
+    $.ajax({
+        data: {
+            ganador: ganador,
+            modo: 'resultados'
+        },
+        type: 'POST',
+        dataType: 'json',
+        url: 'ajax/insert.php'
+    });
 }
 
 function cambiaTurno(){
@@ -1643,6 +1670,48 @@ function dibujaFichas(){
         dibujaFicha(ficha_drag.color, ficha_drag.tipo, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
         ctx.drawImage(FICHA_SELECT, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
     }
+    // dibujo de ganador si se ha acabado la partida //
+    if(estado === 'resultados') {
+        ctx.fillStyle = '#4b4e6e';
+        ctx.fillRect(0, TAM_TABLERO/2 - TAM_CUADROS/3, TAM_TABLERO, TAM_CUADROS/2);
+        ctx.font = (TAM_CUADROS/3)+'px Arial';
+        ctx.fillStyle = '#b8b8b8';
+        if(fichas_blancas === 0){
+            if(mis_datos.rol !== 'espectador') {
+                if (mis_datos.color === 'blancas') {
+                    ctx.fillText('¡Has perdido!', TAM_CUADROS/2, TAM_TABLERO/2);
+                } else {
+                    ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
+                }
+            } else {
+                if (mis_datos.color === 'blancas') {
+                    ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
+                } else {
+                    ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
+                }
+            }
+        } else {
+            if(mis_datos.rol !== 'espectador') {
+                if (mis_datos.color === 'negras') {
+                    ctx.fillText('¡Has perdido!', TAM_CUADROS/2, TAM_TABLERO/2);
+                } else {
+                    ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
+                }
+            } else {
+                if (mis_datos.color === 'negras') {
+                    ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
+                } else {
+                    ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
+                }
+            }
+        }
+    } else if (estado === 'tablas') {
+        ctx.fillStyle = '#4b4e6e';
+        ctx.fillRect(0, TAM_TABLERO/2 - TAM_CUADROS/3, TAM_TABLERO, TAM_CUADROS/2);
+        ctx.font = (TAM_CUADROS/3)+'px Arial';
+        ctx.fillStyle = '#e2e2e2';
+        ctx.fillText('La partida ha acabado en tablas.', TAM_CUADROS/2, TAM_TABLERO/2);
+    }
 }
 
 function dibujaTablero(){
@@ -1674,12 +1743,8 @@ function dibujaTablero(){
 
 function actualizaJuego(){
     dibujaTablero();
-    switch (estado) {
-        case 'no_jugando':
-            inicializaFichas();
-            break;
-        case 'jugando':
-            break;
+    if(estado !== 'jugando'){
+        inicializaFichas();
     }
     dibujaFichas();
 }

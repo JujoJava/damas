@@ -46,6 +46,7 @@ if (isset($_SESSION['login'])) {
                         $visit = false;
                         $espectadores = array();
                         $nuevos_usus = false;
+                        $tablas = false;
 
                         $sala->updateVisitante();
                         $sala->updateEspectadores();
@@ -64,6 +65,7 @@ if (isset($_SESSION['login'])) {
                             }
                             if ($sala->getAnfitrion() instanceof Usuario) $anfit = array('cod' => $sala->getAnfitrion()->getCod(), 'nick' => $sala->getAnfitrion()->getNick());
                             if ($sala->getVisitante() instanceof Usuario) $visit = array('cod' => $sala->getVisitante()->getCod(), 'nick' => $sala->getVisitante()->getNick());
+                            $tablas = PartidaBD::obtieneTablas($sala->getCodPartida(), $usuario->getCod());
                             $datos['partida'] = array(
                                 'anfitrion' => $anfit,
                                 'visitante' => $visit,
@@ -71,7 +73,8 @@ if (isset($_SESSION['login'])) {
                                 'mis_datos' => array('cod' => $usuario->getCod(), 'rol' => $sala->getTipoUsuario($usuario->getCod())),
                                 'colores' => PartidaBD::getColores($sala->getCodPartida()),
                                 'movimientos' => $movimientos,
-                                'nuevos_movimientos' => $nuevos_movimientos
+                                'nuevos_movimientos' => $nuevos_movimientos,
+                                'tablas' => $tablas
                             );
                         }
                     } else {

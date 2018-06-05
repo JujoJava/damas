@@ -107,8 +107,8 @@ class PartidaBD
     public static function creaPartida($codnegro,$codblanco){
         $codpartida = self::obtieneIdDisponiblePartida();
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,?)");
-        ManejoBBDD::ejecutar(array($codpartida, $codnegro, $codblanco));
+        ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,?,?)");
+        ManejoBBDD::ejecutar(array($codpartida, $codnegro, $codblanco, ''));
         if (ManejoBBDD::filasAfectadas() > 0) {
             ManejoBBDD::desconectar();
             return $codpartida;
@@ -242,6 +242,9 @@ class PartidaBD
         if(ManejoBBDD::filasAfectadas() > 0){
             ManejoBBDD::desconectar();
             if(self::addComidas($codmov, $codpartida, $comidas)) {
+                ManejoBBDD::preparar("DELETE FROM tablas WHERE codpartida = ?");
+                ManejoBBDD::ejecutar(array($codpartida));
+                ManejoBBDD::desconectar();
                 return $codmov;
             }
         }
@@ -296,6 +299,12 @@ class PartidaBD
                 if (ManejoBBDD::filasAfectadas() > 0) { //es un invitado
                     ManejoBBDD::preparar("UPDATE sala SET anfitrion = null WHERE anfitrion = ? and codsala = ?");
                     ManejoBBDD::ejecutar(array($anfitrion['anfitrion'], $anfitrion['codsala']));
+                    ManejoBBDD::preparar("UPDATE partida SET codnegro = null WHERE codnegro = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($anfitrion['visitante'], $anfitrion['codpartida']));
+                    ManejoBBDD::preparar("UPDATE partida SET codblanco = null WHERE codblanco = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($anfitrion['visitante'], $anfitrion['codpartida']));
+                    ManejoBBDD::preparar("DELETE FROM tablas WHERE codusu = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($anfitrion['visitante'], $anfitrion['codpartida']));
                 }
             }
             return true;
@@ -320,6 +329,12 @@ class PartidaBD
                 if (ManejoBBDD::filasAfectadas() > 0) { //es un invitado
                     ManejoBBDD::preparar("UPDATE sala SET visitante = null WHERE visitante = ? and codsala = ?");
                     ManejoBBDD::ejecutar(array($visitante['visitante'], $visitante['codsala']));
+                    ManejoBBDD::preparar("UPDATE partida SET codnegro = null WHERE codnegro = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($visitante['visitante'], $visitante['codpartida']));
+                    ManejoBBDD::preparar("UPDATE partida SET codblanco = null WHERE codblanco = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($visitante['visitante'], $visitante['codpartida']));
+                    ManejoBBDD::preparar("DELETE FROM tablas WHERE codusu = ? and codpartida = ?");
+                    ManejoBBDD::ejecutar(array($visitante['visitante'], $visitante['codpartida']));
                 }
             }
             return true;
@@ -340,11 +355,11 @@ class PartidaBD
                 ManejoBBDD::ejecutar(array($codpartida));
                 $datospartida = ManejoBBDD::getDatos();
                 if($datospartida[0]['codnegro'] == $codusu) {
-                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,NULL,?)");
-                    ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codblanco']));
+                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,NULL,?,?)");
+                    ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codblanco'], ''));
                 } else {
-                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,NULL)");
-                    ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codnegro']));
+                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,NULL,?)");
+                    ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codnegro'], ''));
                 }
                 ManejoBBDD::preparar("SELECT * FROM sala WHERE codsala = ? and jugandose = 1");
                 ManejoBBDD::ejecutar(array($codsala));
@@ -423,6 +438,52 @@ class PartidaBD
         }
         ManejoBBDD::desconectar();
         return $pass;
+    }
+    public static function setGanador($codpartida, $color){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("UPDATE partida SET ganador = ? WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($color, $codpartida));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+    public static function proponerTablas($codpartida, $codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("INSERT INTO tablas VALUES(?,?)");
+        ManejoBBDD::ejecutar(array($codpartida, $codusu));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+    public static function obtieneTablas($codpartida, $codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM tablas WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            if (count($datos) == 2) {
+                ManejoBBDD::preparar("UPDATE partida SET ganador = tablas WHERE codpartida = ?");
+                ManejoBBDD::ejecutar(array($codpartida));
+                ManejoBBDD::desconectar();
+                return 'tablas';
+            } else if (count($datos) == 1) {
+                if($datos[0]['codusu'] == $codusu) {
+                    ManejoBBDD::desconectar();
+                    return 'proponiendo';
+                } else {
+                    ManejoBBDD::desconectar();
+                    return 'propuesta';
+                }
+            }
+        }
+        ManejoBBDD::desconectar();
+        return false;
     }
 
     public static function obtieneIdDisponibleSala(){
