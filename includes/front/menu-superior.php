@@ -68,9 +68,6 @@
 // menú superior //
 
 $punto_activo = array(
-    'login' => '',
-    'logout' => '',
-    'registro' => '',
     'perfil' => '',
     'juego' => ''
 );
@@ -98,19 +95,19 @@ echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-end'>";
 if($user instanceof Jugador){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>";
-    echo "<li class='nav-item ".$punto_activo['perfil']."'><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i></a></li>"; //Solo registrados. Para acceder al menú de usuario
-    echo "<li class='nav-item ".$punto_activo['logout']."'><a title='Cerrar sesión' href='' class='nav-link'><i class='fas fa-sign-out-alt'></i></a>"; //Botón para cerrar sesión. Icono.
+    echo "<li class='nav-item'><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i><span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
+    echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link'><i class='fas fa-sign-out-alt'></i><span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
 }
 else if($user instanceof Invitado){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>"; //Usuario invitado con nombre provisional. No enlaza a nada.
-    echo "<li class='nav-item ".$punto_activo['login']."'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
-    echo "<li class='nav-item ".$punto_activo['registro']."'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
+    echo "<li class='nav-item'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
+    echo "<li class='nav-item'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 else{
     echo "<li class='nav-item mostrar-invitado nombre-usuario' style='display:none;'></li>";
-    echo "<li class='nav-item ".$punto_activo['login']."'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
-    echo "<li class='nav-item ".$punto_activo['registro']."'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
+    echo "<li class='nav-item'><a href='' title='Iniciar sesión' class='nav-link' data-toggle='modal' data-target='#modal_login'>Iniciar sesión</a></li>"; //Botón de iniciar sesión
+    echo "<li class='nav-item'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 
 if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){

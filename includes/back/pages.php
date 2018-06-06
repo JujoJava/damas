@@ -8,14 +8,14 @@
 
 if(isset($_GET['page'])){
     if($_GET['page'] == 'juego' && (!isset($_SESSION['partida']) || !isset($_SESSION['login']))){
-        header('location: principal');
+        header('location:principal');
     } else {
         include("pages/" . $_GET['page'] . ".html");
         if($_GET['page'] == 'redirect'){
             if(isset($_GET['cod']) && isset($_GET['pass'])){
                 $_SESSION['redirect'] = array('cod' => $_GET['cod'], 'pass' => $_GET['pass']);
             } else {
-                header('location: principal');
+                header('location:principal');
             }
         }
     }

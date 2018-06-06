@@ -34,6 +34,13 @@ $(document).ready(function(){
         ocultarErrores();
     });
 
+    $('#menu-lateral button[name=ver-repeticiones]').click(function(){
+        $('#menu-lateral #lista-repeticiones').toggle(200);
+    });
+    $('#menu-lateral button[name=ver-lista-amigos]').click(function(){
+        $('#menu-lateral #lista-amigos').toggle(200);
+    });
+
     // se encuentra en página principal //
     if($('#principal').length > 0) {
 
@@ -85,6 +92,23 @@ $(document).ready(function(){
             } else{
                 ocultarError($(this));
                 $('#modal_jugar_nueva button[name=crear-partida]').attr('disabled', true);
+            }
+        });
+
+        //activar o desactivar el botón de entrar en sala según lo escrito en el input
+        $('#modal_entrar_sala input[name=nomUsuInvi]').keyup(function(){
+            if($(this).val() !== ''){
+                if($(this).val().length <= 16) {
+                    ocultarError($(this));
+                    $('#modal_entrar_sala button[name=entrar-sala]').attr('disabled', false); //correcto
+                }
+                else{
+                    mostrarError($(this), '¡El nick es demasiado largo!');
+                    $('#modal_entrar_sala button[name=entrar-sala]').attr('disabled', true);
+                }
+            } else{
+                ocultarError($(this));
+                $('#modal_entrar_sala button[name=entrar-sala]').attr('disabled', true);
             }
         });
 
@@ -165,7 +189,7 @@ $(document).ready(function(){
                                         location.reload();
                                     }
                                 },
-                                beforeSend: function(){
+                                beforeSend: function(e){
                                     botonRueda(boton);
                                     input_nombre.attr('disabled', true);
                                     input_pass.attr('disabled', true);
@@ -223,6 +247,47 @@ $(document).ready(function(){
 
         });
 
+        //al pulsar el botón del modal de entrar en sala
+        $('#modal_entrar_sala button[name=entrar-sala]').click(function() {
+            // crear invitado
+            var boton = $(this);
+            var input_nombre = $('#modal_entrar_sala input[name=nomUsuInvi]');
+            if (input_nombre.val() !== '') {
+                if (input_nombre.val().length <= 16) {
+
+                    ajaxModal = $.ajax({
+                        data: {
+                            nick: input_nombre.val(),
+                            modo: 'usuario_invitado'
+                        },
+                        type: 'POST',
+                        dataType: 'json',
+                        url: 'ajax/insert.php',
+                        success: function (response) {
+                            botonNormal(boton, 'Crear');
+                            if (response.correcto === false) {
+                                input_nombre.attr('disabled', false);
+                                mostrarError(input_nombre, response.error);
+                            }
+                            else { //usuario invitado registrado
+                                window.location = 'redirect/' + boton.attr('id') + '/';
+                            }
+                        },
+                        beforeSend: function () {
+                            botonRueda(boton);
+                            input_nombre.attr('disabled', true);
+                        }
+                    });
+
+                } else {
+                    mostrarError(input_nombre, '¡El nick es demasiado largo!');
+                    $('#modal_jugar_nueva button[name=crear-partida]').attr('disabled', true);
+                }
+            } else {
+                mostrarError(input_nombre, '¡El campo está vacío!');
+                $('#modal_jugar_nueva button[name=crear-partida]').attr('disabled', true);
+            }
+        });
         //al pulsar el botón de crear partida
         $('#modal_jugar_nueva button[name=crear-partida]').click(function(){
             // crear invitado

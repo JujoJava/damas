@@ -107,6 +107,12 @@ if(isset($_POST['modo'])){
                 $datos['error'] = 'El nombre de usuario o la contraseña no son correctos.';
             }
             break;
+        case 'logueado':
+            $datos = array('correcto' => false);
+            if(isset($_SESSION['login'])){
+                $datos['correcto'] = true;
+            }
+            break;
     }
 }
 else{

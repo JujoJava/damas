@@ -21,7 +21,7 @@
 }
 
 
-#menu-lateral{
+#menu-lateral {
     background: #555;
     color:#fff;
 
@@ -31,7 +31,7 @@
     border-radius:10px;
     padding:10px;
 }
-#menu-lateral div{
+#menu-lateral div {
     display:flex;
     flex-direction:column;
     text-align:center;
@@ -46,6 +46,40 @@
     border-style:solid;
     border-color:#484848;
     border-radius:10px;
+}
+#menu-lateral #lista-amigos {
+    display:none;
+}
+#menu-lateral #lista-repeticiones {
+    display:none;
+    max-height:50px;
+    width:100%;
+    overflow-y:auto;
+}
+#menu-lateral #lista-repeticiones > div {
+    width:100%;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+}
+#menu-lateral #lista-repeticiones > div > span.Victoria {
+    color: #00a900;
+    font-style:italic;
+}
+#menu-lateral #lista-repeticiones > div > span.Derrota {
+    color:red;
+    font-style:italic;
+}
+#menu-lateral #lista-repeticiones > div > span.Tablas {
+    font-style:italic;
+}
+#menu-lateral #lista-repeticiones > div > a {
+    color: #c2c2c2;
+    text-decoration:none;
+}
+#menu-lateral #lista-repeticiones > div > a:hover {
+    color: #a1a1a1;
+    text-decoration:none;
 }
 #mensaje_aviso {
     display:none;

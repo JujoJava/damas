@@ -27,6 +27,13 @@ create table invitado
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+create table amigos
+(
+	codusu int NOT NULL, -- clave ajena de jugador
+	codamigo int NOT NULL -- clave ajena de jugador
+)
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
 -- una sala tiene varios espectadores (usuarios) --
 create table espectador
 (
@@ -95,6 +102,7 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 alter table usuario add constraint cp_usuario primary key (codusu);
 alter table jugador add constraint cp_jugador primary key (codusu);
 alter table invitado add constraint cp_invitado primary key (codusu);
+alter table amigos add constraint cp_amigos primary key (codusu, codamigo);
 alter table espectador add constraint cp_espectador primary key (codsala,codusu);
 alter table movimiento add constraint cp_movimiento primary key (codmov,codpartida);
 alter table comida add constraint cp_comida primary key (numficha, codmov, codpartida, color);
@@ -104,6 +112,8 @@ alter table sala add constraint cp_sala primary key (codsala,codpartida);
 
 alter table jugador add constraint ca_jugador_usuario foreign key (codusu) references usuario (codusu);
 alter table invitado add constraint ca_jugador_invitado foreign key (codusu) references usuario (codusu) on delete cascade;
+alter table amigos add constraint ca_amigos_jugador foreign key (codusu) references jugador (codusu) on delete cascade;
+alter table amigos add constraint ca_amigos_amigo foreign key (codamigo) references jugador (codusu) on delete cascade;
 alter table espectador add constraint ca_espectador_sala foreign key (codsala) references sala (codsala) on delete cascade;
 alter table espectador add constraint ca_espectador_usuario foreign key (codusu) references usuario (codusu) on delete cascade;
 alter table movimiento add constraint ca_movimiento_partida foreign key (codpartida) references partida (codpartida);

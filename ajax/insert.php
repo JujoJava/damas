@@ -137,22 +137,24 @@ if(isset($_POST['modo'])){
             $nick = $_POST['nick'];
             $pass = $_POST['pass'];
             if(!empty($nick)){
-                $datos['error']['error_nombre'] = '¡El nick está vacío!';
-                if(strlen($nick)){
+                if(strlen($nick) > 16){
                     $datos['error']['error_nombre'] = '¡El nick es demasiado largo!';
                 }
+            } else {
+                $datos['error']['error_nombre'] = '¡El nick está vacío!';
             }
             if(!empty($pass)){
-                $datos['error']['error_pass'] = '¡La contraseña está vacía!';
-                if(strlen($pass)){
+                if(strlen($pass) > 250){
                     $datos['error']['error_pass'] = '¡La contraseña es demasiado larga!';
                 }
+            } else {
+                $datos['error']['error_pass'] = '¡La contraseña está vacía!';
             }
             if(empty($datos['error']['error_nombre']) && empty($datos['error']['error_pass'])){
                 if(isset($_SESSION['login'])) {
                     $usuario = $_SESSION['login'];
                     if ($usuario instanceof Invitado) {
-                        if (UsuarioBD::existeNickJugador($_POST['nick'])) {
+                        if (!UsuarioBD::existeNickJugador($_POST['nick'])) {
                             UsuarioBD::transformaInvitadoEnJugador($usuario->getCod(), $_POST['nick'], $_POST['pass']);
                             $_SESSION['login'] = new Jugador($usuario->getCod(), $_POST['nick']);
                             $datos['correcto'] = true;
@@ -161,7 +163,7 @@ if(isset($_POST['modo'])){
                         }
                     }
                 } else {
-                    if (UsuarioBD::existeNickJugador($_POST['nick'])) {
+                    if (!UsuarioBD::existeNickJugador($_POST['nick'])) {
                         $cod = UsuarioBD::registraJugador($_POST['nick'], $_POST['pass']);
                         if($cod != null) {
                             $_SESSION['login'] = new Jugador($cod, $_POST['nick']);

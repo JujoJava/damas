@@ -1,3 +1,36 @@
+<div id='modal_entrar_sala' class='modal fade' role='dialog'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Entrar a sala</h4>
+                <button type='button' class='close' data-dismiss='modal'>&times;</button>
+            </div>
+            <div class='modal-body'>
+                <?php
+
+                if (!$user instanceof Usuario) {
+
+                    echo "<div class='conf-invitado'>";
+                    echo "<p>No tienes un nombre que te identifique.<br>";
+                    echo "Por favor, introduce un nombre.</p>";
+                    echo "<form><div class='form-group has-danger'>";
+                    echo "<input placeholder='Nombre' class='form-control' type='text' name='nomUsuInvi'>";
+                    echo "<div class='invalid-feedback'></div>";
+                    echo "</div></form></div>";
+                }
+
+                ?>
+
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-lg btn-secondary' data-dismiss='modal'>Cerrar</button>
+                <button type='button' disabled='disabled' name='entrar-sala' class='btn btn-lg btn-primary'>Crear</button>
+                <div class="invalid-feedback"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div id='modal_jugar_nueva' class='modal fade' role='dialog'>
     <div class='modal-dialog'>
         <div class='modal-content'>
@@ -109,16 +142,52 @@
         $anfitrionPartida = $partida->getAnfitrion();
         if($anfitrionPartida instanceof Usuario) {
             if($anfitrionPartida->getCod() == $user->getCod()) {
-                echo "<div><button type='button' class='btn btn-info btn-lg' name='invitar_partida' data-toggle='modal' data-target='#modal_invitar_partida'>Invitar a partida</button></div>";
+                echo "<div><button type='button' class='btn btn-primary btn-lg' name='invitar_partida' data-toggle='modal' data-target='#modal_invitar_partida'>Invitar a partida</button></div>";
             }
         }
     } else if(!$partida instanceof Partida) {
-        echo "<div><button type='button' class='btn btn-info btn-lg' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</button>"; //botón que abrirá el modal de creación rápida
+        echo "<div><button type='button' class='btn btn-primary btn-lg' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</button>"; //botón que abrirá el modal de creación rápida
         echo "<span><i>Pulsa este botón para empezar a jugar ya mismo una partida con otro amigo</i></span></div>";
     }
 
     if($user instanceof Jugador){ //sólamente usuarios registrados podrán ver esto
-        echo "<div><a href='repeticiones'>Ver repeticiones</a></div>"; //página de repeticiones
+        echo "<div><button type='button' class='btn btn-info btn-lg' name='ver-repeticiones'>Ver repeticiones</button>"; //lista de repeticiones
+        echo "<div id='lista-repeticiones'>";
+        $repeticiones = PartidaBD::getPartidas($user->getCod());
+        foreach($repeticiones as $repeticion){
+            if($repeticion['ganador'] != '') {
+                $oponente = $repeticion['codnegro'];
+                $micolor = 'negro';
+                if ($oponente == $user->getCod()) {
+                    $oponente = $repeticion['codblanco'];
+                    $micolor = 'blanco';
+                }
+                $resultado = '';
+                if($repeticion['ganador'] == 'blanco'){
+                    if($micolor == 'blanco') {
+                        $resultado = 'Victoria';
+                    } else {
+                        $resultado = 'Derrota';
+                    }
+                } else if($repeticion['ganador'] == 'negro'){
+                    if($micolor == 'blanco') {
+                        $resultado = 'Derrota';
+                    } else {
+                        $resultado = 'Victoria';
+                    }
+                } else { $resultado = 'Tablas'; }
+                echo "<div>";
+                echo "<span>Contra " . $oponente . "</span>";
+                echo "<span class='$resultado'>$resultado</span>";
+                echo "<a href='' id='".$repeticion['codpartida']."'>Ver</a>";
+                echo "</div>";
+            }
+        }
+        echo "</div></div>";
+        echo "<div><button type='button' class='btn btn-info btn-lg' name='ver-lista-amigos'>Ver amigos</button>"; //lista de amigos
+        echo "<div id='lista-amigos'>";
+        //lista de amigos
+        echo "</div></div>";
         echo "<div id='info-usuario'>";
         //información básica del usuario (partidas totales, ganadas, perdidas, amigos...)
         echo "</div>";

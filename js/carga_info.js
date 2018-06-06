@@ -23,14 +23,43 @@ $(document).ready(function(){
                 // campo acciones //
                 cadena += "<td class='acciones'>";
                 if(data[i].visitante === null){ //si no hay un visitante, botón para jugar
-                    cadena += "<button type='button' class='btn btn-secondary'>Jugar</button>";
+                    cadena += "<button type='button' name='jugar-sala' class='btn btn-primary'>Jugar</button>";
                 }
                 if(Number(data[i].puede_espectar) === 1){ //si se puede espectar, botón para ello
-                    cadena += "<button type='button' class='btn btn-info'>Espectar</button>";
+                    cadena += "<button type='button' name='espectar-sala' class='btn btn-info'>Espectar</button>";
                 }
                 cadena += "</td></tr>";
             }
             $("#lista_salas table tbody").html(cadena);
+
+            // EVENTOS //
+
+            //botón para jugar partida
+            $('#lista_salas button[name=jugar-sala]').click(function(){
+                var boton = $(this);
+                var codsala = boton.parents('tr').attr('id');
+                $.ajax({
+                    data: {
+                        modo: 'logueado'
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'ajax/get.php',
+                    success: function(response){
+                        if(response.correcto){
+                            window.location = 'redirect/'+codsala+'/';
+                        } else {
+                            botonNormal(boton, 'Jugar');
+                            $('#modal_entrar_sala').modal();
+                            $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                        }
+                    },
+                    beforeSend: function(){
+                        botonRueda(boton);
+                    }
+                });
+
+            });
 
             // animación al pasar por la línea para ver la descripción completa //
 

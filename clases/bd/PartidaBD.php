@@ -31,6 +31,14 @@ class PartidaBD
         return ManejoBBDD::getDatos();
     }
 
+    public static function getPartidas($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM partida WHERE codnegro = ? OR codblanco = ?");
+        ManejoBBDD::ejecutar(array($codusu, $codusu));
+        ManejoBBDD::desconectar();
+        return ManejoBBDD::getDatos();
+    }
+
     public static function getNumEspectadores(){
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.codsala, count(e.codusu) AS cantespec
