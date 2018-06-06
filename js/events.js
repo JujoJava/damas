@@ -17,7 +17,11 @@ $(document).ready(function(){
             botonNormal('.modal button[name=registro-usuario]', 'Registrar');
             ajaxModal = null;
         }
-        $('.modal input[type=text]').val('');
+        $('#modal_entrar_sala input[type=text]').val('');
+        $('#modal_inv_red input[type=text]').val('');
+        $('#modal_jugar_nueva input[type=text]').val('');
+        $('#modal_login input[type=text]').val('');
+        $('#modal_registro input[type=text]').val('');
         $('.modal input[type=password]').val('');
         $('.modal input').attr('disabled', false);
         $('.modal button.btn-primary').attr('disabled', true);
@@ -32,7 +36,11 @@ $(document).ready(function(){
             botonNormal('.modal button[name=registro-usuario]', 'Registrar');
             ajaxModal = null;
         }
-        $('.modal input[type=text]').val('');
+        $('#modal_entrar_sala input[type=text]').val('');
+        $('#modal_inv_red input[type=text]').val('');
+        $('#modal_jugar_nueva input[type=text]').val('');
+        $('#modal_login input[type=text]').val('');
+        $('#modal_registro input[type=text]').val('');
         $('.modal input[type=password]').val('');
         $('.modal input').attr('disabled', false);
         $('.modal button.btn-primary').attr('disabled', true);
@@ -245,8 +253,7 @@ $(document).ready(function(){
                         mostrarError(boton, response.error);
                     }
                 },
-                beforeSend: function(e){
-                    console.log(e);
+                beforeSend: function(){
                     botonRueda(boton);
                     input_nombre.attr('disabled', true);
                     input_pass.attr('disabled', true);

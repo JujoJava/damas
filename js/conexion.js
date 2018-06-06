@@ -148,9 +148,6 @@ function estaConectado(){
                     setTimeout(estaConectado, 5000); //cada 5 segundos
                 }
             }
-        },
-        beforeSend: function(e){
-            console.log(e);
         }
     });
 }

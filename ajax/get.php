@@ -75,7 +75,7 @@ if(isset($_POST['modo'])){
                                             $pass
                                         );
                                         $datos['correcto'] = true;
-                                        $_SESSION['redirect'] = null;
+                                        $_SESSION['redirect'] = '';
                                     }
                                 }
                             } else {
@@ -115,7 +115,8 @@ if(isset($_POST['modo'])){
             );
             $nick = $_POST['nick'];
             $pass = $_POST['pass'];
-            if($datos_usuario = UsuarioBD::loginJugador($nick, $pass) != null){
+            $datos_usuario = UsuarioBD::loginJugador($nick, $pass);
+            if($datos_usuario != null){
                 $_SESSION['login'] = new Jugador($datos_usuario[0]['codusu'], $nick);
                 $datos['correcto'] = true;
             } else {

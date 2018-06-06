@@ -11,7 +11,7 @@ if(isset($_GET['page'])){
     if($_GET['page'] == 'redirect'){
         if(isset($_GET['cod']) && isset($_GET['pass'])){
             if(isset($_SESSION['redirect'])) {
-                if ($_SESSION['redirect'] == null) {
+                if ($_SESSION['redirect'] == '') {
                     $_SESSION['redirect'] = array('cod' => $_GET['cod'], 'pass' => $_GET['pass']);
                 }
             } else {
