@@ -49,8 +49,9 @@ class UsuarioBD
 
     public static function desconectaJugadoresNoConectados(){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("UPDATE jugador j SET conectado = 0
+        ManejoBBDD::preparar("UPDATE jugador j
                               INNER JOIN usuario u ON (j.codusu = u.codusu)
+                              SET j.conectado = 0
                               WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE)");
         ManejoBBDD::ejecutar(array());
         $cantidad = ManejoBBDD::filasAfectadas();
@@ -96,7 +97,7 @@ class UsuarioBD
         ManejoBBDD::preparar("INSERT INTO usuario VALUES(?,?,NOW())");
         ManejoBBDD::ejecutar(array($codusu, $nick));
         if(ManejoBBDD::filasAfectadas() > 0){
-            ManejoBBDD::preparar("INSERT INTO jugador VALUES(?,?,1)");
+            ManejoBBDD::preparar("INSERT INTO jugador VALUES(?,SHA(?),1)");
             ManejoBBDD::ejecutar(array($codusu, $pass));
             if(ManejoBBDD::filasAfectadas() > 0){
                 ManejoBBDD::desconectar();

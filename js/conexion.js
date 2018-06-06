@@ -85,6 +85,13 @@ function estaConectado(){
                             mis_datos = respuesta.partida.mis_datos;
                             anfitrion = respuesta.partida.anfitrion;
                             visitante = respuesta.partida.visitante;
+                            if (mis_datos.rol !== 'espectador') {
+                                if (mis_datos.cod == respuesta.partida.colores.codblanco) {
+                                    mis_datos.color = 'blancas';
+                                } else {
+                                    mis_datos.color = 'negras';
+                                }
+                            }
                             if(anfitrion && visitante){
                                 if(estado === 'no_jugando') {
                                     inicializaJuego();
@@ -102,13 +109,6 @@ function estaConectado(){
                                 estado = 'no_jugando';
                                 turno = '';
                                 $('[name=proponer-tablas]').attr('disabled', true);
-                            }
-                            if (mis_datos.rol !== 'espectador') {
-                                if (mis_datos.cod == respuesta.partida.colores.codblanco) {
-                                    mis_datos['color'] = 'blancas';
-                                } else {
-                                    mis_datos['color'] = 'negras';
-                                }
                             }
                             // se ha actualizado la página o se ha entrado desde otro sitio //
                             if(respuesta.partida.movimientos.length > 0 && movimientos.length === 0) {
@@ -148,6 +148,9 @@ function estaConectado(){
                     setTimeout(estaConectado, 5000); //cada 5 segundos
                 }
             }
+        },
+        beforeSend: function(e){
+            console.log(e);
         }
     });
 }

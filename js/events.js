@@ -13,24 +13,30 @@ $(document).ready(function(){
         if(ajaxModal !== null){
             ajaxModal.abort();
             botonNormal('.modal button[name=crear-partida]', 'Crear');
+            botonNormal('.modal button[name=iniciar-sesion]', 'Iniciar sesión');
+            botonNormal('.modal button[name=registro-usuario]', 'Registrar');
             ajaxModal = null;
         }
-        $('#modal_jugar_nueva input[type=text]').val('');
-        $('#modal_jugar_nueva input[type=password]').val('');
-        $('#modal_jugar_nueva input').attr('disabled', false);
-        $('#modal_jugar_nueva button[name=crear-partida]').attr('disabled', true);
+        $('.modal input[type=text]').val('');
+        $('.modal input[type=password]').val('');
+        $('.modal input').attr('disabled', false);
+        $('.modal button.btn-primary').attr('disabled', true);
+        $('.modal button[name=iniciar-sesion]').attr('disabled', false);
         ocultarErrores();
     });
     $('.modal').on('show.bs.modal', function(){
         if(ajaxModal !== null){
             ajaxModal.abort();
             botonNormal('.modal button[name=crear-partida]', 'Crear');
+            botonNormal('.modal button[name=iniciar-sesion]', 'Iniciar sesión');
+            botonNormal('.modal button[name=registro-usuario]', 'Registrar');
             ajaxModal = null;
         }
-        $('#modal_jugar_nueva input[type=text]').val('');
-        $('#modal_jugar_nueva input[type=password]').val('');
-        $('#modal_jugar_nueva input').attr('disabled', false);
-        $('#modal_jugar_nueva button[name=crear-partida]').attr('disabled', true);
+        $('.modal input[type=text]').val('');
+        $('.modal input[type=password]').val('');
+        $('.modal input').attr('disabled', false);
+        $('.modal button.btn-primary').attr('disabled', true);
+        $('.modal button[name=iniciar-sesion]').attr('disabled', false);
         ocultarErrores();
     });
 
@@ -223,7 +229,8 @@ $(document).ready(function(){
             ajaxModal = $.ajax({
                 data: {
                     nick: input_nombre.val(),
-                    pass: input_pass.val()
+                    pass: input_pass.val(),
+                    modo: 'login'
                 },
                 type: 'POST',
                 dataType: 'json',
@@ -238,7 +245,8 @@ $(document).ready(function(){
                         mostrarError(boton, response.error);
                     }
                 },
-                beforeSend: function(){
+                beforeSend: function(e){
+                    console.log(e);
                     botonRueda(boton);
                     input_nombre.attr('disabled', true);
                     input_pass.attr('disabled', true);
@@ -389,23 +397,32 @@ $(document).ready(function(){
             if($(this).val() !== ''){
                 if($(this).val().length <= 16) {
                     ocultarError($(this));
-                    $('#modal_inv_red button[name=insertar-usuario]').attr('disabled', false); //correcto
+                    $('#modal_inv_red button[name=red-partida]').attr('disabled', false); //correcto
                 }
                 else{
                     mostrarError($(this), '¡El nick es demasiado largo!');
-                    $('#modal_inv_red button[name=insertar-usuario]').attr('disabled', true);
+                    $('#modal_inv_red button[name=red-partida]').attr('disabled', true);
                 }
             } else{
                 ocultarError($(this));
-                $('#modal_inv_red button[name=insertar-usuario]').attr('disabled', true);
+                $('#modal_inv_red button[name=red-partida]').attr('disabled', true);
             }
         });
-
-        $('#modal_inv_red button[name=insertar-usuario]').click(function(){
+        //activar o desactivar el botón de jugar según lo escrito en el input
+        $('#modal_inv_red input[name=passSala]').keyup(function(){
+            if($(this).val() !== ''){
+                ocultarError($(this));
+                $('#modal_inv_red button[name=red-partida]').attr('disabled', false); //correcto
+            } else{
+                ocultarError($(this));
+                $('#modal_inv_red button[name=red-partida]').attr('disabled', true);
+            }
+        });
+        $('#modal_inv_red button[name=red-partida]').click(function () {
             var boton = $(this);
             var input_nombre = $('#modal_inv_red input[name=nomUsuInvi]');
-            if(input_nombre.val() !== ''){
-                if(input_nombre.val().length <= 16) {
+            if (input_nombre.val() !== '') {
+                if (input_nombre.val().length <= 16) {
 
                     ajaxModal = $.ajax({
                         data: {
@@ -418,6 +435,7 @@ $(document).ready(function(){
                         success: function (response) {
                             if (response.correcto === false) {
                                 input_nombre.attr('disabled', false);
+                                botonNormal(boton, 'Entrar');
                                 mostrarError(input_nombre, response.error);
                             }
                             else { //usuario invitado registrado
@@ -436,6 +454,40 @@ $(document).ready(function(){
                 }
             } else {
                 mostrarError(input_nombre, '¡El campo está vacío!');
+                boton.attr('disabled', true);
+            }
+        });
+        $('#modal_inv_red button[name=red-partida]').click(function () {
+            var boton = $(this);
+            var input_pass = $('#modal_inv_red input[name=passSala]');
+            if (input_pass.val() !== '') {
+
+                ajaxModal = $.ajax({
+                    data: {
+                        pass: input_pass.val(),
+                        modo: 'pass-sala'
+                    },
+                    type: 'POST',
+                    dataType: 'json',
+                    url: 'ajax/get.php',
+                    success: function (response) {
+                        if (response.correcto === false) {
+                            input_pass.attr('disabled', false);
+                            botonNormal(boton, 'Entrar');
+                            mostrarError(input_pass, response.error);
+                        }
+                        else { //contraseña correcta
+                            window.location.reload();
+                        }
+                    },
+                    beforeSend: function () {
+                        botonRueda(boton);
+                        input_pass.attr('disabled', true);
+                    }
+                });
+
+            } else {
+                mostrarError(input_pass, '¡El campo está vacío!');
                 boton.attr('disabled', true);
             }
         });

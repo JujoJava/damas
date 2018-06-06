@@ -57,24 +57,26 @@ if(isset($_POST['modo'])){
                                 if ($datos = PartidaBD::entrarSalaRedirect(
                                     $cod,
                                     $pass, //contraseña directamente codificada con SHA
-                                    $_SESSION['login']->getCod(),
-                                    $_POST['tipo'] //si es espectador o visitante
+                                    $_SESSION['login']->getCod()
                                 )) {
-                                    $espectadores = array();
-                                    $arr_espectadores = PartidaBD::getEspectadoresSala($datos['codsala']);
-                                    foreach ($arr_espectadores as $cod) {
-                                        $espectadores[] = $cod;
+                                    if(isset($datos['codsala'])) {
+                                        $espectadores = array();
+                                        $arr_espectadores = PartidaBD::getEspectadoresSala($datos['codsala']);
+                                        foreach ($arr_espectadores as $cod) {
+                                            $espectadores[] = $cod;
+                                        }
+                                        PartidaBD::setColorNuevoVisitante($datos['codpartida']);
+                                        $_SESSION['partida'] = new Sala(
+                                            $datos['codpartida'],
+                                            $datos['codsala'],
+                                            $espectadores,
+                                            $datos['anfitrion'],
+                                            $_SESSION['login']->getCod(),
+                                            $pass
+                                        );
+                                        $datos['correcto'] = true;
+                                        $_SESSION['redirect'] = null;
                                     }
-                                    PartidaBD::setColorNuevoVisitante($datos['codpartida']);
-                                    $_SESSION['partida'] = new Sala(
-                                        $datos['codpartida'],
-                                        $datos['codsala'],
-                                        $espectadores,
-                                        $datos['anfitrion'],
-                                        $_SESSION['login']->getCod(),
-                                        $pass
-                                    );
-                                    $datos['correcto'] = true;
                                 }
                             } else {
                                 $datos['accion'] = 'redirigir';
@@ -91,6 +93,19 @@ if(isset($_POST['modo'])){
 
             } else {
                 $datos['accion'] = 'redirigir';
+            }
+            break;
+        case 'pass-sala':
+            $datos = array(
+                'correcto' => false,
+                'error' => ''
+            );
+            $pass = $_POST['pass'];
+            if(PartidaBD::passCorrecta($_SESSION['redirect']['cod'], $pass)){
+                $datos['correcto'] = true;
+                $_SESSION['redirect']['pass'] = PartidaBD::obtienePass($_SESSION['redirect']['cod']);
+            } else {
+                $datos['error'] = 'La contraseña no es correcta.';
             }
             break;
         case 'login':

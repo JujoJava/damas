@@ -65,7 +65,9 @@ if (isset($_SESSION['login'])) {
                             }
                             if ($sala->getAnfitrion() instanceof Usuario) $anfit = array('cod' => $sala->getAnfitrion()->getCod(), 'nick' => $sala->getAnfitrion()->getNick());
                             if ($sala->getVisitante() instanceof Usuario) $visit = array('cod' => $sala->getVisitante()->getCod(), 'nick' => $sala->getVisitante()->getNick());
-                            $tablas = PartidaBD::obtieneTablas($sala->getCodPartida(), $usuario->getCod());
+                            if(!PartidaBD::existeGanador($sala->getCodPartida())){
+                                $tablas = PartidaBD::obtieneTablas($sala->getCodPartida(), $usuario->getCod());
+                            }
                             $datos['partida'] = array(
                                 'anfitrion' => $anfit,
                                 'visitante' => $visit,

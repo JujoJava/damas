@@ -160,8 +160,7 @@ $(document).ready(function(){
         $('#modal_inv_red').modal({backdrop: 'static', keyboard: false});
         $.ajax({
             data: {
-                modo: 'redirect',
-                tipo: 'visitante'
+                modo: 'redirect'
             },
             type: 'POST',
             dataType: 'json',
@@ -177,6 +176,11 @@ $(document).ready(function(){
                         });
                     } else if(data.accion === 'mismasala') {
                         window.location = 'juego';
+                    } else if(data.accion === 'solicita_pass') {
+                        $('#modal_inv_red .modal-body i.fa-spinner').hide(300, function() {
+                            $('#modal_inv_red .pass-sala').show(300);
+                            $('#modal_inv_red .modal-footer').show(300);
+                        });
                     } else {
                         window.location = 'principal';
                     }

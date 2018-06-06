@@ -14,6 +14,18 @@ $user = null; //usuario que ha iniciado sesión
 $partida = null; //partida visualizando (puede ser una sala o una repetición)
 $pagina = 'principal';
 
+if(isset($_GET['page'])){
+    if($_GET['page'] == 'juego' && (!isset($_SESSION['partida']) || !isset($_SESSION['login']))){
+        header('location:principal');
+    } else {
+        if($_GET['page'] == 'redirect'){
+            if(!isset($_GET['cod']) || !isset($_GET['pass'])) {
+                header('location:principal');
+            }
+        }
+    }
+}
+
 if (isset($_SESSION['login'])) {
     if ($_SESSION['login'] instanceof Usuario) {
         $user = $_SESSION['login']; //instancia de Usuario

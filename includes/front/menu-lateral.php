@@ -157,27 +157,28 @@
         foreach($repeticiones as $repeticion){
             if($repeticion['ganador'] != '') {
                 $oponente = $repeticion['codnegro'];
-                $micolor = 'negro';
+                $micolor = 'negras';
                 if ($oponente == $user->getCod()) {
                     $oponente = $repeticion['codblanco'];
-                    $micolor = 'blanco';
+                    $micolor = 'blancas';
                 }
+                $nombre_oponente = UsuarioBD::obtieneJugador($oponente)[0]['nick'];
                 $resultado = '';
-                if($repeticion['ganador'] == 'blanco'){
-                    if($micolor == 'blanco') {
+                if($repeticion['ganador'] == 'blancas'){
+                    if($micolor == 'blancas') {
                         $resultado = 'Victoria';
                     } else {
                         $resultado = 'Derrota';
                     }
-                } else if($repeticion['ganador'] == 'negro'){
-                    if($micolor == 'blanco') {
+                } else if($repeticion['ganador'] == 'negras'){
+                    if($micolor == 'blancas') {
                         $resultado = 'Derrota';
                     } else {
                         $resultado = 'Victoria';
                     }
                 } else { $resultado = 'Tablas'; }
                 echo "<div>";
-                echo "<span>Contra " . $oponente . "</span>";
+                echo "<span>Contra " . $nombre_oponente . "</span>";
                 echo "<span class='$resultado'>$resultado</span>";
                 echo "<a href='' id='".$repeticion['codpartida']."'>Ver</a>";
                 echo "</div>";
@@ -201,7 +202,7 @@
         if($partida instanceof Sala) {
             $tipousu = $partida->getTipoUsuario($user->getCod());
             if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
-                echo "<button type='button' class='btn btn-default btn-lg' name='proponer-tablas'>Proponer tablas</button>";
+                echo "<button type='button' class='btn btn-default btn-lg' disabled='disabled' name='proponer-tablas'>Proponer tablas</button>";
             }
         }
         echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";

@@ -39,6 +39,19 @@ class PartidaBD
         return ManejoBBDD::getDatos();
     }
 
+    public static function existeGanador($codpartida){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT ganador FROM partida WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        $datos = ManejoBBDD::getDatos();
+        if($datos[0]['ganador'] != ''){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
     public static function getNumEspectadores(){
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.codsala, count(e.codusu) AS cantespec
@@ -260,31 +273,29 @@ class PartidaBD
         return false;
     }
 
-    public static function entrarSalaRedirect($codsala, $pass, $codusu, $tipo) {
+    public static function entrarSalaRedirect($codsala, $pass, $codusu) {
         if(self::obtienePass($codsala) == $pass) { //uso directamente la variable sin SHA, porque ya está codificada
             ManejoBBDD::conectar();
-            if ($tipo == 'visitante') {
-                ManejoBBDD::preparar("SELECT visitante FROM sala WHERE codsala = ? and jugandose = 1");
-                ManejoBBDD::ejecutar(array($codsala));
-                if (ManejoBBDD::getDatos()[0]['visitante'] == NULL) {
-                    ManejoBBDD::preparar("UPDATE sala SET visitante = ? WHERE codsala = ? and jugandose = 1");
-                    ManejoBBDD::ejecutar(array($codusu, $codsala));
-                    if(ManejoBBDD::filasAfectadas() > 0){
-                        ManejoBBDD::preparar("SELECT codpartida, anfitrion FROM sala WHERE codsala = ? and jugandose = 1");
-                        ManejoBBDD::ejecutar(array($codsala));
-                        $datos = ManejoBBDD::getDatos();
-                        $codpartida = $datos[0]['codpartida'];
-                        $anfitrion = $datos[0]['anfitrion'];
-                        if(ManejoBBDD::filasAfectadas() > 0) {
-                            ManejoBBDD::desconectar();
-                            return array('codsala' => $codsala, 'codpartida' => $codpartida, 'anfitrion' => $anfitrion);
-                        }
+            ManejoBBDD::preparar("SELECT visitante FROM sala WHERE codsala = ? and jugandose = 1");
+            ManejoBBDD::ejecutar(array($codsala));
+            if (ManejoBBDD::getDatos()[0]['visitante'] == NULL) {
+                ManejoBBDD::preparar("UPDATE sala SET visitante = ? WHERE codsala = ? and jugandose = 1");
+                ManejoBBDD::ejecutar(array($codusu, $codsala));
+                if(ManejoBBDD::filasAfectadas() > 0){
+                    ManejoBBDD::preparar("SELECT codpartida, anfitrion FROM sala WHERE codsala = ? and jugandose = 1");
+                    ManejoBBDD::ejecutar(array($codsala));
+                    $datos = ManejoBBDD::getDatos();
+                    $codpartida = $datos[0]['codpartida'];
+                    $anfitrion = $datos[0]['anfitrion'];
+                    if(ManejoBBDD::filasAfectadas() > 0) {
+                        ManejoBBDD::desconectar();
+                        return array('codsala' => $codsala, 'codpartida' => $codpartida, 'anfitrion' => $anfitrion);
                     }
                 }
             }
-            else if($tipo == 'espectador'){
-                //LO DEJO PARA OTRO MOMENTO
-            }
+        } else {
+            ManejoBBDD::desconectar();
+            return array('accion' => 'solicita_pass');
         }
         ManejoBBDD::desconectar();
         return false;
@@ -294,7 +305,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.anfitrion, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.anfitrion = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) AND jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -324,7 +335,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.visitante, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.visitante = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) AND s.jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -446,6 +457,17 @@ class PartidaBD
         }
         ManejoBBDD::desconectar();
         return $pass;
+    }
+    public static function passCorrecta($codsala, $pass){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT DISTINCT pass FROM sala WHERE codsala = ? AND pass = SHA(?)");
+        ManejoBBDD::ejecutar(array($codsala, $pass));
+        if(count(ManejoBBDD::getDatos()) > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
     }
     public static function setGanador($codpartida, $color){
         ManejoBBDD::conectar();

@@ -1405,23 +1405,25 @@ function hayNuevoMovimiento(mov){
 }
 
 function addMovimiento(comidas, movimiento, ficha){
-    var ficha_aux = '';
-    for(var i = 0 ; i < NUM_CASILLAS ; i++){
-        for(var j = 0 ; j < NUM_CASILLAS ; j++){
-            ficha_aux = fichas[i][j];
-            if(ficha_aux.posicion === ficha.posicion){
-                fichas[i][j] = espacioVacio(ficha.posicion);
-            }
-            if(ficha_aux.posicion === movimiento.posicion){
-                fichas[i][j].color = ficha.color;
-                fichas[i][j].tipo = convertirDama(ficha, movimiento.posicion);
-                fichas[i][j].numFicha = ficha.numFicha;
-            }
-            for(var k = 0 ; k < comidas.length ; k++){
-                if(ficha_aux.posicion === comidas[k].posicion){
-                    restaFicha(ficha_aux.color);
-                    fichas[i][j] = espacioVacio(comidas[k].posicion);
-                    comprobarPuntos();
+    if(ficha !== false) {
+        var ficha_aux = '';
+        for (var i = 0; i < NUM_CASILLAS; i++) {
+            for (var j = 0; j < NUM_CASILLAS; j++) {
+                ficha_aux = devuelveDatosFicha(fichas[i][j]);
+                if (ficha_aux.posicion === ficha.posicion) {
+                    fichas[i][j] = espacioVacio(ficha.posicion);
+                }
+                if (ficha_aux.posicion === movimiento.posicion) {
+                    fichas[i][j].color = ficha.color;
+                    fichas[i][j].tipo = convertirDama(ficha, movimiento.posicion);
+                    fichas[i][j].numFicha = ficha.numFicha;
+                }
+                for (var k = 0; k < comidas.length; k++) {
+                    if (ficha_aux.posicion === comidas[k].posicion) {
+                        restaFicha(ficha_aux.color);
+                        fichas[i][j] = espacioVacio(comidas[k].posicion);
+                        comprobarPuntos();
+                    }
                 }
             }
         }
@@ -1694,11 +1696,7 @@ function dibujaFichas(){
                     ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
                 }
             } else {
-                if (mis_datos.color === 'blancas') {
-                    ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
-                } else {
-                    ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
-                }
+                ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
             }
         } else {
             if(mis_datos.rol !== 'espectador') {
@@ -1708,11 +1706,7 @@ function dibujaFichas(){
                     ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
                 }
             } else {
-                if (mis_datos.color === 'negras') {
-                    ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
-                } else {
-                    ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
-                }
+                ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
             }
         }
     } else if (estado === 'tablas') {
@@ -1753,7 +1747,7 @@ function dibujaTablero(){
 
 function actualizaJuego(){
     dibujaTablero();
-    if(estado !== 'jugando'){
+    if(estado === 'no_jugando'){
         inicializaFichas();
     }
     dibujaFichas();
