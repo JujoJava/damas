@@ -91,6 +91,8 @@ function estaConectado(){
                                 } else {
                                     mis_datos.color = 'negras';
                                 }
+                            } else {
+                                mis_datos.color = 'none';
                             }
                             if(anfitrion && visitante){
                                 if(estado === 'no_jugando') {

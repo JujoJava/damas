@@ -158,10 +158,13 @@
             if($repeticion['ganador'] != '') {
                 $oponente = $repeticion['codnegro'];
                 $micolor = 'negras';
+
                 if ($oponente == $user->getCod()) {
                     $oponente = $repeticion['codblanco'];
+                } else {
                     $micolor = 'blancas';
                 }
+
                 $nombre_oponente = UsuarioBD::obtieneJugador($oponente)[0]['nick'];
                 $resultado = '';
                 if($repeticion['ganador'] == 'blancas'){
@@ -194,7 +197,7 @@
         echo "</div>";
     }
     else{
-        echo "<div><span><i>Regístrate para guardar repeticiones, espectar partidas, y participar en los ránkings</i></span></div>";
+        echo "<div><span><i>Regístrate para guardar repeticiones, agregar amigos, y participar en los ránkings</i></span></div>";
     }
 
     if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){

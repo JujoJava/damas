@@ -203,7 +203,7 @@ $(document).ready(function(){
                                         location.reload();
                                     }
                                 },
-                                beforeSend: function(e){
+                                beforeSend: function(){
                                     botonRueda(boton);
                                     input_nombre.attr('disabled', true);
                                     input_pass.attr('disabled', true);

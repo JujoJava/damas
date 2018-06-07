@@ -63,18 +63,9 @@ class Sala extends Partida
                 if($this->visitante->getCod() == $codusu){
                     return "visitante";
                 }
-                else{
-                    foreach($this->espectadores as $espectador){
-                        if($espectador instanceof Usuario){
-                            if($espectador == $codusu){
-                                return "espectador";
-                            }
-                        }
-                    }
-                }
             }
         }
-        return "";
+        return "espectador";
     }
     public function addMovimientos($movimientosBD){
         if($movimientosBD) {

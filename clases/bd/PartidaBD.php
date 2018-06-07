@@ -278,19 +278,45 @@ class PartidaBD
             ManejoBBDD::conectar();
             ManejoBBDD::preparar("SELECT visitante FROM sala WHERE codsala = ? and jugandose = 1");
             ManejoBBDD::ejecutar(array($codsala));
+
             if (ManejoBBDD::getDatos()[0]['visitante'] == NULL) {
                 ManejoBBDD::preparar("UPDATE sala SET visitante = ? WHERE codsala = ? and jugandose = 1");
                 ManejoBBDD::ejecutar(array($codusu, $codsala));
-                if(ManejoBBDD::filasAfectadas() > 0){
-                    ManejoBBDD::preparar("SELECT codpartida, anfitrion FROM sala WHERE codsala = ? and jugandose = 1");
+
+                if (ManejoBBDD::filasAfectadas() > 0) {
+                    ManejoBBDD::preparar("SELECT codpartida, anfitrion, visitante FROM sala WHERE codsala = ? and jugandose = 1");
                     ManejoBBDD::ejecutar(array($codsala));
                     $datos = ManejoBBDD::getDatos();
                     $codpartida = $datos[0]['codpartida'];
                     $anfitrion = $datos[0]['anfitrion'];
+                    $visitante = $datos[0]['visitante'];
                     if(ManejoBBDD::filasAfectadas() > 0) {
                         ManejoBBDD::desconectar();
-                        return array('codsala' => $codsala, 'codpartida' => $codpartida, 'anfitrion' => $anfitrion);
+                        return array('codsala' => $codsala, 'codpartida' => $codpartida, 'anfitrion' => $anfitrion, 'visitante' => $visitante);
                     }
+                }
+
+            } else { //entrará como espectador
+                ManejoBBDD::preparar("SELECT puede_espectar FROM sala WHERE codsala = ? and jugandose = 1");
+                ManejoBBDD::ejecutar(array($codsala));
+                $puede_espectar = ManejoBBDD::getDatos()[0]['puede_espectar'];
+                if($puede_espectar == 1) {
+                    ManejoBBDD::preparar("INSERT INTO espectador VALUES(?,?)");
+                    ManejoBBDD::ejecutar(array($codsala, $codusu));
+
+                    if (ManejoBBDD::filasAfectadas() > 0) {
+                        ManejoBBDD::preparar("SELECT codpartida, anfitrion, visitante FROM sala WHERE codsala = ? and jugandose = 1");
+                        ManejoBBDD::ejecutar(array($codsala));
+                        $datos = ManejoBBDD::getDatos();
+                        $codpartida = $datos[0]['codpartida'];
+                        $anfitrion = $datos[0]['anfitrion'];
+                        $visitante = $datos[0]['visitante'];
+                        if(ManejoBBDD::filasAfectadas() > 0) {
+                            ManejoBBDD::desconectar();
+                            return array('codsala' => $codsala, 'codpartida' => $codpartida, 'anfitrion' => $anfitrion, 'visitante' => $visitante);
+                        }
+                    }
+
                 }
             }
         } else {
@@ -361,10 +387,39 @@ class PartidaBD
         return false;
     }
 
+    public static function borraEspectadores(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT e.codusu, e.codsala FROM espectador e
+                              INNER JOIN usuario u ON (e.codusu = u.codusu)
+                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
+        ManejoBBDD::ejecutar(array());
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            foreach ($datos as $espectador) {
+                ManejoBBDD::desconectar();
+                self::salirSala($espectador['codsala'], '', $espectador['codusu'], 'espectador');
+                ManejoBBDD::conectar();
+                ManejoBBDD::preparar("SELECT codusu FROM invitado WHERE codusu = ?");
+                ManejoBBDD::ejecutar(array($espectador['codusu']));
+            }
+            return true;
+        }
+        return false;
+    }
+
     public static function salirSala($codsala, $codpartida, $codusu, $tipo) {
         ManejoBBDD::conectar();
         switch ($tipo) {
             case "anfitrion":
+                ManejoBBDD::preparar("SELECT * FROM partida WHERE codpartida = ?");
+                ManejoBBDD::ejecutar(array($codpartida));
+                $datospartida = ManejoBBDD::getDatos();
+                ManejoBBDD::preparar("UPDATE partida SET ganador = ? WHERE codpartida = ? and ganador = ''");
+                if($datospartida[0]['codnegro'] == $codusu) {
+                    ManejoBBDD::ejecutar(array('blancas', $codpartida));
+                } else {
+                    ManejoBBDD::ejecutar(array('negras', $codpartida));
+                }
                 ManejoBBDD::preparar("UPDATE sala SET jugandose = 0 WHERE codsala = ? and jugandose = 1");
                 ManejoBBDD::ejecutar(array($codsala));
                 break;
@@ -373,10 +428,13 @@ class PartidaBD
                 ManejoBBDD::preparar("SELECT * FROM partida WHERE codpartida = ?");
                 ManejoBBDD::ejecutar(array($codpartida));
                 $datospartida = ManejoBBDD::getDatos();
+                ManejoBBDD::preparar("UPDATE partida SET ganador = ? WHERE codpartida = ? and ganador = ''");
                 if($datospartida[0]['codnegro'] == $codusu) {
+                    ManejoBBDD::ejecutar(array('blancas', $codpartida));
                     ManejoBBDD::preparar("INSERT INTO partida VALUES(?,NULL,?,?)");
                     ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codblanco'], ''));
                 } else {
+                    ManejoBBDD::ejecutar(array('negras', $codpartida));
                     ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,NULL,?)");
                     ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codnegro'], ''));
                 }

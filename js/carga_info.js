@@ -25,8 +25,8 @@ $(document).ready(function(){
                 if(data[i].visitante === null){ //si no hay un visitante, botón para jugar
                     cadena += "<button type='button' name='jugar-sala' class='btn btn-primary'>Jugar</button>";
                 }
-                if(Number(data[i].puede_espectar) === 1){ //si se puede espectar, botón para ello
-                    cadena += "<button type='button' name='espectar-sala' class='btn btn-info'>Espectar</button>";
+                else if(Number(data[i].puede_espectar) === 1){ //si se puede espectar, botón para ello
+                    cadena += "<button type='button' name='jugar-sala' class='btn btn-info'>Ver</button>";
                 }
                 cadena += "</td></tr>";
             }
@@ -34,9 +34,20 @@ $(document).ready(function(){
 
             // EVENTOS //
 
+            var elm;
+            $('#lista_salas tr').click(function(e){
+                if(!$(this).children('td.acciones').is(':visible')){
+                    elm = $(this).children('td.acciones');
+                    if (!$(e.target).is(elm.children('button'))) {
+                        elm.children('button').trigger('click');
+                    }
+                }
+            });
+
             //botón para jugar partida
-            $('#lista_salas button[name=jugar-sala]').click(function(){
+            $('#lista_salas button[name=jugar-sala]').on('click', function(){
                 var boton = $(this);
+                var textoBoton = boton.html();
                 var codsala = boton.parents('tr').attr('id');
                 $.ajax({
                     data: {
@@ -49,7 +60,7 @@ $(document).ready(function(){
                         if(response.correcto){
                             window.location = 'redirect/'+codsala+'/';
                         } else {
-                            botonNormal(boton, 'Jugar');
+                            botonNormal(boton, textoBoton);
                             $('#modal_entrar_sala').modal();
                             $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
                         }

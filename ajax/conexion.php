@@ -21,6 +21,7 @@ if (isset($_SESSION['login'])) {
             // Borra las salas que no tengan un anfitrión //
             PartidaBD::borraAnfitrionesSalas();
             PartidaBD::borraVisitantesSalas();
+            PartidaBD::borraEspectadores();
             UsuarioBD::borraInvitadosNoConectados();
             UsuarioBD::desconectaJugadoresNoConectados();
             if (isset($_SESSION['partida'])) {

@@ -71,11 +71,10 @@ if(isset($_POST['modo'])){
                                             $datos['codsala'],
                                             $espectadores,
                                             $datos['anfitrion'],
-                                            $_SESSION['login']->getCod(),
+                                            $datos['visitante'],
                                             $pass
                                         );
                                         $datos['correcto'] = true;
-                                        $_SESSION['redirect'] = '';
                                     }
                                 }
                             } else {
@@ -94,6 +93,7 @@ if(isset($_POST['modo'])){
             } else {
                 $datos['accion'] = 'redirigir';
             }
+            $_SESSION['redirect'] = '';
             break;
         case 'pass-sala':
             $datos = array(
