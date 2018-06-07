@@ -17,8 +17,12 @@ if(isset($_POST['modo'])){
                     $tipo = '';
                     if($usuario->getCod() == $partida->getAnfitrion()->getCod()){
                         $tipo = 'anfitrion';
-                    } else if ($usuario->getCod() == $partida->getVisitante()->getCod()){
-                        $tipo = 'visitante';
+                    } else if($partida->getVisitante() != null){
+                        if($usuario->getCod() == $partida->getVisitante()->getCod()){
+                            $tipo = 'visitante';
+                        } else {
+                            $tipo = 'espectador';
+                        }
                     } else {
                         $tipo = 'espectador';
                     }

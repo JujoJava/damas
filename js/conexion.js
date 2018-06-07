@@ -46,35 +46,40 @@ function estaConectado(){
                                     $('#juego .color .blancas').html('');
                                 }
                             }
+                            //muestra los espectadores//
+                            if($('#menu-lateral').is(':visible')) {
+                                $('#espectadores-partida ul').html('');
+                                for (var i = 0; i < respuesta.partida.espectadores.length; i++) {
+                                    $('#espectadores-partida ul').append('<li>' + respuesta.partida.espectadores[i].nick + '</li>');
+                                }
+                            }
                             if(respuesta.partida.tablas === 'tablas') {
                                 estado = 'tablas';
                                 turno = '';
-                                if ($('#menu-lateral').length > 0){
-                                    $('#menu-lateral button[name=proponer-tablas]').html('<span>Proponer tablas</span>');
-                                    $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
-                                } else {
+                                $('.menu button[name=proponer-tablas]').html('<span>Proponer tablas</span>');
+                                $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
+                                $('#menu-inferior button[name=proponer-tablas]').attr('class', 'btn btn-info btn-lg');
+                                if (!$('#menu-lateral').is(':visible')){
                                     if($('#juego').length > 0){
                                         $('#juego .aviso').html('');
                                     }
                                 }
                                 $('[name=proponer-tablas]').attr('disabled', true);
-                                actualizaJuego();
                             } else if(respuesta.partida.tablas === 'propuesta') {
-                                if ($('#menu-lateral').length > 0){
-                                    $('#menu-lateral button[name=proponer-tablas]').html('<span>El oponente propone tablas</span>');
-                                    $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-warning btn-lg');
-                                } else {
+                                $('.menu button[name=proponer-tablas]').html('<span>El oponente propone tablas</span>');
+                                $('.menu button[name=proponer-tablas]').attr('class', 'btn btn-warning btn-lg');
+                                if (!$('#menu-lateral').is(':visible')){
                                     if($('#juego').length > 0){
-                                        $('#juego .aviso').html('<span>El oponente propone tablas. Pulsa \'Proponer tablas\' en el menú o sigue jugando.</span>');
+                                        $('#juego .aviso').html('<span>El oponente propone tablas. Pulsa \'Proponer tablas\' abajo o sigue jugando.</span>');
                                     }
                                 }
                                 $('[name=proponer-tablas]').attr('disabled', false);
                             } else {
                                 if (respuesta.partida.tablas !== 'proponiendo') {
-                                    if ($('#menu-lateral').length > 0){
-                                        $('#menu-lateral button[name=proponer-tablas]').html('Proponer tablas');
-                                        $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
-                                    } else {
+                                    $('.menu button[name=proponer-tablas]').html('Proponer tablas');
+                                    $('#menu-lateral button[name=proponer-tablas]').attr('class', 'btn btn-default btn-lg');
+                                    $('#menu-inferior button[name=proponer-tablas]').attr('class', 'btn btn-info btn-lg');
+                                    if (!$('#menu-lateral').is(':visible')){
                                         if($('#juego').length > 0){
                                             $('#juego .aviso').html('');
                                         }
@@ -150,6 +155,8 @@ function estaConectado(){
                     setTimeout(estaConectado, 5000); //cada 5 segundos
                 }
             }
+        },
+        beforeSend: function(){
         }
     });
 }

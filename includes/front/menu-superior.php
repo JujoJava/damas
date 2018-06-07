@@ -110,22 +110,6 @@ else{
     echo "<li class='nav-item'><a href='' title='Registrarse' data-toggle='modal' data-target='#modal_registro' class='nav-link'>Registrarse</a></li>"; //Botón para registrarse
 }
 
-if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'){
-    if($partida instanceof Sala) {
-        $anfitrionPartida = $partida->getAnfitrion();
-        if($anfitrionPartida instanceof Usuario) {
-            if($anfitrionPartida->getCod() == $user->getCod()) {
-                echo "<li><button type='button' class='btn btn-info btn-lg' name='invitar_partida' data-toggle='modal' data-target='#modal_invitar_partida'>Invitar a partida</button></li>";
-            }
-        }
-        $tipousu = $partida->getTipoUsuario($user->getCod());
-        if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
-            echo "<li class='nav-item menu-movil'><button type='button' class='btn btn-default btn-lg' name='proponer-tablas'>Proponer tablas</button></li>";
-        }
-    }
-    echo "<li class='nav-item menu-movil'><button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></li>";
-}
-
 echo "</ul></div>";
 echo "</nav>";
 

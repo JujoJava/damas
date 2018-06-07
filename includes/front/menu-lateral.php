@@ -135,7 +135,7 @@
     </div>
 </div>
 
-<div id='menu-lateral'>
+<div id='menu-lateral' class="menu">
     <?php
 
     if($partida instanceof Sala && $user instanceof Usuario && $pagina == 'juego') {
@@ -166,25 +166,32 @@
                 }
 
                 $nombre_oponente = UsuarioBD::obtieneJugador($oponente)[0]['nick'];
-                $resultado = '';
-                if($repeticion['ganador'] == 'blancas'){
-                    if($micolor == 'blancas') {
-                        $resultado = 'Victoria';
+                if(empty($nombre_oponente)){
+                    $nombre_oponente = $oponente."_".UsuarioBD::obtieneInvitado($oponente)[0]['nick'];
+                }
+                if(!empty($nombre_oponente)) {
+                    $resultado = '';
+                    if ($repeticion['ganador'] == 'blancas') {
+                        if ($micolor == 'blancas') {
+                            $resultado = 'Victoria';
+                        } else {
+                            $resultado = 'Derrota';
+                        }
+                    } else if ($repeticion['ganador'] == 'negras') {
+                        if ($micolor == 'blancas') {
+                            $resultado = 'Derrota';
+                        } else {
+                            $resultado = 'Victoria';
+                        }
                     } else {
-                        $resultado = 'Derrota';
+                        $resultado = 'Tablas';
                     }
-                } else if($repeticion['ganador'] == 'negras'){
-                    if($micolor == 'blancas') {
-                        $resultado = 'Derrota';
-                    } else {
-                        $resultado = 'Victoria';
-                    }
-                } else { $resultado = 'Tablas'; }
-                echo "<div>";
-                echo "<span>Contra " . $nombre_oponente . "</span>";
-                echo "<span class='$resultado'>$resultado</span>";
-                echo "<a href='' id='".$repeticion['codpartida']."'>Ver</a>";
-                echo "</div>";
+                    echo "<div>";
+                    echo "<span>Contra " . $nombre_oponente . "</span>";
+                    echo "<span class='$resultado'>$resultado</span>";
+                    echo "<a href='' class='ver_repeticion' id='" . $repeticion['codpartida'] . "'>Ver</a>";
+                    echo "</div>";
+                }
             }
         }
         echo "</div></div>";
@@ -193,7 +200,28 @@
         //lista de amigos
         echo "</div></div>";
         echo "<div id='info-usuario'>";
-        //información básica del usuario (partidas totales, ganadas, perdidas, amigos...)
+        $partidas = PartidaBD::getPartidas($user->getCod());
+        $partidas_totales = 0;
+        $partidas_ganadas = 0;
+        $partidas_perdidas = 0;
+        foreach($partidas as $p){
+            if($p['ganador'] != '') {
+                $partidas_totales++;
+                if ($p['codnegro'] == $user->getCod()) {
+                    $micolor = 'negras';
+                } else {
+                    $micolor = 'blancas';
+                }
+                if ($p['ganador'] == $micolor) {
+                    $partidas_ganadas++;
+                } else {
+                    $partidas_perdidas++;
+                }
+            }
+        }
+        echo "<div><span>Partidas totales</span><span>".$partidas_totales."</span></div>";
+        echo "<div><span>Partidas ganadas</span><span>".$partidas_ganadas."</span></div>";
+        echo "<div><span>Partidas perdidas</span><span>".$partidas_perdidas."</span></div>";
         echo "</div>";
     }
     else{
@@ -209,6 +237,10 @@
             }
         }
         echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";
+        echo "<div id='espectadores-partida'>";
+        echo "<h2>Espectadores</h2><ul>";
+        echo "</ul>";
+        echo "</div>";
     }
     ?>
 </div>

@@ -104,9 +104,7 @@ if(isset($_POST['modo'])){
                 if($usuario instanceof Usuario){
                     $sala = $_SESSION['partida'];
                     if($sala instanceof Sala){
-                        if($sala->getTipoUsuario($usuario->getCod()) == 'anfitrion'){
-                            PartidaBD::setGanador($sala->getCodPartida(), $_POST['ganador']);
-                        }
+                        PartidaBD::setGanador($sala->getCodPartida(), $_POST['ganador']);
                     }
                 }
             }

@@ -119,9 +119,14 @@ class Sala extends Partida
         }
     }
     public function updateEspectadores(){
+        $this->espectadores = array();
         $datos = PartidaBD::getEspectadoresSala($this->codSala);
         foreach($datos as $espectador){
-            $this->espectadores[] = $espectador['codusu'];
+            if($espectador['tipo'] == 'invitado'){
+                $this->espectadores[] = new Invitado($espectador['codusu'], $espectador['nick']);
+            } else if($espectador['tipo'] == 'jugador'){
+                $this->espectadores[] = new Jugador($espectador['codusu'], $espectador['nick']);
+            }
         }
     }
     public function updateCodPartida(){

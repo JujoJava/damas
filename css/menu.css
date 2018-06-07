@@ -1,7 +1,19 @@
+#menu-inferior {
+    display:flex;
+    flex-direction:row;
+    width:100%;
+    flex-wrap:wrap;
+}
 @media all and (min-width:990px){
     #menu-superior .menu-movil{
         display:none;
     }
+    #menu-inferior{
+        display:none;
+    }
+}
+#menu-inferior > button {
+    margin:5px;
 }
 #menu-superior .label-menu-icon {
     display:inline-block;
@@ -47,6 +59,23 @@
     border-color:#484848;
     border-radius:10px;
 }
+#menu-lateral #espectadores-partida h2 {
+    font-size: 14px;
+    font-weight:bold;
+    text-transform:uppercase;
+}
+#menu-lateral #espectadores-partida ul {
+    list-style:none;
+    padding:0;
+}
+#menu-lateral #info-usuario > div {
+    border: none;
+    background: #575757;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 9px;
+}
+
 #menu-lateral #lista-amigos {
     display:none;
     max-height:150px;

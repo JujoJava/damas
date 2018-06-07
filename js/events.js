@@ -55,6 +55,28 @@ $(document).ready(function(){
         $('#menu-lateral #lista-amigos').toggle(200);
     });
 
+    $('#menu-lateral #lista-repeticiones a.ver-repeticion').click(function(){
+        var pulsado = $(this);
+        if(!pulsado.hasClass('desactivado')) {
+            $.ajax({
+                data: {
+                    partida: pulsado.attr('id'),
+                    modo: 'repeticion'
+                },
+                type: 'POST',
+                dataType: 'json',
+                url: 'ajax/get.php',
+                success: function (response) {
+                    botonNormal(pulsado, 'Ver');
+                },
+                beforeSend: function () {
+                    $('a.ver-repeticion').addClass('desactivado');
+                    botonRueda(pulsado);
+                }
+            });
+        }
+    });
+
     // se encuentra en página principal //
     if($('#principal').length > 0) {
 
@@ -366,11 +388,16 @@ $(document).ready(function(){
                     input_espectar.attr('disabled', true);
                     $('#modal_jugar_nueva input[name=color-fichas]').attr('disabled', true);
 
+                    var puede_espectar = 0;
+                    if(input_espectar.is(':checked')){
+                        puede_espectar = 1;
+                    }
+
                     ajaxModal = $.ajax({
                         data : {
                             descripcion: input_descripcion.val(),
                             pass: input_pass.val(),
-                            puede_espectar: input_espectar.is(':checked'),
+                            puede_espectar: puede_espectar,
                             color_anfit: input_color.attr('id'),
                             modo: 'crea_sala'
                         },
@@ -501,7 +528,7 @@ $(document).ready(function(){
 
     } else if($('#juego').length > 0) {
 
-        $('#menu-lateral button[name=salir-partida]').click(function(){
+        $('.menu button[name=salir-partida]').click(function(){
 
             var boton = $(this);
 
@@ -525,7 +552,7 @@ $(document).ready(function(){
 
         });
 
-        $('#menu-lateral button[name=proponer-tablas]').click(function(){
+        $('.menu button[name=proponer-tablas]').click(function(){
 
             var boton = $(this);
 

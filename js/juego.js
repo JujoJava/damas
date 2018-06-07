@@ -1467,9 +1467,12 @@ function comprobarPuntos(){
 }
 
 function guardaResultados(){
-    var ganador = 'blancas';
-    if(fichas_blancas === 0){
-        ganador = 'negras';
+    var ganador = 'tablas';
+    if (estado === 'resultados') {
+        ganador = 'blancas';
+        if (fichas_blancas === 0) {
+            ganador = 'negras';
+        }
     }
     $.ajax({
         data: {
@@ -1632,40 +1635,42 @@ function dibujaFicha(color, tipo, x, y, w, h){
 function dibujaFichas(){
     var ficha_drag = false;
     var comidas = [];
-    for(var i = 0 ; i < NUM_CASILLAS ; i++){
-        for(var j = 0 ; j < NUM_CASILLAS ; j++){
-            // dibujos sobre todas las fichas, excepto la que esté siendo arrastrada //
-            if(ficha_seleccionada && raton_down){
-                if(ficha_seleccionada.color !== fichas[i][j].color || ficha_seleccionada.numFicha !== fichas[i][j].numFicha){
-                    dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+    if(fichas.length > 0) {
+        for (var i = 0; i < NUM_CASILLAS; i++) {
+            for (var j = 0; j < NUM_CASILLAS; j++) {
+                // dibujos sobre todas las fichas, excepto la que esté siendo arrastrada //
+                if (ficha_seleccionada && raton_down) {
+                    if (ficha_seleccionada.color !== fichas[i][j].color || ficha_seleccionada.numFicha !== fichas[i][j].numFicha) {
+                        dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j * TAM_CUADROS, i * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                    }
+                } else {
+                    dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j * TAM_CUADROS, i * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
                 }
-            } else {
-                dibujaFicha(fichas[i][j].color, fichas[i][j].tipo, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
-            }
 
-            // dibujos sobre la ficha seleccionada //
-            if(ficha_seleccionada) {
-                if(ficha_seleccionada.numFicha === fichas[i][j].numFicha && fichas[i][j].color === ficha_seleccionada.color){
-                    if(!raton_down){
-                        ctx.drawImage(FICHA_SELECT, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
-                    } else {
-                        ficha_drag = fichas[i][j];
+                // dibujos sobre la ficha seleccionada //
+                if (ficha_seleccionada) {
+                    if (ficha_seleccionada.numFicha === fichas[i][j].numFicha && fichas[i][j].color === ficha_seleccionada.color) {
+                        if (!raton_down) {
+                            ctx.drawImage(FICHA_SELECT, j * TAM_CUADROS, i * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                        } else {
+                            ficha_drag = fichas[i][j];
+                        }
                     }
                 }
-            }
-            // dibujos sobre los posibles movimientos de una ficha seleccionada //
-            for(var k = 0 ; k < posibles_movimientos.length ; k++){
-                if(posibles_movimientos[k].movimiento.posicion === fichas[i][j].posicion){
-                    ctx.drawImage(FICHA_MOV, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
-                    if(cuadro_hover){
-                        if(fichas[i][j].posicion === cuadro_hover.posicion){
-                            ctx.drawImage(CUADRO_SELECT, j*TAM_CUADROS, i*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
-                            comidas = posibles_movimientos[k].comidas;
-                            for(var n = 0 ; n < comidas.length ; n++){
-                                for(var i2 = 0 ; i2 < fichas.length ; i2++){
-                                    for(var j2 = 0 ; j2 < fichas[i2].length ; j2++){
-                                        if(fichas[i2][j2].posicion === comidas[n].posicion){
-                                            ctx.drawImage(FICHA_COMIDA, j2*TAM_CUADROS, i2*TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                // dibujos sobre los posibles movimientos de una ficha seleccionada //
+                for (var k = 0; k < posibles_movimientos.length; k++) {
+                    if (posibles_movimientos[k].movimiento.posicion === fichas[i][j].posicion) {
+                        ctx.drawImage(FICHA_MOV, j * TAM_CUADROS, i * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                        if (cuadro_hover) {
+                            if (fichas[i][j].posicion === cuadro_hover.posicion) {
+                                ctx.drawImage(CUADRO_SELECT, j * TAM_CUADROS, i * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                                comidas = posibles_movimientos[k].comidas;
+                                for (var n = 0; n < comidas.length; n++) {
+                                    for (var i2 = 0; i2 < fichas.length; i2++) {
+                                        for (var j2 = 0; j2 < fichas[i2].length; j2++) {
+                                            if (fichas[i2][j2].posicion === comidas[n].posicion) {
+                                                ctx.drawImage(FICHA_COMIDA, j2 * TAM_CUADROS, i2 * TAM_CUADROS, TAM_CUADROS, TAM_CUADROS);
+                                            }
                                         }
                                     }
                                 }
@@ -1675,46 +1680,47 @@ function dibujaFichas(){
                 }
             }
         }
-    }
-    // dibujo de arrastre de la ficha seleccionada //
-    if(ficha_drag) {
-        var diferencia = (TAM_CUADROS/2);
-        dibujaFicha(ficha_drag.color, ficha_drag.tipo, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
-        ctx.drawImage(FICHA_SELECT, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
-    }
-    // dibujo de ganador si se ha acabado la partida //
-    if(estado === 'resultados') {
-        ctx.fillStyle = '#4b4e6e';
-        ctx.fillRect(0, TAM_TABLERO/2 - TAM_CUADROS/3, TAM_TABLERO, TAM_CUADROS/2);
-        ctx.font = (TAM_CUADROS/3)+'px Arial';
-        ctx.fillStyle = '#b8b8b8';
-        if(fichas_blancas === 0){
-            if(mis_datos.rol !== 'espectador') {
-                if (mis_datos.color === 'blancas') {
-                    ctx.fillText('¡Has perdido!', TAM_CUADROS/2, TAM_TABLERO/2);
-                } else {
-                    ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
-                }
-            } else {
-                ctx.fillText('¡Han ganado las negras!', TAM_CUADROS/2, TAM_TABLERO/2);
-            }
-        } else {
-            if(mis_datos.rol !== 'espectador') {
-                if (mis_datos.color === 'negras') {
-                    ctx.fillText('¡Has perdido!', TAM_CUADROS/2, TAM_TABLERO/2);
-                } else {
-                    ctx.fillText('¡Has ganado!', TAM_CUADROS/2, TAM_TABLERO/2);
-                }
-            } else {
-                ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS/2, TAM_TABLERO/2);
-            }
+        // dibujo de arrastre de la ficha seleccionada //
+        if (ficha_drag) {
+            var diferencia = (TAM_CUADROS / 2);
+            dibujaFicha(ficha_drag.color, ficha_drag.tipo, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
+            ctx.drawImage(FICHA_SELECT, mousePos.x - diferencia, mousePos.y - diferencia, TAM_CUADROS, TAM_CUADROS);
         }
-    } else if (estado === 'tablas') {
-        ctx.fillStyle = '#4b4e6e';
-        ctx.fillRect(0, TAM_TABLERO/2 - TAM_CUADROS/3, TAM_TABLERO, TAM_CUADROS/2);
-        ctx.font = (TAM_CUADROS/3)+'px Arial';
-        ctx.fillStyle = '#e2e2e2';
-        ctx.fillText('La partida ha acabado en tablas.', TAM_CUADROS/2, TAM_TABLERO/2);
+        // dibujo de ganador si se ha acabado la partida //
+        if (estado === 'resultados') {
+            ctx.fillStyle = '#4b4e6e';
+            ctx.fillRect(0, TAM_TABLERO / 2 - TAM_CUADROS / 3, TAM_TABLERO, TAM_CUADROS / 2);
+            ctx.font = (TAM_CUADROS / 3) + 'px Arial';
+            ctx.fillStyle = '#b8b8b8';
+            if (fichas_blancas === 0) {
+                if (mis_datos.rol !== 'espectador') {
+                    if (mis_datos.color === 'blancas') {
+                        ctx.fillText('¡Has perdido!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                    } else {
+                        ctx.fillText('¡Has ganado!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                    }
+                } else {
+                    ctx.fillText('¡Han ganado las negras!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                }
+            } else {
+                if (mis_datos.rol !== 'espectador') {
+                    if (mis_datos.color === 'negras') {
+                        ctx.fillText('¡Has perdido!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                    } else {
+                        ctx.fillText('¡Has ganado!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                    }
+                } else {
+                    ctx.fillText('¡Han ganado las blancas!', TAM_CUADROS / 2, TAM_TABLERO / 2);
+                }
+            }
+        } else if (estado === 'tablas') {
+            guardaResultados();
+            ctx.fillStyle = '#4b4e6e';
+            ctx.fillRect(0, TAM_TABLERO / 2 - TAM_CUADROS / 3, TAM_TABLERO, TAM_CUADROS / 2);
+            ctx.font = (TAM_CUADROS / 3) + 'px Arial';
+            ctx.fillStyle = '#e2e2e2';
+            ctx.fillText('La partida ha acabado en tablas.', TAM_CUADROS / 2, TAM_TABLERO / 2);
+        }
     }
 }
 
@@ -1747,7 +1753,7 @@ function dibujaTablero(){
 
 function actualizaJuego(){
     dibujaTablero();
-    if(estado === 'no_jugando'){
+    if(estado === 'no_jugando' || estado === 'tablas' || estado === 'resultados') {
         inicializaFichas();
     }
     dibujaFichas();

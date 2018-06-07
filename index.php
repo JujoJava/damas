@@ -34,11 +34,13 @@
             <?php include("includes/front/menu-superior.php"); ?>
         </header>
         <main> <?php //separado en dos mitades, la página actual, y la sección (section) de la derecha ?>
-            <?php include("includes/back/pages.php"); ?>
-            <section>
-                <?php include("includes/front/menu-lateral.php"); ?>
-                <?php // ¿publicidad...? // ?>
-            </section>
+            <div>
+                <?php include("includes/back/pages.php"); ?>
+                <section>
+                    <?php include("includes/front/menu-lateral.php"); ?>
+                </section>
+            </div>
+            <?php include("includes/front/menu-inferior.php"); ?>
         </main>
         <footer>
             <?php include("includes/front/footer.html"); ?>
