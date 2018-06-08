@@ -5,9 +5,7 @@
  * Date: 03/04/2018
  * Time: 20:05
  */
-
 if(isset($_GET['page'])){
-    include("pages/" . $_GET['page'] . ".html");
     if($_GET['page'] == 'redirect'){
         if(isset($_GET['cod']) && isset($_GET['pass'])){
             if(isset($_SESSION['redirect'])) {
@@ -19,6 +17,7 @@ if(isset($_GET['page'])){
             }
         }
     }
+    include("pages/" . $_GET['page'] . ".html");
     $pagina = $_GET['page'];
 }
 else if(isset($_POST['page'])){

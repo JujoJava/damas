@@ -575,6 +575,31 @@ $(document).ready(function(){
 
         });
 
+        $('.menu button[name=rendirse]').click(function(){
+            var boton = $(this);
+
+            $.ajax({
+                data: {
+                    ganador: 'rendicion',
+                    modo: 'resultados'
+                },
+                type: 'POST',
+                dataType: 'json',
+                url: 'ajax/insert.php',
+                success: function(response){
+                    botonNormal(boton, 'Rendirse');
+                    if(response.correcto){
+                        boton.attr('disabled', true);
+                        $('.menu button[name=proponer-tablas]').attr('disabled', true);
+                    }
+                },
+                beforeSend: function(){
+                    botonRueda(boton);
+                }
+            });
+
+        });
+
     }
 
 });

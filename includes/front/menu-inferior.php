@@ -11,7 +11,8 @@ if($partida instanceof Partida && $user instanceof Usuario && $pagina == 'juego'
         }
         $tipousu = $partida->getTipoUsuario($user->getCod());
         if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
-            echo "<button type='button' class='btn btn-info btn-lg' name='proponer-tablas'>Proponer tablas</button>";
+            echo "<button type='button' class='btn btn-info btn-lg' disabled='disabled' name='proponer-tablas'>Proponer tablas</button>";
+            echo "<button type='button' class='btn btn-warning btn-lg' disabled='disabled' name='rendirse'>Rendirse</button>";
         }
     }
     echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button>";

@@ -8,7 +8,7 @@ php_value display_errors 1
 RewriteEngine On
 
 RewriteRule ^([a-zA-Z0-9_-]+)(|/)$ index.php?page=$1
-RewriteRule ^([a-zA-Z0-9_-]+)/([0-9_-]+)?/([a-zA-Z0-9_-]+)?$ index.php?page=$1&cod=$2&pass=$3
+RewriteRule ^([a-zA-Z0-9_-]+)/([0-9_-]+)?/?([a-zA-Z0-9_-]+)?$ index.php?page=$1&cod=$2&pass=$3
 Rewriterule ^$ index.php?page=principal
 #Rewriterule ^index.php$ index.php?page=principal
 

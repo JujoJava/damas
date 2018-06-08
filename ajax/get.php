@@ -75,10 +75,12 @@ if(isset($_POST['modo'])){
                                             $pass
                                         );
                                         $datos['correcto'] = true;
+                                        $_SESSION['redirect'] = '';
                                     }
                                 }
                             } else {
                                 $datos['accion'] = 'redirigir';
+                                $_SESSION['redirect'] = '';
                             }
                         } else {
                             $datos['accion'] = 'login';
@@ -88,12 +90,13 @@ if(isset($_POST['modo'])){
                     }
                 } else {
                     $datos['accion'] = 'redirigir';
+                    $_SESSION['redirect'] = '';
                 }
 
             } else {
                 $datos['accion'] = 'redirigir';
+                $_SESSION['redirect'] = '';
             }
-            $_SESSION['redirect'] = '';
             break;
         case 'pass-sala':
             $datos = array(
@@ -101,9 +104,10 @@ if(isset($_POST['modo'])){
                 'error' => ''
             );
             $pass = $_POST['pass'];
-            if(PartidaBD::passCorrecta($_SESSION['redirect']['cod'], $pass)){
+            $cod = $_SESSION['redirect']['cod'];
+            if(PartidaBD::passCorrecta($cod, $pass)){
                 $datos['correcto'] = true;
-                $_SESSION['redirect']['pass'] = PartidaBD::obtienePass($_SESSION['redirect']['cod']);
+                $_SESSION['redirect']['pass'] = PartidaBD::obtienePass($cod);
             } else {
                 $datos['error'] = 'La contraseña no es correcta.';
             }

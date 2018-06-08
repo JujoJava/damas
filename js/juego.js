@@ -36,6 +36,7 @@ var mis_datos = null; //objeto con mis datos
 var anfitrion = false;
 var visitante = false;
 var turno = '';
+var rendicion = '';
 
 var posibles_movimientos = []; //array con los posibles movimientos de una ficha seleccionada
 var ficha_seleccionada = false;
@@ -1365,6 +1366,14 @@ function defineEventos(){
 }
 
 function obtieneFicha(numficha, color){
+    if(numficha == -1){
+        return {
+            numFicha: -1,
+            color: '',
+            posicion: '',
+            tipo: ''
+        };
+    }
     for(var i = 0 ; i < fichas.length ; i++){
         for(var j = 0 ; j < fichas[i].length ; j++){
             if(fichas[i][j].numFicha == numficha && fichas[i][j].color === color){
@@ -1394,6 +1403,9 @@ function hayNuevoMovimiento(mov){
     for(var i = 0 ; i < mov.length ; i++){
         comidas = mov[i].comidas;
         var ficha = obtieneFicha(mov[i].numficha, mov[i].color);
+        if(ficha.numFicha == -1){
+            ficha.posicion = mov[i].posicion;
+        }
         var movimiento = {
             numFicha: Number(mov[i].numficha),
             posicion: mov[i].posicion,
@@ -1692,7 +1704,7 @@ function dibujaFichas(){
             ctx.fillRect(0, TAM_TABLERO / 2 - TAM_CUADROS / 3, TAM_TABLERO, TAM_CUADROS / 2);
             ctx.font = (TAM_CUADROS / 3) + 'px Arial';
             ctx.fillStyle = '#b8b8b8';
-            if (fichas_blancas === 0) {
+            if (fichas_blancas === 0 || rendicion === 'negras') {
                 if (mis_datos.rol !== 'espectador') {
                     if (mis_datos.color === 'blancas') {
                         ctx.fillText('¡Has perdido!', TAM_CUADROS / 2, TAM_TABLERO / 2);
@@ -1702,7 +1714,7 @@ function dibujaFichas(){
                 } else {
                     ctx.fillText('¡Han ganado las negras!', TAM_CUADROS / 2, TAM_TABLERO / 2);
                 }
-            } else {
+            } else if (fichas_negras === 0 || rendicion === 'blancas') {
                 if (mis_datos.rol !== 'espectador') {
                     if (mis_datos.color === 'negras') {
                         ctx.fillText('¡Has perdido!', TAM_CUADROS / 2, TAM_TABLERO / 2);

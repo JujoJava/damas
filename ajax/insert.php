@@ -99,12 +99,27 @@ if(isset($_POST['modo'])){
             }
             break;
         case 'resultados':
+            $datos = array('correcto' => false);
             if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
                 $usuario = $_SESSION['login'];
                 if($usuario instanceof Usuario){
                     $sala = $_SESSION['partida'];
                     if($sala instanceof Sala){
-                        PartidaBD::setGanador($sala->getCodPartida(), $_POST['ganador']);
+                        if($_POST['ganador'] != 'rendicion') {
+                            PartidaBD::setGanador($sala->getCodPartida(), $_POST['ganador']);
+                            $datos['correcto'] = true;
+                        } else {
+                            if(!PartidaBD::existeGanador($sala->getCodPartida()) && !PartidaBD::existeTablas($sala->getCodPartida())) {
+                                $colores = PartidaBD::getColores($sala->getCodPartida());
+                                if ($colores['codnegro'] == $usuario->getCod()) {
+                                    PartidaBD::setGanador($sala->getCodPartida(), 'blancas');
+                                    $datos['correcto'] = true;
+                                } else if ($colores['codblanco'] == $usuario->getCod()) {
+                                    PartidaBD::setGanador($sala->getCodPartida(), 'negras');
+                                    $datos['correcto'] = true;
+                                }
+                            }
+                        }
                     }
                 }
             }

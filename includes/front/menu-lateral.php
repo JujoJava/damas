@@ -147,7 +147,7 @@
         }
     } else if(!$partida instanceof Partida) {
         echo "<div><button type='button' class='btn btn-primary btn-lg' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</button>"; //botón que abrirá el modal de creación rápida
-        echo "<span><i>Pulsa este botón para empezar a jugar ya mismo una partida con otro amigo</i></span></div>";
+        echo "<span><i>Pulsa este botón para empezar a jugar una partida con otro amigo</i></span></div>";
     }
 
     if($user instanceof Jugador){ //sólamente usuarios registrados podrán ver esto
@@ -234,13 +234,18 @@
             $tipousu = $partida->getTipoUsuario($user->getCod());
             if (($tipousu == 'anfitrion' || $tipousu == 'visitante')) {
                 echo "<button type='button' class='btn btn-default btn-lg' disabled='disabled' name='proponer-tablas'>Proponer tablas</button>";
+                echo "<button type='button' class='btn btn-warning btn-lg' disabled='disabled' name='rendirse'>Rendirse</button>";
             }
         }
         echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";
-        echo "<div id='espectadores-partida'>";
-        echo "<h2>Espectadores</h2><ul>";
-        echo "</ul>";
-        echo "</div>";
+        if($partida instanceof Sala) {
+            if(PartidaBD::getSalaJugandose($partida->getCodSala())[0]['puede_espectar'] == 1) {
+                echo "<div id='espectadores-partida'>";
+                echo "<h2>Espectadores</h2><ul>";
+                echo "</ul>";
+                echo "</div>";
+            }
+        }
     }
     ?>
 </div>

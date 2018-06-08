@@ -39,6 +39,14 @@ class PartidaBD
         return ManejoBBDD::getDatos();
     }
 
+    public static function getPartida($codpartida){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM partida WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        ManejoBBDD::desconectar();
+        return ManejoBBDD::getDatos();
+    }
+
     public static function existeGanador($codpartida){
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT ganador FROM partida WHERE codpartida = ?");
@@ -47,6 +55,32 @@ class PartidaBD
         if($datos[0]['ganador'] != '' && $datos[0]['ganador'] != 'tablas'){
             ManejoBBDD::desconectar();
             return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function existeTablas($codpartida){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT ganador FROM partida WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        $datos = ManejoBBDD::getDatos();
+        if($datos[0]['ganador'] == 'tablas'){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function getGanador($codpartida){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT ganador FROM partida WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        $datos = ManejoBBDD::getDatos();
+        if(count($datos) > 0){
+            ManejoBBDD::desconectar();
+            return $datos[0];
         }
         ManejoBBDD::desconectar();
         return false;

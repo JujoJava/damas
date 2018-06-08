@@ -53,6 +53,7 @@ function estaConectado(){
                                     $('#espectadores-partida ul').append('<li>' + respuesta.partida.espectadores[i].nick + '</li>');
                                 }
                             }
+
                             if(respuesta.partida.tablas === 'tablas') {
                                 estado = 'tablas';
                                 turno = '';
@@ -87,6 +88,13 @@ function estaConectado(){
                                     $('[name=proponer-tablas]').attr('disabled', false);
                                 }
                             }
+
+                            if (respuesta.partida.ganador) {
+                                estado = 'resultados';
+                                turno = '';
+                                rendicion = respuesta.partida.ganador;
+                            }
+
                             mis_datos = respuesta.partida.mis_datos;
                             anfitrion = respuesta.partida.anfitrion;
                             visitante = respuesta.partida.visitante;
@@ -105,17 +113,21 @@ function estaConectado(){
                                     actualizaJuego();
                                     estado = 'jugando';
                                     turno = 'blancas';
+                                    rendicion = '';
                                     $('[name=proponer-tablas]').attr('disabled', false);
+                                    $('[name=rendirse]').attr('disabled', false);
                                 } else if(estado === 'tablas' || estado === 'resultados'){
                                     inicializaJuego();
                                     actualizaJuego();
                                     $('[name=proponer-tablas]').attr('disabled', true);
+                                    $('[name=rendirse]').attr('disabled', true);
                                 }
                             }
                             else {
                                 estado = 'no_jugando';
                                 turno = '';
                                 $('[name=proponer-tablas]').attr('disabled', true);
+                                $('[name=rendirse]').attr('disabled', true);
                             }
                             // se ha actualizado la página o se ha entrado desde otro sitio //
                             if(respuesta.partida.movimientos.length > 0 && movimientos.length === 0) {
