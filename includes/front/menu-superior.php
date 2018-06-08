@@ -63,6 +63,21 @@
     </div>
 </div>
 
+<div id='modal_logout' class='modal fade' role='dialog'>
+    <div class='modal-dialog'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h4 class='modal-title'>Cerrando sesión...</h4>
+            </div>
+            <div class='modal-body'>
+                <div class="info">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <?php
 
 // menú superior //
@@ -72,8 +87,16 @@ $punto_activo = array(
     'juego' => ''
 );
 
-if(isset($_GET['page']))
+if(isset($_GET['page'])) {
     $punto_activo[$_GET['page']] = 'active';
+    if(isset($_GET['cod'])){
+        if(!empty($_GET['cod'])){
+            if($_GET['page'] == 'perfil'){
+                $punto_activo[$_GET['page']] = '';
+            }
+        }
+    }
+}
 
 echo "<nav id='menu-superior' class='navbar navbar-expand-lg navbar-dark bg-dark'>";
 
@@ -95,8 +118,8 @@ echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-end'>";
 if($user instanceof Jugador){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>";
-    echo "<li class='nav-item'><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i><span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
-    echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link'><i class='fas fa-sign-out-alt'></i><span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
+    echo "<li class='nav-item'".$punto_activo['perfil']."><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i><span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
+    echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link' name='cerrar-sesion'><i class='fas fa-sign-out-alt'></i><span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
 }
 else if($user instanceof Invitado){
     $nick = $user->getNick();

@@ -109,6 +109,18 @@ class UsuarioBD
         ManejoBBDD::desconectar();
         return null;
     }
+    public static function obtieneUsuario($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT nick FROM usuario WHERE codusu = ?");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
 
     public static function obtieneJugador($codusu) {
         ManejoBBDD::conectar();

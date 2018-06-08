@@ -168,6 +168,8 @@
                 $nombre_oponente = UsuarioBD::obtieneJugador($oponente)[0]['nick'];
                 if(empty($nombre_oponente)){
                     $nombre_oponente = $oponente."_".UsuarioBD::obtieneInvitado($oponente)[0]['nick'];
+                } else {
+                    $nombre_oponente = "<a href='perfil/".$oponente."'>".$nombre_oponente."</a>";
                 }
                 if(!empty($nombre_oponente)) {
                     $resultado = '';
@@ -187,7 +189,7 @@
                         $resultado = 'Tablas';
                     }
                     echo "<div>";
-                    echo "<span>Contra " . $nombre_oponente . "</span>";
+                    echo "<span>VS " . $nombre_oponente . "</span>";
                     echo "<span class='$resultado'>$resultado</span>";
                     echo "<a href='' class='ver_repeticion' id='" . $repeticion['codpartida'] . "'>Ver</a>";
                     echo "</div>";

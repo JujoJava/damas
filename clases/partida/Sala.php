@@ -91,17 +91,6 @@ class Sala extends Partida
         }
         return false;
     }
-    public static function generaComidas($comidasBD){
-        $comidas = array();
-        foreach($comidasBD as $comida){
-            $comidas[] = array(
-                'numFicha' => $comida['numficha'],
-                'color' => $comida['color'],
-                'posicion' => $comida['posicion']
-            );
-        }
-        return $comidas;
-    }
     public function addMovimiento($movimiento){
         $this->movimientos[] = $movimiento;
     }

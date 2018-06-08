@@ -112,6 +112,15 @@ if(isset($_POST['modo'])){
                 $datos['error'] = 'La contraseña no es correcta.';
             }
             break;
+        case 'repeticion':
+            $datos = array('correcto' => false);
+            $codpartida = $_POST['partida'];
+            if(PartidaBD::existePartida($codpartida) && $_SESSION['login'] instanceof Jugador){
+                $datos = PartidaBD::getPartida($codpartida);
+                $_SESSION['partida'] = new Repeticion($codpartida, $datos[0]['codnegro'], $datos[0]['codblanco']);
+                $datos['correcto'] = true;
+            }
+            break;
         case 'login':
             $datos = array(
                 'correcto' => false,

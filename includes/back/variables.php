@@ -12,6 +12,7 @@ session_start();
 
 $user = null; //usuario que ha iniciado sesión
 $partida = null; //partida visualizando (puede ser una sala o una repetición)
+$perfil = null; //perfil que va a visualizar
 $pagina = 'principal';
 
 if(isset($_GET['page'])){

@@ -17,6 +17,16 @@ if(isset($_GET['page'])){
             }
         }
     }
+    if($_GET['page'] == 'perfil') {
+        if(isset($_GET['cod'])){
+            $p = UsuarioBD::obtieneJugador($_GET['cod']);
+            if($p){
+                $perfil = new Jugador($_GET['cod'], $p[0]['nick']);
+            }
+        } else {
+            $perfil = $user;
+        }
+    }
     include("pages/" . $_GET['page'] . ".html");
     $pagina = $_GET['page'];
 }

@@ -30,17 +30,17 @@ function estaConectado(){
                         if ($('#juego').length > 0) { //esta en la sala de juego. Se actualizará el tablero
                             $('#juego .anfitrion').html("Sala de " + respuesta.partida.anfitrion.nick);
                             if (respuesta.partida.anfitrion.cod == respuesta.partida.colores.codblanco) {
-                                $('#juego .color .blancas').html(respuesta.partida.anfitrion.nick);
+                                $('#juego .color .blancas').html("<a href='perfil/"+respuesta.partida.colores.codblanco+"'"+respuesta.partida.anfitrion.nick+"</a>");
                                 if(respuesta.partida.visitante) {
-                                    $('#juego .color .negras').html(respuesta.partida.visitante.nick);
+                                    $('#juego .color .negras').html("<a href='perfil/"+respuesta.partida.colores.codblanco+"'"+respuesta.partida.visitante.nick+"</a>");
                                 }
                                 else {
                                     $('#juego .color .negras').html('');
                                 }
                             } else {
-                                $('#juego .color .negras').html(respuesta.partida.anfitrion.nick);
+                                $('#juego .color .negras').html("<a href='perfil/"+respuesta.partida.colores.codnegro+"'"+respuesta.partida.anfitrion.nick+"</a>");
                                 if(respuesta.partida.visitante) {
-                                    $('#juego .color .blancas').html(respuesta.partida.visitante.nick);
+                                    $('#juego .color .blancas').html("<a href='perfil/"+respuesta.partida.colores.codnegro+"'"+respuesta.partida.visitante.nick+"</a>");
                                 }
                                 else {
                                     $('#juego .color .blancas').html('');
@@ -50,7 +50,7 @@ function estaConectado(){
                             if($('#menu-lateral').is(':visible')) {
                                 $('#espectadores-partida ul').html('');
                                 for (var i = 0; i < respuesta.partida.espectadores.length; i++) {
-                                    $('#espectadores-partida ul').append('<li>' + respuesta.partida.espectadores[i].nick + '</li>');
+                                    $('#espectadores-partida ul').append('<li><a href="perfil/' + respuesta.partida.espectadores[i].cod + '">' + respuesta.partida.espectadores[i].nick + '</a></li>');
                                 }
                             }
 

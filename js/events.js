@@ -67,7 +67,12 @@ $(document).ready(function(){
                 dataType: 'json',
                 url: 'ajax/get.php',
                 success: function (response) {
-                    botonNormal(pulsado, 'Ver');
+                    if(response.correcto) {
+                        window.location = 'juego';
+                    } else {
+                        $('a.ver-repeticion').removeClass('desactivado');
+                        botonNormal(pulsado, 'Ver');
+                    }
                 },
                 beforeSend: function () {
                     $('a.ver-repeticion').addClass('desactivado');
@@ -282,6 +287,23 @@ $(document).ready(function(){
                 }
             });
 
+        });
+
+        //al pulsar el botón del modal de cerrar sesión
+        $('#menu-superior a[name=logout]').click(function(){
+            $('#modal_logout').modal({backdrop:'static', keyboard:false});
+            $.ajax({
+                data: {modo:'logout'},
+                type: 'POST',
+                dataType: 'json',
+                url: 'ajax/delete.php',
+                success: function(){
+                    window.location.reload();
+                },
+                beforeSend: function(){
+                    $('#modal_logout .modal-body .info').html("<i class='fas fa-spinner fa-spin'></i>");
+                }
+            });
         });
 
         //al pulsar el botón del modal de entrar en sala

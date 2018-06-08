@@ -15,25 +15,64 @@ if(isset($_POST['modo'])){
                     $usuario = $_SESSION['login'];
                     $partida = $_SESSION['partida'];
                     $tipo = '';
-                    if($usuario->getCod() == $partida->getAnfitrion()->getCod()){
-                        $tipo = 'anfitrion';
-                    } else if($partida->getVisitante() != null){
-                        if($usuario->getCod() == $partida->getVisitante()->getCod()){
-                            $tipo = 'visitante';
+                    if($partida instanceof Sala) {
+                        if ($usuario->getCod() == $partida->getAnfitrion()->getCod()) {
+                            $tipo = 'anfitrion';
+                        } else if ($partida->getVisitante() != null) {
+                            if ($usuario->getCod() == $partida->getVisitante()->getCod()) {
+                                $tipo = 'visitante';
+                            } else {
+                                $tipo = 'espectador';
+                            }
                         } else {
                             $tipo = 'espectador';
                         }
+                        if (PartidaBD::salirSala(
+                            $partida->getCodSala(),
+                            $partida->getCodPartida(),
+                            $usuario->getCod(),
+                            $tipo
+                        )) {
+                            $datos['correcto'] = true;
+                            $_SESSION['partida'] = null;
+                        }
                     } else {
-                        $tipo = 'espectador';
-                    }
-                    if(PartidaBD::salirSala(
-                        $partida->getCodSala(),
-                        $partida->getCodPartida(),
-                        $usuario->getCod(),
-                        $tipo
-                    )) {
                         $datos['correcto'] = true;
                         $_SESSION['partida'] = null;
+                    }
+                }
+            }
+            break;
+        case 'logout':
+            if(isset($_SESSION['login'])){
+                $usuario = $_SESSION['login'];
+                if(isset($_SESSION['partida'])){
+                    $partida = $_SESSION['partida'];
+                    $tipo = '';
+                    if($partida instanceof Sala) {
+                        if ($usuario->getCod() == $partida->getAnfitrion()->getCod()) {
+                            $tipo = 'anfitrion';
+                        } else if ($partida->getVisitante() != null) {
+                            if ($usuario->getCod() == $partida->getVisitante()->getCod()) {
+                                $tipo = 'visitante';
+                            } else {
+                                $tipo = 'espectador';
+                            }
+                        } else {
+                            $tipo = 'espectador';
+                        }
+                        if (PartidaBD::salirSala(
+                            $partida->getCodSala(),
+                            $partida->getCodPartida(),
+                            $usuario->getCod(),
+                            $tipo
+                        )) {
+                            $_SESSION['partida'] = null;
+                            $_SESSION['login'] = null;
+                        }
+                    } else {
+                        $_SESSION['partida'] = null;
+                        $_SESSION['login'] = null;
                     }
                 }
             }
