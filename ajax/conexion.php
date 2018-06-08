@@ -81,13 +81,48 @@ if (isset($_SESSION['login'])) {
                                 'movimientos' => $movimientos,
                                 'nuevos_movimientos' => $nuevos_movimientos,
                                 'tablas' => $tablas,
-                                'ganador' => $ganador
+                                'ganador' => $ganador,
+                                'tipo' => 'sala'
                             );
                         }
                     } else {
                         $_SESSION['partida'] = null;
                         $datos['accion'] = 'salpartida';
                         $datos['alerta'] = 'La sala se ha cerrado';
+                    }
+                } else if ($sala instanceof Repeticion) {
+                    $puede_ver = false;
+                    if ($usuario->getCod() != $sala->getBlanco()->getCod() && $usuario->getCod() != $sala->getNegro()->getCod()) {
+                        if (PartidaBD::partidaPublica($sala->getCodPartida())) {
+                            $puede_ver = true;
+                        }
+                    } else {
+                        $puede_ver = true;
+                    }
+                    if ($puede_ver) {
+
+                        //datos de la partida//
+                        $blanco = $sala->getBlanco()->getNick();
+                        $negro = $sala->getNegro()->getNick();
+                        $ganador = false;
+                        $movimientos = $sala->getMovimientosArray();
+
+                        if(PartidaBD::existeGanador($sala->getCodPartida())){
+                            $ganador = PartidaBD::getGanador($sala->getCodPartida())[0];
+                        }
+                        $datos['partida'] = array(
+                            'mis_datos' => array('cod' => $usuario->getCod(), 'rol' => 'espectador'),
+                            'blanco' => $blanco,
+                            'negro' => $negro,
+                            'colores' => PartidaBD::getColores($sala->getCodPartida()),
+                            'movimientos' => $movimientos,
+                            'ganador' => $ganador,
+                            'tipo' => 'repeticion'
+                        );
+
+                    } else {
+                        $_SESSION['partida'] = null;
+                        $datos['accion'] = 'salpartida';
                     }
                 }
             }

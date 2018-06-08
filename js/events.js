@@ -50,12 +50,13 @@ $(document).ready(function(){
 
     $('#menu-lateral button[name=ver-repeticiones]').click(function(){
         $('#menu-lateral #lista-repeticiones').toggle(200);
+
     });
     $('#menu-lateral button[name=ver-lista-amigos]').click(function(){
         $('#menu-lateral #lista-amigos').toggle(200);
     });
 
-    $('#menu-lateral #lista-repeticiones a.ver-repeticion').click(function(){
+    $('#menu-lateral #lista-repeticiones .ver_repeticion').click(function(){
         var pulsado = $(this);
         if(!pulsado.hasClass('desactivado')) {
             $.ajax({
@@ -567,7 +568,8 @@ $(document).ready(function(){
                         botonNormal(boton, 'Salir de partida');
                     }
                 },
-                beforeSend: function(){
+                beforeSend: function(e){
+                    console.log(e);
                     botonRueda(boton);
                 }
             });

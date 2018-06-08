@@ -11,7 +11,7 @@ if(isset($_POST['modo'])){
         case 'partida':
             $datos['correcto'] = false;
             if(isset($_SESSION['login']) && isset($_SESSION['partida'])){
-                if($_SESSION['login'] instanceof Usuario && $_SESSION['partida'] instanceof Sala){
+                if($_SESSION['login'] instanceof Usuario && $_SESSION['partida'] instanceof Partida){
                     $usuario = $_SESSION['login'];
                     $partida = $_SESSION['partida'];
                     $tipo = '';

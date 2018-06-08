@@ -67,6 +67,9 @@ class Sala extends Partida
         }
         return "espectador";
     }
+    public function addMovimiento($movimiento){
+        $this->movimientos[] = $movimiento;
+    }
     public function addMovimientos($movimientosBD){
         if($movimientosBD) {
             if (count($movimientosBD) > count($this->movimientos)) {
@@ -90,9 +93,6 @@ class Sala extends Partida
             return false;
         }
         return false;
-    }
-    public function addMovimiento($movimiento){
-        $this->movimientos[] = $movimiento;
     }
     public function updateVisitante(){
         $datos = PartidaBD::getVisitante($this->codSala);

@@ -32,6 +32,9 @@ main section{
     display:flex;
     flex-direction:column;
 }
+a:hover {
+    cursor:pointer;
+}
 @media all and (max-width:990px){
     #menu-lateral{
         display:none;

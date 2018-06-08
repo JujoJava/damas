@@ -189,9 +189,9 @@
                         $resultado = 'Tablas';
                     }
                     echo "<div>";
-                    echo "<span>VS " . $nombre_oponente . "</span>";
+                    echo "<span>Contra " . $nombre_oponente . "</span>";
                     echo "<span class='$resultado'>$resultado</span>";
-                    echo "<a href='' class='ver_repeticion' id='" . $repeticion['codpartida'] . "'>Ver</a>";
+                    echo "<a class='ver_repeticion' id='" . $repeticion['codpartida'] . "'>Ver</a>";
                     echo "</div>";
                 }
             }
@@ -238,6 +238,11 @@
                 echo "<button type='button' class='btn btn-default btn-lg' disabled='disabled' name='proponer-tablas'>Proponer tablas</button>";
                 echo "<button type='button' class='btn btn-warning btn-lg' disabled='disabled' name='rendirse'>Rendirse</button>";
             }
+        } else if ($partida instanceof Repeticion) {
+            echo "<div id='repeticion'><div><button type='button' class='btn btn-default btn-md' name='atras'>< Anterior</button>";
+            echo "</div><div><span class='num-mov'></span>";
+            echo "</div><div><button type='button' class='btn btn-default btn-md' name='adelante'>Siguiente ></button>";
+            echo "</div></div>";
         }
         echo "<button type='button' class='btn btn-danger btn-lg' name='salir-partida'>Salir de partida</button></div>";
         if($partida instanceof Sala) {

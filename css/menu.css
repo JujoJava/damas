@@ -4,11 +4,19 @@
     width:100%;
     flex-wrap:wrap;
 }
+#menu-repeticion {
+    display:flex;
+    flex-direction:row;
+    justify-content:space-around;
+}
 @media all and (min-width:990px){
     #menu-superior .menu-movil{
         display:none;
     }
     #menu-inferior{
+        display:none;
+    }
+    #menu-repeticion{
         display:none;
     }
 }
@@ -31,7 +39,6 @@
     padding-bottom:0.5rem;
     font-weight:bold;
 }
-
 
 #menu-lateral {
     background: #555;
@@ -63,6 +70,17 @@
     border-style:solid;
     border-color:#484848;
     border-radius:10px;
+}
+#menu-lateral #repeticion {
+    flex-direction:row;
+    justify-content:space-around;
+    border:none;
+    background:#575757;
+}
+#menu-lateral #repeticion > div {
+    display:block;
+    border:none;
+    background:#575757;
 }
 #menu-lateral #espectadores-partida h2 {
     font-size: 14px;

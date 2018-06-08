@@ -162,7 +162,7 @@ class PartidaBD
     public static function creaPartida($codnegro,$codblanco){
         $codpartida = self::obtieneIdDisponiblePartida();
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,?,?)");
+        ManejoBBDD::preparar("INSERT INTO partida(codpartida, codnegro, codblanco, ganador) VALUES(?,?,?,?)");
         ManejoBBDD::ejecutar(array($codpartida, $codnegro, $codblanco, ''));
         if (ManejoBBDD::filasAfectadas() > 0) {
             ManejoBBDD::desconectar();
@@ -299,6 +299,21 @@ class PartidaBD
                 ManejoBBDD::ejecutar(array($codpartida));
                 ManejoBBDD::desconectar();
                 return $codmov;
+            }
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function partidaPublica($codpartida){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM partida WHERE codpartida = ?");
+        ManejoBBDD::ejecutar(array($codpartida));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            if($datos[0]['rep_publica_codnegro'] == 1 && $datos[0]['rep_publica_codblanco'] == 1){
+                ManejoBBDD::desconectar();
+                return true;
             }
         }
         ManejoBBDD::desconectar();
@@ -465,11 +480,11 @@ class PartidaBD
                 ManejoBBDD::preparar("UPDATE partida SET ganador = ? WHERE codpartida = ? and ganador = ''");
                 if($datospartida[0]['codnegro'] == $codusu) {
                     ManejoBBDD::ejecutar(array('blancas', $codpartida));
-                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,NULL,?,?)");
+                    ManejoBBDD::preparar("INSERT INTO partida(codpartida, codnegro, codblanco, ganador) VALUES(?,NULL,?,?)");
                     ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codblanco'], ''));
                 } else {
                     ManejoBBDD::ejecutar(array('negras', $codpartida));
-                    ManejoBBDD::preparar("INSERT INTO partida VALUES(?,?,NULL,?)");
+                    ManejoBBDD::preparar("INSERT INTO partida(codpartida, codnegro, codblanco, ganador) VALUES(?,?,NULL,?)");
                     ManejoBBDD::ejecutar(array($codnewpartida, $datospartida[0]['codnegro'], ''));
                 }
                 ManejoBBDD::preparar("SELECT * FROM sala WHERE codsala = ? and jugandose = 1");

@@ -35,6 +35,9 @@ var ctx;
 var mis_datos = null; //objeto con mis datos
 var anfitrion = false;
 var visitante = false;
+var repeticion = false;
+var rep_mov = -1;
+var rep_mov_totales = [];
 var turno = '';
 var rendicion = '';
 
@@ -51,6 +54,46 @@ var puede_castigar = false;
 
 var fichas_blancas = 12;
 var fichas_negras = 12;
+
+function cambioMovimiento(pos){
+    var mov_estado = [];
+    var i = 0;
+    if(pos === -1){ //atras
+        if(rep_mov > 0) {
+            rep_mov--;
+            for(i = 0 ; i < rep_mov ; i++){
+                mov_estado.push(rep_mov_totales[i]);
+            }
+            hayNuevoMovimiento(mov_estado);
+        } else if(rep_mov === 0){
+            movimientos = [];
+        }
+    } else if(pos === +1) { //adelante
+        if(rep_mov < rep_mov_totales.length-1){
+            rep_mov++;
+            for(i = 0 ; i < rep_mov ; i++){
+                mov_estado.push(rep_mov_totales[i]);
+            }
+            hayNuevoMovimiento(mov_estado);
+        }
+    }
+    if(rep_mov === 0){
+        $('.menu button[name=atras]').attr('disabled', true);
+        $('.menu button[name=adelante]').attr('disabled', false);
+    } else if(rep_mov === rep_mov_totales.length - 1){
+        $('.menu button[name=atras]').attr('disabled', false);
+        $('.menu button[name=adelante]').attr('disabled', true);
+    } else {
+        $('.menu button[name=atras]').attr('disabled', false);
+        $('.menu button[name=adelante]').attr('disabled', false);
+    }
+
+    if(rep_mov !== -1){
+        $('.menu span.num-mov').html(rep_mov);
+    } else {
+        $('.menu span.num-mov').html('');
+    }
+}
 
 function miTurno(){
     if(mis_datos.rol !== 'espectador'){
@@ -1397,7 +1440,9 @@ function convertirDama(ficha, posicion){
 // los movimientos se calcularán TODOS desde cero //
 function hayNuevoMovimiento(mov){
     var comidas;
-    num_comidas_ult_mov = mov[mov.length-1].comidas.length;
+    if(repeticion === false) {
+        num_comidas_ult_mov = mov[mov.length - 1].comidas.length;
+    }
     movimientos = []; //vaciamos el array para volverlo a llenar
     inicializaFichas(); //reiniciamos el array de fichas para realizar el proceso de movimientos
     for(var i = 0 ; i < mov.length ; i++){
@@ -1793,10 +1838,8 @@ $(window).ready(function() {
             ctx = canvas[0].getContext('2d');
 
             $(window).resize(function(){
-                if(mis_datos !== null && estado === 'jugando') {
-                    inicializaJuego();
-                    actualizaJuego();
-                }
+                inicializaJuego();
+                actualizaJuego();
             });
 
         }

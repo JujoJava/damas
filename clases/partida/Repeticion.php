@@ -15,15 +15,23 @@
 class Repeticion extends Partida
 {
 
-    private $negro;
-    private $blanco;
+    private $negro; //objeto tipo Jugador
+    private $blanco; //objeto tipo Jugador
 
     public function __construct($codPartida, $codnegro, $codblanco){
         parent::__construct($codPartida);
         $datos = UsuarioBD::obtieneUsuario($codnegro);
-        $this->negro = new Jugador($codnegro, $datos[0]['nick']);
+        if($datos) {
+            $this->negro = new Jugador($codnegro, $datos[0]['nick']);
+        } else {
+            $this->negro = new Jugador(-1, 'desconocido');
+        }
         $datos = UsuarioBD::obtieneUsuario($codblanco);
-        $this->blanco = new Jugador($codblanco, $datos[0]['nick']);
+        if($datos) {
+            $this->blanco = new Jugador($codblanco, $datos[0]['nick']);
+        } else {
+            $this->blanco = new Jugador(-1, 'desconocido');
+        }
         $datos = PartidaBD::getMovimientos($codPartida);
         foreach($datos as $mov){
             $color = 'blancas';
@@ -38,6 +46,14 @@ class Repeticion extends Partida
                 self::generaComidas(PartidaBD::getComidasMovimiento($mov['codmov'], $codPartida))
             );
         }
+    }
+
+    public function getNegro(){
+        return $this->negro;
+    }
+
+    public function getBlanco(){
+        return $this->blanco;
     }
 
 }

@@ -8,6 +8,7 @@
 
 class Jugador extends Usuario
 {
+    private $repeticiones;
 
     public function __construct($cod,$nick){
         parent::__construct($cod,$nick);
