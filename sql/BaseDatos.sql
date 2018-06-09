@@ -82,9 +82,7 @@ create table partida
 	codblanco int, -- clave ajena de usuario (fichas blancas)
 	ganador enum('', 'blancas', 'negras', 'tablas'), -- ganador de la partida
 	rep_publica_codnegro tinyint DEFAULT 1, -- repetición pública para codnegro
-	rep_publica_codblanco tinyint DEFAULT 1, -- repetición pública para codblanco
-	rep_fav_codnegro tinyint DEFAULT 0, -- repetición en favoritos para codnegro
-	rep_fav_codblanco tinyint DEFAULT 0 -- repetición en favoritos para codblanco
+	rep_publica_codblanco tinyint DEFAULT 1 -- repetición pública para codblanco
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 

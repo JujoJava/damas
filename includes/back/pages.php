@@ -21,10 +21,12 @@ if(isset($_GET['page'])){
         if(isset($_GET['cod'])){
             $p = UsuarioBD::obtieneJugador($_GET['cod']);
             if($p){
-                $perfil = new Jugador($_GET['cod'], $p[0]['nick']);
+                $_SESSION['perfil'] = new Jugador($_GET['cod'], $p[0]['nick']);
             }
         } else {
-            $perfil = $user;
+            if($user instanceof Jugador) {
+                $_SESSION['perfil'] = $user;
+            }
         }
     }
     include("pages/" . $_GET['page'] . ".html");

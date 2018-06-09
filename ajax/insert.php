@@ -188,6 +188,16 @@ if(isset($_POST['modo'])){
                 }
             }
             break;
+        case 'privacidad':
+            $privacidad = $_POST['privacidad'];
+            $codpartida = $_POST['codpartida'];
+            if(isset($_SESSION['login'])) {
+                if($_SESSION['login'] instanceof Jugador) {
+                    $codusu = $_SESSION['login']->getCod();
+                    PartidaBD::cambiaPrivacidad($codpartida, $codusu, $privacidad);
+                }
+            }
+            break;
     }
 }
 else{

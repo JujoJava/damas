@@ -12,7 +12,7 @@ session_start();
 
 $user = null; //usuario que ha iniciado sesión
 $partida = null; //partida visualizando (puede ser una sala o una repetición)
-$perfil = null; //perfil que va a visualizar
+$_SESSION['perfil'] = null; //perfil que va a visualizar
 $pagina = 'principal';
 
 if(isset($_GET['page'])){
@@ -22,6 +22,18 @@ if(isset($_GET['page'])){
         if($_GET['page'] == 'redirect'){
             if(!isset($_GET['cod']) || !isset($_GET['pass'])) {
                 header('location:principal');
+            }
+        }
+        else if($_GET['page'] == 'perfil') {
+            if(isset($_GET['cod'])){
+                $p = UsuarioBD::obtieneInvitado($_GET['cod']);
+                if($p){
+                    header('location:principal');
+                }
+            } else {
+                if($user instanceof Invitado) {
+                    header('location:principal');
+                }
             }
         }
     }

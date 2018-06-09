@@ -15,7 +15,7 @@ if(isset($_POST['modo'])){
                     $usuario = $_SESSION['login'];
                     $partida = $_SESSION['partida'];
                     $tipo = '';
-                    if($partida instanceof Sala) {
+                    if ($partida instanceof Sala) {
                         if ($usuario->getCod() == $partida->getAnfitrion()->getCod()) {
                             $tipo = 'anfitrion';
                         } else if ($partida->getVisitante() != null) {

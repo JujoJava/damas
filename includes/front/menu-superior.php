@@ -84,7 +84,8 @@
 
 $punto_activo = array(
     'perfil' => '',
-    'juego' => ''
+    'juego' => '',
+    'ranking' => ''
 );
 
 if(isset($_GET['page'])) {
@@ -109,7 +110,7 @@ echo "<div class='collapse navbar-collapse w-100' id='opciones-menu'><ul class='
 if($partida instanceof Partida){
     echo "<li class='nav-item ".$punto_activo['juego']."'><a href='juego' class='nav-link' title='Partida'><i class='fas fa-chess-queen'></i><span id='mensaje_aviso'>!</span><span class='label-menu-icon'>Partida en curso</span></a></li>"; //icono de partida. Sale una señal si se realiza un movimiento
 } else {
-    echo "<li class='nav-item menu-movil'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'>¡Jugar ya!</a>";
+    echo "<li class='nav-item menu-movil'><a class='nav-link' data-toggle='modal' data-target='#modal_jugar_nueva'><i class='fas fa-gamepad'></i> ¡Jugar ya!</a>";
 }
 
 echo "</ul>";
@@ -118,8 +119,9 @@ echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-end'>";
 if($user instanceof Jugador){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>";
-    echo "<li class='nav-item'".$punto_activo['perfil']."><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i><span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
-    echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link' name='cerrar-sesion'><i class='fas fa-sign-out-alt'></i><span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
+    echo "<li class='nav-item'".$punto_activo['ranking']."><a id='ranking' title='Ranking' href='ranking' class='nav-link'><i class='fas fa-trophy'></i> <span class='label-menu-icon'>Ránking</span></a></li>";
+    echo "<li class='nav-item'".$punto_activo['perfil']."><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i> <span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
+    echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link' name='cerrar-sesion'><i class='fas fa-sign-out-alt'></i> <span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
 }
 else if($user instanceof Invitado){
     $nick = $user->getNick();

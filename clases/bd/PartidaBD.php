@@ -9,7 +9,7 @@ class PartidaBD
      */
     public static function getAllSalas(){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT s.codsala, anf.nick as anfitrion, vis.nick as visitante, s.pass, s.puede_espectar, s.descripcion
+        ManejoBBDD::preparar("SELECT s.codsala, anf.codusu as codanfitrion, vis.codusu as codvisitante, anf.nick as anfitrion, vis.nick as visitante, s.pass, s.puede_espectar, s.descripcion
                               FROM sala s 
                               INNER JOIN usuario anf ON (anf.codusu = s.anfitrion) 
                               LEFT JOIN usuario vis ON (vis.codusu = s.visitante) 
@@ -21,7 +21,7 @@ class PartidaBD
 
     public static function getAllSalasOtros($codusu){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT s.codsala, anf.nick as anfitrion, vis.nick as visitante, s.pass, s.puede_espectar, s.descripcion
+        ManejoBBDD::preparar("SELECT s.codsala, anf.codusu as codanfitrion, vis.codusu as codvisitante, anf.nick as anfitrion, vis.nick as visitante, s.pass, s.puede_espectar, s.descripcion
                               FROM sala s 
                               INNER JOIN usuario anf ON (anf.codusu = s.anfitrion) 
                               LEFT JOIN usuario vis ON (vis.codusu = s.visitante) 
@@ -37,6 +37,26 @@ class PartidaBD
         ManejoBBDD::ejecutar(array($codusu, $codusu));
         ManejoBBDD::desconectar();
         return ManejoBBDD::getDatos();
+    }
+
+    public static function getPartidasRep($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM partida WHERE codnegro = ? OR codblanco = ?
+                              AND (rep_publica_codnegro = 1 AND rep_publica_codblanco = 1)");
+        ManejoBBDD::ejecutar(array($codusu, $codusu));
+        ManejoBBDD::desconectar();
+        return ManejoBBDD::getDatos();
+    }
+
+    public static function cambiaPrivacidad($codpartida, $codusu, $privacidad){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("UPDATE partida SET rep_publica_codnegro = ? WHERE codpartida = ? AND codnegro = ?");
+        ManejoBBDD::ejecutar(array($privacidad, $codpartida, $codusu));
+        if(ManejoBBDD::filasAfectadas() == 0){
+            ManejoBBDD::preparar("UPDATE partida SET rep_publica_codblanco = ? WHERE codpartida = ? AND codblanco = ?");
+            ManejoBBDD::ejecutar(array($privacidad, $codpartida, $codusu));
+        }
+        ManejoBBDD::desconectar();
     }
 
     public static function getPartida($codpartida){

@@ -9,11 +9,20 @@ $(document).ready(function(){
             for(var i = 0 ; i < data.length ; i++){
                 cadena += "<tr id='"+data[i].codsala+"'>";
                 cadena += "<td class='numsala'>"+data[i].codsala+"</td>"; //código de la sala
-                cadena += "<td>"+data[i].anfitrion+"</td>"; //usuario anfitrión
-                if(data[i].visitante !== null) //usuario visitante
-                    cadena += "<td>" + data[i].visitante + "</td>";
-                else
+                if(data[i].anf_tipo === 'jugador') {
+                    cadena += "<td><a href='perfil/" + data[i].codanfitrion + "'>" + data[i].anfitrion + "</a></td>"; //usuario anfitrión
+                } else {
+                    cadena += "<td>" + data[i].anfitrion + "</td>"; //usuario anfitrión
+                }
+                if(data[i].visitante !== null) { //usuario visitante
+                    if(data[i].vis_tipo === 'jugador') {
+                        cadena += "<td><a href='perfil/" + datao[i].codvisitante + "'>" + data[i].visitante + "</a></td>";
+                    } else{
+                        cadena += "<td>" + data[i].visitante + "</td>";
+                    }
+                } else {
                     cadena += "<td></td>";
+                }
                 cadena += "<td title='"+data[i].descripcion+"' class='descripcion'><div>"+data[i].descripcion+"</div></td>"; //descripción
                 if(data[i].pass !== null) //tiene contraseña o no
                     cadena += "<td class='pass' title='Con contraseña'><i class='fas fa-lock'></i></td>";
@@ -199,6 +208,95 @@ $(document).ready(function(){
             },
             beforeSend: function(){
                 $('#modal_inv_red .modal-body').append("<i class='fas fa-spinner fa-spin'></i>");
+            }
+        });
+    }
+
+    if($('#perfil').length > 0){
+        $.ajax({
+            data: { modo: 'perfil' },
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/get.php',
+            success: function(response){
+                //POR AQUI
+            }
+        });
+        $.ajax({
+            data: { modo: 'repeticiones' },
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/get.php',
+            success: function(data){
+                var cadena;
+                for(var i = 0 ; i < data.length ; i++){
+                    cadena = '';
+                    if(data[i].bla_tipo === 'jugador') {
+                        cadena += "<td><a href='perfil/"+data[i].codblanco+"'>"+data[i].nickblanco+"</a></td>";
+                    } else {
+                        cadena += "<td>"+data[i].nickblanco+"</td>";
+                    }
+                    if(data[i].neg_tipo === 'jugador') {
+                        cadena += "<td><a href='perfil/"+data[i].codnegro+"'>"+data[i].nicknegro+"</a></td>";
+                    } else {
+                        cadena += "<td>"+data[i].nicknegro+"</td>";
+                    }
+                    if(data[i].ganador === 'tablas'){
+                        cadena += "<td>Tablas</td>";
+                    } else {
+                        cadena += "<td>Ganan "+data[i].ganador+"</td>";
+                    }
+                    cadena += "<td><a class='ver_repeticion' id='"+data[i].codpartida+"'>"+Ver+"</a>";
+                    if(data[i].miperfil) {
+                        cadena += "<select name='privacidad' class='"+data[i].codpartida+"'>";
+                        cadena += "<option value='1'>Público</option>";
+                        cadena += "<option value='0'>Privado</option>";
+                        cadena += "</select>";
+                    }
+                    cadena += "</td>";
+                }
+                $('#perfil .ver_repeticion').click(function(){
+                    var pulsado = $(this);
+                    if(!pulsado.hasClass('desactivado')) {
+                        $.ajax({
+                            data: {
+                                partida: pulsado.attr('id'),
+                                modo: 'repeticion'
+                            },
+                            type: 'POST',
+                            dataType: 'json',
+                            url: 'ajax/get.php',
+                            success: function (response) {
+                                if(response.correcto) {
+                                    window.location = 'juego';
+                                } else {
+                                    $('a.ver-repeticion').removeClass('desactivado');
+                                    botonNormal(pulsado, 'Ver');
+                                }
+                            },
+                            beforeSend: function () {
+                                $('a.ver-repeticion').addClass('desactivado');
+                                botonRueda(pulsado);
+                            }
+                        });
+                    }
+                });
+
+                $('table#repeticiones select[name=privacidad]').change(function(){
+                    $.ajax({
+                        data: {
+                            modo: 'privacidad',
+                            privacidad: $(this).val(),
+                            codpartida: $(this).attr('class')
+                        },
+                        type: 'POST',
+                        dataType: 'json',
+                        url: 'ajax/insert.php'
+                    })
+                });
+            },
+            beforeSend: function(){
+                $('table#repeticiones tbody').html('<tr><td colspan="4"><i class="fas fa-spinner fa-spin"></i></td></tr>');
             }
         });
     }
