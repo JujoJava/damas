@@ -35,9 +35,37 @@ main section{
 a:hover {
     cursor:pointer;
 }
+#perfil .seccion-amistad .lista-amigos,
+#perfil .seccion-amistad h3 {
+    display:none;
+}
+#perfil .seccion-amistad h3 {
+    padding-top:10px;
+}
+#perfil .seccion-amistad .lista-amigos > div {
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-start;
+}
+#perfil .seccion-amistad .lista-amigos span,
+#perfil .seccion-amistad .lista-amigos a {
+    font-size:12px;
+    padding-right:5px;
+}
+.recibida_sol {
+    font-style:italic;
+}
+.enviada_sol {
+    font-style:italic;
+    color: #9b9b9b;
+}
 @media all and (max-width:990px){
     #menu-lateral{
         display:none;
+    }
+    #perfil .seccion-amistad .lista-amigos,
+    #perfil .seccion-amistad h3 {
+        display:block;
     }
     main .pagina{
         min-width:calc(100% - 20px);
@@ -150,28 +178,24 @@ main #perfil > div {
 .estado.conexion-1 {
     color:green;
 }
+#menu-lateral .estado.conexion-1 {
+    color: #00aa00;
+}
 .estado.conexion-2 {
     color:#ab0000;
 }
+#menu-lateral .estado.conexion-2 {
+    color: #db5c56;
+}
 .estado.conexion-3 {
     color: #d08800;
+}
+#menu-lateral .estado.conexion-2 a {
+    color: #db5c56;
 }
 .estado.conexion-2 a {
     color:#ab0000;
 }
 .estado.conexion-3 a {
     color: #d08800;
-}
-#perfil .seccion-amistad .lista-amigos h3 {
-    padding-top:10px;
-}
-#perfil .seccion-amistad .lista-amigos > div {
-    display:flex;
-    flex-direction:row;
-    justify-content:flex-start;
-}
-#perfil .seccion-amistad .lista-amigos span,
-#perfil .seccion-amistad .lista-amigos a {
-    font-size:12px;
-    padding-right:5px;
 }

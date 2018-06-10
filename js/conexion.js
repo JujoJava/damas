@@ -95,7 +95,7 @@ function estaConectado(){
                                 if (respuesta.amigos[k].conectado === 2) {
                                     cadena += "<div>";
                                     cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
-                                    cadena += "<span class='estado conexion-2'><a class='" + response.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Jugando</a></span>";
+                                    cadena += "<span class='estado conexion-2'><a class='" + respuesta.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Jugando</a></span>";
                                     cadena += "</div>";
                                 }
                             }
@@ -103,7 +103,7 @@ function estaConectado(){
                                 if (respuesta.amigos[k].conectado === 3) {
                                     cadena += "<div>";
                                     cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
-                                    cadena += "<span class='estado conexion-3'><a class='" + response.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Viendo una partida</a></span>";
+                                    cadena += "<span class='estado conexion-3'><a class='" + respuesta.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Viendo una partida</a></span>";
                                     cadena += "</div>";
                                 }
                             }
@@ -120,7 +120,7 @@ function estaConectado(){
                             for (k = 0; k < respuesta.mis_solicitudes.length; k++) {
                                 cadena += "<div>";
                                 cadena += "<span><a href='perfil/" + respuesta.mis_solicitudes[k].codusu + "'>" + respuesta.mis_solicitudes[k].nick + "</a></span>";
-                                cadena += "<span>Solicitud enviada</span>";
+                                cadena += "<span class='enviada_sol'>Solicitud enviada</span>";
                                 cadena += "</div>";
                             }
                         }
@@ -128,7 +128,7 @@ function estaConectado(){
                             for (k = 0; k < respuesta.solicitudes_a_mi.length; k++) {
                                 cadena += "<div>";
                                 cadena += "<span><a href='perfil/" + respuesta.solicitudes_a_mi[k].codusu + "'>" + respuesta.solicitudes_a_mi[k].nick + "</a></span>";
-                                cadena += "<span>Te ha enviado una solicitud</span>";
+                                cadena += "<span class='recibida_sol'>Te ha enviado una solicitud</span>";
                                 cadena += "</div>";
                             }
                         }
@@ -138,7 +138,7 @@ function estaConectado(){
                         }
 
                         //botón para jugar partida
-                        $('#menu-lateral .lista-amigos .estado a[name=jugar-sala]').on('click', function(){
+                        $('#menu-lateral #lista-amigos .estado a[name=jugar-sala]').on('click', function(){
                             var boton = $(this);
                             if(!boton.hasClass('desactivado')) {
                                 var codsala = boton.attr('class');
