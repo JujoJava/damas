@@ -12,13 +12,13 @@ $(document).ready(function(){
                 if(data[i].anf_tipo === 'jugador') {
                     cadena += "<td><a href='perfil/" + data[i].codanfitrion + "'>" + data[i].anfitrion + "</a></td>"; //usuario anfitrión
                 } else {
-                    cadena += "<td>" + data[i].anfitrion + "</td>"; //usuario anfitrión
+                    cadena += "<td>" + data[i].codanfitrion+"_"+data[i].anfitrion + "</td>"; //usuario anfitrión
                 }
                 if(data[i].visitante !== null) { //usuario visitante
                     if(data[i].vis_tipo === 'jugador') {
-                        cadena += "<td><a href='perfil/" + datao[i].codvisitante + "'>" + data[i].visitante + "</a></td>";
+                        cadena += "<td><a href='perfil/" + data[i].codvisitante + "'>" + data[i].visitante + "</a></td>";
                     } else{
-                        cadena += "<td>" + data[i].visitante + "</td>";
+                        cadena += "<td>" + data[i].codvisitante+"_"+data[i].visitante + "</td>";
                     }
                 } else {
                     cadena += "<td></td>";
@@ -219,7 +219,62 @@ $(document).ready(function(){
             dataType: 'json',
             url: 'ajax/get.php',
             success: function(response){
-                //POR AQUI
+                if(response !== false){
+                    $('#perfil .titulo').html('Perfil de '+response.nick);
+                    $('#perfil .estado').attr("class", "conexion-"+response.conectado);
+                    switch(response.conectado){
+                        case 0:
+                            $('#perfil .estado').html("Desconectado");
+                            break;
+                        case 1:
+                            $('#perfil .estado').html("Conectado");
+                            break;
+                        case 2:
+                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Ver partida'>Jugando</a>");
+                            break;
+                        case 3:
+                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Ver partida'>Viendo una partida</a>");
+                            break;
+                    }
+                    $('#perfil .posicion-ranking').html("<span>#"+response.posicion_ranking+" en el ranking</span>");
+                    $('#perfil .partidas-jugadas').html("<span>"+response.partidas_jugadas+" partidas jugadas</span>");
+                    $('#perfil .partidas-ganadas').html("<span>"+response.partidas_ganadas+" partidas ganadas</span>");
+                    $('#perfil .partidas-perdidas').html("<span>"+response.partidas_perdidas+" partidas perdidas</span>");
+                } else {
+                    window.location = 'principal';
+                }
+
+                //botón para jugar partida
+                $('#perfil .estado a[name=jugar-sala]').on('click', function(){
+                    var boton = $(this);
+                    if(!boton.hasClass('desactivado')) {
+                        var codsala = boton.attr('class');
+                        boton.addClass('desactivado');
+                        var textoBoton = boton.html();
+                        $.ajax({
+                            data: {
+                                modo: 'logueado'
+                            },
+                            type: 'POST',
+                            dataType: 'json',
+                            url: 'ajax/get.php',
+                            success: function (response) {
+                                if (response.correcto) {
+                                    window.location = 'redirect/' + codsala + '/';
+                                } else {
+                                    botonNormal(boton, textoBoton);
+                                    $('#modal_entrar_sala').modal();
+                                    $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                                    boton.removeClass('desactivado');
+                                }
+                            },
+                            beforeSend: function () {
+                                botonRueda(boton);
+                            }
+                        });
+                    }
+                });
+
             }
         });
         $.ajax({
@@ -229,31 +284,39 @@ $(document).ready(function(){
             url: 'ajax/get.php',
             success: function(data){
                 var cadena;
-                for(var i = 0 ; i < data.length ; i++){
-                    cadena = '';
-                    if(data[i].bla_tipo === 'jugador') {
-                        cadena += "<td><a href='perfil/"+data[i].codblanco+"'>"+data[i].nickblanco+"</a></td>";
-                    } else {
-                        cadena += "<td>"+data[i].nickblanco+"</td>";
+                cadena = '';
+                for(var i = 0 ; i < data.repeticiones.length ; i++){
+                    if(data.repeticiones[i].ganador !== '') {
+                        cadena += "<tr>";
+                        if (data.repeticiones[i].bla_tipo === 'jugador') {
+                            cadena += "<td><a href='perfil/" + data.repeticiones[i].codblanco + "'>" + data.repeticiones[i].nickblanco + "</a></td>";
+                        } else {
+                            cadena += "<td>" + data.repeticiones[i].codblanco+"_"+data.repeticiones[i].nickblanco + "</td>";
+                        }
+                        if (data.repeticiones[i].neg_tipo === 'jugador') {
+                            cadena += "<td><a href='perfil/" + data.repeticiones[i].codnegro + "'>" + data.repeticiones[i].nicknegro + "</a></td>";
+                        } else {
+                            cadena += "<td>" + data.repeticiones[i].codnegro+"_"+data.repeticiones[i].nicknegro + "</td>";
+                        }
+                        if (data.repeticiones[i].ganador === 'tablas') {
+                            cadena += "<td>Tablas</td>";
+                        } else {
+                            cadena += "<td>Ganan " + data.repeticiones[i].ganador + "</td>";
+                        }
+                        cadena += "<td><a class='ver_repeticion' id='" + data.repeticiones[i].codpartida + "'>Ver</a>";
+                        if (data.miperfil) {
+                            cadena += "<br><select name='privacidad' class='" + data.repeticiones[i].codpartida + "'>";
+                            cadena += "<option value='1'>Público</option>";
+                            cadena += "<option value='0'>Privado</option>";
+                            cadena += "</select>";
+                        }
+                        cadena += "</td></tr>";
                     }
-                    if(data[i].neg_tipo === 'jugador') {
-                        cadena += "<td><a href='perfil/"+data[i].codnegro+"'>"+data[i].nicknegro+"</a></td>";
-                    } else {
-                        cadena += "<td>"+data[i].nicknegro+"</td>";
-                    }
-                    if(data[i].ganador === 'tablas'){
-                        cadena += "<td>Tablas</td>";
-                    } else {
-                        cadena += "<td>Ganan "+data[i].ganador+"</td>";
-                    }
-                    cadena += "<td><a class='ver_repeticion' id='"+data[i].codpartida+"'>"+Ver+"</a>";
-                    if(data[i].miperfil) {
-                        cadena += "<select name='privacidad' class='"+data[i].codpartida+"'>";
-                        cadena += "<option value='1'>Público</option>";
-                        cadena += "<option value='0'>Privado</option>";
-                        cadena += "</select>";
-                    }
-                    cadena += "</td>";
+                }
+                if(cadena !== '') {
+                    $('#perfil #repeticiones tbody').html(cadena);
+                } else {
+                    $('#perfil #repeticiones tbody').html("<tr><td colspan='4'>No hay repeticiones</td></tr>");
                 }
                 $('#perfil .ver_repeticion').click(function(){
                     var pulsado = $(this);
@@ -274,7 +337,8 @@ $(document).ready(function(){
                                     botonNormal(pulsado, 'Ver');
                                 }
                             },
-                            beforeSend: function () {
+                            beforeSend: function (e) {
+                                console.log(e);
                                 $('a.ver-repeticion').addClass('desactivado');
                                 botonRueda(pulsado);
                             }

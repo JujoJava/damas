@@ -120,3 +120,41 @@ input:checked + .slider:before {
     -ms-transform: translateX(26px);
     transform: translateX(26px);
 }
+
+main #perfil {
+    width:65%;
+}
+main #perfil > div {
+    padding-top:20px;
+}
+#perfil #repeticiones a.ver_repeticion {
+    color: #7886ff;
+}
+#perfil #repeticiones a.ver_repeticion:hover {
+    text-decoration:underline;
+}
+#perfil #repeticiones td,
+#perfil #repeticiones th {
+    text-align:center;
+}
+#perfil .estado a {
+    text-decoration:none;
+}
+#perfil .estado.conexion-0 {
+    color: #959595;
+}
+#perfil .estado.conexion-1 {
+    color:green;
+}
+#perfil .estado.conexion-2 {
+    color:#ab0000;
+}
+#perfil .estado.conexion-3 {
+    color: #d08800;
+}
+#perfil .estado.conexion-2 a {
+    color:#ab0000;
+}
+#perfil .estado.conexion-3 a {
+    color: #d08800;
+}

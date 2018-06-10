@@ -69,7 +69,7 @@ function cambioMovimiento(pos){
             movimientos = [];
         }
     } else if(pos === +1) { //adelante
-        if(rep_mov < rep_mov_totales.length-1){
+        if(rep_mov < rep_mov_totales.length){
             rep_mov++;
             for(i = 0 ; i < rep_mov ; i++){
                 mov_estado.push(rep_mov_totales[i]);
@@ -80,7 +80,7 @@ function cambioMovimiento(pos){
     if(rep_mov === 0){
         $('.menu button[name=atras]').attr('disabled', true);
         $('.menu button[name=adelante]').attr('disabled', false);
-    } else if(rep_mov === rep_mov_totales.length - 1){
+    } else if(rep_mov === rep_mov_totales.length){
         $('.menu button[name=atras]').attr('disabled', false);
         $('.menu button[name=adelante]').attr('disabled', true);
     } else {
@@ -1433,6 +1433,9 @@ function convertirDama(ficha, posicion){
         if(getMovDer(ficha.color, posicion) || getMovIzq(ficha.color, posicion)){
             tipo = 'normal';
         }
+    }
+    if(ficha.tipo === ''){
+        tipo = '';
     }
     return tipo;
 }

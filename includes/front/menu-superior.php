@@ -7,16 +7,17 @@
             </div>
             <div class='modal-body'>
 
-                <?php
-                $nomUsu = '';
-                if ($user instanceof Invitado) {
-                    $nomUsu = $user->getNickPuro();
-                }
-                ?>
-
                 <form>
                     <div class="form-group has-danger">
-                        <input placeholder="Nombre de usuario" value="<?= $nomUsu ?>" class="form-control" type="text" name="nomUsu">
+                        <?php
+                        if($user instanceof Invitado){
+                            $nomUsu = $user->getNickPuro();
+                            echo "<input placeholder='Nombre de usuario' value='$nomUsu' class='form-control' type='text' name='nomUsu'>";
+                        } else {
+                            echo "<input placeholder='Nombre de usuario' class='form-control' type='text' name='nomUsu'>";
+
+                        }
+                        ?>
                         <div class="invalid-feedback"></div>
                     </div>
                     <div class="form-group has-danger">
@@ -119,8 +120,8 @@ echo "<ul class='nav navbar-nav mr-auto w-100 justify-content-end'>";
 if($user instanceof Jugador){
     $nick = $user->getNick();
     echo "<li class='nav-item nombre-usuario'>$nick</li>";
-    echo "<li class='nav-item'".$punto_activo['ranking']."><a id='ranking' title='Ranking' href='ranking' class='nav-link'><i class='fas fa-trophy'></i> <span class='label-menu-icon'>Ránking</span></a></li>";
-    echo "<li class='nav-item'".$punto_activo['perfil']."><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i> <span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
+    echo "<li class='nav-item ".$punto_activo['ranking']."'><a id='ranking' title='Ranking' href='ranking' class='nav-link'><i class='fas fa-trophy'></i> <span class='label-menu-icon'>Ránking</span></a></li>";
+    echo "<li class='nav-item ".$punto_activo['perfil']."'><a id='info-perfil' title='Perfil' href='perfil' class='nav-link'><i class='fas fa-user'></i> <span class='label-menu-icon'>Perfil de usuario</span></a></li>"; //Solo registrados. Para acceder al menú de usuario
     echo "<li class='nav-item'><a title='Cerrar sesión' href='' class='nav-link' name='cerrar-sesion'><i class='fas fa-sign-out-alt'></i> <span class='label-menu-icon'>Cerrar sesión</span></a>"; //Botón para cerrar sesión. Icono.
 }
 else if($user instanceof Invitado){

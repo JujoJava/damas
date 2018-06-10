@@ -38,6 +38,14 @@ class PartidaBD
         ManejoBBDD::desconectar();
         return ManejoBBDD::getDatos();
     }
+   /* public static function getPuntuaciones(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT j.codusu, count(j.codusu)")
+    }
+    public static function getRanking(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT count(j.codusu)")
+    }*/
 
     public static function getPartidasRep($codusu){
         ManejoBBDD::conectar();
@@ -266,7 +274,7 @@ class PartidaBD
 
     public static function getMovimientos($codpartida){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT * FROM movimiento WHERE codpartida = ?");
+        ManejoBBDD::preparar("SELECT * FROM movimiento WHERE codpartida = ? and valido = 1");
         ManejoBBDD::ejecutar(array($codpartida));
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -310,13 +318,15 @@ class PartidaBD
     public static function addMovimiento($codpartida, $codusu, $numficha, $mov_orig, $mov_dest, $comidas){
         $codmov = self::obtieneIdDisponibleMovimiento($codpartida);
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("INSERT INTO movimiento VALUES(?,?,?,?,?,?)");
+        ManejoBBDD::preparar("INSERT INTO movimiento(codmov, codpartida, codusu, numficha, mov_orig, mov_dest) VALUES(?,?,?,?,?,?)");
         ManejoBBDD::ejecutar(array($codmov, $codpartida, $codusu, $numficha, $mov_orig, $mov_dest));
         if(ManejoBBDD::filasAfectadas() > 0){
             ManejoBBDD::desconectar();
             if(self::addComidas($codmov, $codpartida, $comidas)) {
                 ManejoBBDD::preparar("DELETE FROM tablas WHERE codpartida = ?");
                 ManejoBBDD::ejecutar(array($codpartida));
+                ManejoBBDD::preparar("UPDATE movimiento SET valido = 1 WHERE codmov = ? AND codpartida = ?");
+                ManejoBBDD::ejecutar(array($codmov, $codpartida));
                 ManejoBBDD::desconectar();
                 return $codmov;
             }
@@ -573,6 +583,21 @@ class PartidaBD
         }
         ManejoBBDD::desconectar();
         return $data;
+    }
+
+    public static function getAnfitrion($codsala){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT u.codusu, u.nick FROM usuario u
+                              INNER JOIN sala s ON (u.codusu = s.anfitrion)
+                              WHERE s.codsala = ? and jugandose = 1");
+        ManejoBBDD::ejecutar(array($codsala));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return false;
     }
 
     public static function getVisitante($codsala){

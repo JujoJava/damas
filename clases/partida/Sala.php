@@ -26,16 +26,24 @@ class Sala extends Partida
         $this->codSala = $codSala;
         $this->espectadores = $espectadores;
         // introducimos el anfitrion como objeto (jugador o invitado) //
-        if ($datos = UsuarioBD::obtieneJugador($anfitrion)) {
+        $datos = UsuarioBD::obtieneJugador($anfitrion);
+        if ($datos) {
             $this->anfitrion = new Jugador($anfitrion, $datos[0]['nick']);
-        } else if ($datos = UsuarioBD::obtieneInvitado($anfitrion)) {
-            $this->anfitrion = new Invitado($anfitrion, $datos[0]['nick']);
+        } else {
+            $datos = UsuarioBD::obtieneInvitado($anfitrion);
+            if($datos) {
+                $this->anfitrion = new Invitado($anfitrion, $datos[0]['nick']);
+            }
         }
         // introducimos el visitante como objeto (jugador o invitado) //
-        if ($datos = UsuarioBD::obtieneJugador($visitante)) {
+        $datos = UsuarioBD::obtieneJugador($visitante);
+        if ($datos) {
             $this->visitante = new Jugador($visitante, $datos[0]['nick']);
-        } else if ($datos = UsuarioBD::obtieneInvitado($visitante)) {
-            $this->visitante = new Invitado($visitante, $datos[0]['nick']);
+        } else {
+            $datos = UsuarioBD::obtieneInvitado($visitante);
+            if($datos) {
+                $this->visitante = new Invitado($visitante, $datos[0]['nick']);
+            }
         }
         $this->pass = $pass;
     }
@@ -93,6 +101,19 @@ class Sala extends Partida
             return false;
         }
         return false;
+    }
+    public function updateAnfitrion(){
+        $datos = PartidaBD::getAnfitrion($this->codSala);
+        if($datos) {
+            if (UsuarioBD::obtieneJugador($datos[0]['codusu'])) {
+                $this->anfitrion = new Jugador($datos[0]['codusu'], $datos[0]['nick']);
+            } else {
+                $this->anfitrion = new Invitado($datos[0]['codusu'], $datos[0]['nick']);
+            }
+        } else {
+            $this->anfitrion = null;
+            $this->movimientos = array();
+        }
     }
     public function updateVisitante(){
         $datos = PartidaBD::getVisitante($this->codSala);

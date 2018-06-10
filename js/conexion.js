@@ -26,22 +26,60 @@ function estaConectado(){
                 }
 
                 if (respuesta.conectado) {
+
+                    if(respuesta.amigos){
+                        //amigos propios
+                    }
+                    if(respuesta.conexion_perfil){
+                        $('#perfil .estado').attr("class", "conexion-"+respuesta.conexion_perfil.conectado);
+                        switch(respuesta.conexion_perfil.conectado){
+                            case 0:
+                                $('#perfil .estado').html("Desconectado");
+                                break;
+                            case 1:
+                                $('#perfil .estado').html("Conectado");
+                                break;
+                            case 2:
+                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Ver partida'>Jugando</a>");
+                                break;
+                            case 3:
+                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Ver partida'>Viendo una partida</a>");
+                                break;
+                        }
+                    }
+
                     if (respuesta.partida) { //hay una partida activa
                         if ($('#juego').length > 0) { //esta en la sala de juego. Se actualizará el tablero
                             if(respuesta.partida.tipo === 'sala') {
                                 $('#juego .anfitrion').html("Sala de " + respuesta.partida.anfitrion.nick);
                                 if (respuesta.partida.anfitrion.cod == respuesta.partida.colores.codblanco) {
-                                    $('#juego .color .blancas').html("<a href='perfil/" + respuesta.partida.colores.codblanco + "'>" + respuesta.partida.anfitrion.nick + "</a>");
+                                    if(respuesta.partida.anfitrion.tipo === 'jugador') {
+                                        $('#juego .color .blancas').html("<a href='perfil/" + respuesta.partida.colores.codblanco + "'>" + respuesta.partida.anfitrion.nick + "</a>");
+                                    } else if(respuesta.partida.anfitrion.tipo === 'invitado'){
+                                        $('#juego .color .blancas').html(respuesta.partida.anfitrion.nick);
+                                    }
                                     if (respuesta.partida.visitante) {
-                                        $('#juego .color .negras').html("<a href='perfil/" + respuesta.partida.colores.codblanco + "'>" + respuesta.partida.visitante.nick + "</a>");
+                                        if(respuesta.partida.visitante.tipo === 'jugador') {
+                                            $('#juego .color .negras').html("<a href='perfil/" + respuesta.partida.colores.codnegro + "'>" + respuesta.partida.visitante.nick + "</a>");
+                                        } else if(respuesta.partida.visitante.tipo === 'invitado'){
+                                            $('#juego .color .negras').html(respuesta.partida.visitante.nick);
+                                        }
                                     }
                                     else {
                                         $('#juego .color .negras').html('');
                                     }
                                 } else {
-                                    $('#juego .color .negras').html("<a href='perfil/" + respuesta.partida.colores.codnegro + "'>" + respuesta.partida.anfitrion.nick + "</a>");
+                                    if(respuesta.partida.anfitrion.tipo === 'jugador') {
+                                        $('#juego .color .negras').html("<a href='perfil/" + respuesta.partida.colores.codnegro + "'>" + respuesta.partida.anfitrion.nick + "</a>");
+                                    } else if(respuesta.partida.anfitrion.tipo === 'invitado'){
+                                        $('#juego .color .negras').html(respuesta.partida.anfitrion.nick);
+                                    }
                                     if (respuesta.partida.visitante) {
-                                        $('#juego .color .blancas').html("<a href='perfil/" + respuesta.partida.colores.codnegro + "'>" + respuesta.partida.visitante.nick + "</a>");
+                                        if(respuesta.partida.visitante.tipo === 'jugador') {
+                                            $('#juego .color .blancas').html("<a href='perfil/" + respuesta.partida.colores.codblanco + "'>" + respuesta.partida.visitante.nick + "</a>");
+                                        } else if(respuesta.partida.visitante.tipo === 'invitado') {
+                                            $('#juego .color .blancas').html(respuesta.partida.visitante.nick);
+                                        }
                                     }
                                     else {
                                         $('#juego .color .blancas').html('');

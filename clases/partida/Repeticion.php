@@ -20,17 +20,27 @@ class Repeticion extends Partida
 
     public function __construct($codPartida, $codnegro, $codblanco){
         parent::__construct($codPartida);
-        $datos = UsuarioBD::obtieneUsuario($codnegro);
+        $datos = UsuarioBD::obtieneJugador($codnegro);
         if($datos) {
             $this->negro = new Jugador($codnegro, $datos[0]['nick']);
         } else {
-            $this->negro = new Jugador(-1, 'desconocido');
+            $datos = UsuarioBD::obtieneInvitado($codnegro);
+            if($datos) {
+                $this->negro = new Invitado($codnegro, $datos[0]['nick']);
+            } else {
+                $this->negro = new Jugador(-1, 'desconocido');
+            }
         }
-        $datos = UsuarioBD::obtieneUsuario($codblanco);
+        $datos = UsuarioBD::obtieneJugador($codblanco);
         if($datos) {
             $this->blanco = new Jugador($codblanco, $datos[0]['nick']);
         } else {
-            $this->blanco = new Jugador(-1, 'desconocido');
+            $datos = UsuarioBD::obtieneInvitado($codblanco);
+            if($datos) {
+                $this->blanco = new Invitado($codblanco, $datos[0]['nick']);
+            } else {
+                $this->blanco = new Jugador(-1, 'desconocido');
+            }
         }
         $datos = PartidaBD::getMovimientos($codPartida);
         foreach($datos as $mov){

@@ -24,6 +24,48 @@ if (isset($_SESSION['login'])) {
             PartidaBD::borraEspectadores();
             UsuarioBD::borraInvitadosNoConectados();
             UsuarioBD::desconectaJugadoresNoConectados();
+
+            //aqui obtendremos todos los amigos y sus estados//
+            $amigos = UsuarioBD::obtieneAmigos($usuario->getCod());
+            if($amigos){
+                foreach($amigos as $index => $datos) {
+                    if ($datos['conectado'] == 1) {
+                        $datospartida = UsuarioBD::usuarioJugando($datos['codusu']);
+                        if ($datospartida) {
+                            $amigos[$index]['conectado'] = 2; //jugando una partida
+                            $amigos[$index]['codsala'] = $datospartida[0]['codsala'];
+                        } else {
+                            $datospartida = UsuarioBD::usuarioEspectando($datos['codusu']);
+                            if ($datospartida) {
+                                $amigos[$index]['conectado'] = 3; //viendo una partida
+                                $amigos[$index]['codsala'] = $datospartida[0]['codsala'];
+                            }
+                        }
+                    }
+                }
+            }
+            $conexion_perfil = false;
+            if(isset($_SESSION['perfil'])){
+                if($_SESSION['perfil'] instanceof Jugador){
+                    $conexion_perfil = UsuarioBD::obtieneJugador($_SESSION['perfil']->getCod())[0];
+                    if($conexion_perfil){
+                        if($conexion_perfil['conectado'] == 1){
+                            $datospartida = UsuarioBD::usuarioJugando($_SESSION['perfil']->getCod());
+                            if($datospartida){
+                                $conexion_perfil['conectado'] = 2; //jugando una partida
+                                $conexion_perfil['codsala'] = $datospartida[0]['codsala'];
+                            } else {
+                                $datospartida = UsuarioBD::usuarioEspectando($_SESSION['perfil']->getCod());
+                                if($datospartida) {
+                                    $conexion_perfil['conectado'] = 3; //viendo una partida
+                                    $conexion_perfil['codsala'] = $datospartida[0]['codsala'];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             if (isset($_SESSION['partida'])) {
                 $sala = $_SESSION['partida'];
                 if ($sala instanceof Sala) {
@@ -50,6 +92,7 @@ if (isset($_SESSION['login'])) {
                         $tablas = false;
                         $ganador = false;
 
+                        $sala->updateAnfitrion();
                         $sala->updateVisitante();
                         $sala->updateEspectadores();
                         if (!$sala->updateCodPartida()) {
@@ -65,8 +108,11 @@ if (isset($_SESSION['login'])) {
                                     $espectadores[] = array('cod' => $espectador->getCod(), 'nick' => $espectador->getNick());
                                 }
                             }
-                            if ($sala->getAnfitrion() instanceof Usuario) $anfit = array('cod' => $sala->getAnfitrion()->getCod(), 'nick' => $sala->getAnfitrion()->getNick());
-                            if ($sala->getVisitante() instanceof Usuario) $visit = array('cod' => $sala->getVisitante()->getCod(), 'nick' => $sala->getVisitante()->getNick());
+                            if ($sala->getAnfitrion() instanceof Jugador) $anfit = array('tipo' => 'jugador', 'cod' => $sala->getAnfitrion()->getCod(), 'nick' => $sala->getAnfitrion()->getNick());
+                            else if ($sala->getAnfitrion() instanceof Invitado) $anfit = array('tipo' => 'invitado', 'cod' => $sala->getAnfitrion()->getCod(), 'nick' => $sala->getAnfitrion()->getNick());
+                            if ($sala->getVisitante() instanceof Jugador) $visit = array('tipo' => 'jugador', 'cod' => $sala->getVisitante()->getCod(), 'nick' => $sala->getVisitante()->getNick());
+                            else if ($sala->getVisitante() instanceof Invitado) $visit = array('tipo' => 'invitado', 'cod' => $sala->getVisitante()->getCod(), 'nick' => $sala->getVisitante()->getNick());
+
                             if(!PartidaBD::existeGanador($sala->getCodPartida())){
                                 $tablas = PartidaBD::obtieneTablas($sala->getCodPartida(), $usuario->getCod());
                             } else {

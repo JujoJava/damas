@@ -51,7 +51,8 @@ create table movimiento
 	codusu int NOT NULL, -- clave ajena de usuario
 	numficha int NOT NULL, -- número de ficha
 	mov_orig char(2) NOT NULL, -- desde donde mueve
-	mov_dest char(2) NOT NULL -- hacia donde mueve
+	mov_dest char(2) NOT NULL, -- hacia donde mueve
+	valido tinyint DEFAULT 0 -- para asegurarse de que es válido una vez se han subido las comidas si hubiera
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 

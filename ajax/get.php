@@ -26,14 +26,13 @@ if(isset($_POST['modo'])){
                     }
                 }
                 if(!isset($datos[$index]['cantespec'])) $datos[$index]['cantespec'] = 0;
-
-                if(UsuarioBD::obtieneJugador($datos[$index]['anfitrion'])){
+                if(UsuarioBD::obtieneJugador($datos[$index]['codanfitrion'])){
                     $datos[$index]['anf_tipo'] = 'jugador';
                 } else {
                     $datos[$index]['anf_tipo'] = 'invitado';
                 }
                 if($datos[$index]['visitante'] != null) {
-                    if (UsuarioBD::obtieneJugador($datos[$index]['visitante'])) {
+                    if (UsuarioBD::obtieneJugador($datos[$index]['codvisitante'])) {
                         $datos[$index]['vis_tipo'] = 'jugador';
                     } else {
                         $datos[$index]['vis_tipo'] = 'invitado';
@@ -154,34 +153,61 @@ if(isset($_POST['modo'])){
                     $datos['repeticiones'] = PartidaBD::getPartidasRep($usuario->getCod());
                 }
             }
-            foreach($datos as $index => $dato){
+            foreach($datos['repeticiones'] as $index => $dato){
                 $negro = UsuarioBD::obtieneJugador($dato['codnegro']);
                 if ($negro) {
-                    $datos[$index]['neg_tipo'] = 'jugador';
-                    $datos[$index]['nicknegro'] = $negro[0]['nick'];
+                    $datos['repeticiones'][$index]['neg_tipo'] = 'jugador';
+                    $datos['repeticiones'][$index]['nicknegro'] = $negro[0]['nick'];
                 } else {
                     $negro = UsuarioBD::obtieneInvitado($dato['codnegro']);
                     if ($negro) {
-                        $datos[$index]['neg_tipo'] = 'invitado';
-                        $datos[$index]['nicknegro'] = $negro[0]['nick'];
+                        $datos['repeticiones'][$index]['neg_tipo'] = 'invitado';
+                        $datos['repeticiones'][$index]['nicknegro'] = $negro[0]['nick'];
+                    } else {
+                        $datos['repeticiones'][$index]['neg_tipo'] = 'invitado';
+                        $datos['repeticiones'][$index]['nicknegro'] = 'desconocido';
                     }
                 }
                 $blanco = UsuarioBD::obtieneJugador($dato['codblanco']);
                 if ($blanco) {
-                    $datos[$index]['bla_tipo'] = 'jugador';
-                    $datos[$index]['nickblanco'] = $blanco[0]['nick'];
+                    $datos['repeticiones'][$index]['bla_tipo'] = 'jugador';
+                    $datos['repeticiones'][$index]['nickblanco'] = $blanco[0]['nick'];
                 } else {
                     $blanco = UsuarioBD::obtieneInvitado($dato['codblanco']);
                     if ($blanco) {
-                        $datos[$index]['bla_tipo'] = 'invitado';
-                        $datos[$index]['nickblanco'] = $blanco[0]['nick'];
+                        $datos['repeticiones'][$index]['bla_tipo'] = 'invitado';
+                        $datos['repeticiones'][$index]['nickblanco'] = $blanco[0]['nick'];
+                    } else {
+                        $datos['repeticiones'][$index]['bla_tipo'] = 'invitado';
+                        $datos['repeticiones'][$index]['nickblanco'] = 'desconocido';
                     }
                 }
 
             }
             break;
         case 'perfil':
-            //POR AQUI
+            $perfil = $_SESSION['perfil'];
+            if($perfil instanceof Jugador){
+                $datos = UsuarioBD::obtieneJugador($perfil->getCod())[0];
+                if($datos){
+                    if($datos['conectado'] == 1){
+                        $datospartida = UsuarioBD::usuarioJugando($perfil->getCod());
+                        if($datospartida){
+                            $datos['conectado'] = 2; //jugando una partida
+                            $datos['codsala'] = $datospartida[0]['codsala'];
+                        } else {
+                            $datospartida = UsuarioBD::usuarioEspectando($perfil->getCod());
+                            if($datospartida) {
+                                $datos['conectado'] = 3; //viendo una partida
+                                $datos['codsala'] = $datospartida[0]['codsala'];
+                            }
+                        }
+                    }
+                    $datos_partidas = PartidaBD::getPartidas($perfil->getCod());
+                }
+            } else {
+                $datos = false;
+            }
             break;
         case 'login':
             $datos = array(
