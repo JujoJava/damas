@@ -17,7 +17,7 @@ if (isset($_SESSION['login'])) {
         if (UsuarioBD::existeUsuario($usuario->getCod())) {
             $datos['conectado'] = true;
             UsuarioBD::pulsacionUsuario($usuario->getCod());
-            // Borra los usuarios que no hayan mandado una pulsación en el último  minuto //
+            // Borra los usuarios que no hayan mandado una pulsación en el último minuto //
             // Borra las salas que no tengan un anfitrión //
             PartidaBD::borraAnfitrionesSalas();
             PartidaBD::borraVisitantesSalas();
@@ -29,14 +29,15 @@ if (isset($_SESSION['login'])) {
             //aqui obtendremos todos los amigos y sus estados//
             $amigos = UsuarioBD::obtieneAmigos($usuario->getCod());
             if($amigos){
-                foreach($amigos as $index => $datos) {
-                    if ($datos['conectado'] == 1) {
-                        $datospartida = UsuarioBD::usuarioJugando($datos['codusu']);
+                foreach($amigos as $index => $dat) {
+                    $amigos[$index]['conectado'] *= 1;
+                    if ($dat['conectado'] == 1) {
+                        $datospartida = UsuarioBD::usuarioJugando($dat['codusu']);
                         if ($datospartida) {
                             $amigos[$index]['conectado'] = 2; //jugando una partida
                             $amigos[$index]['codsala'] = $datospartida[0]['codsala'];
                         } else {
-                            $datospartida = UsuarioBD::usuarioEspectando($datos['codusu']);
+                            $datospartida = UsuarioBD::usuarioEspectando($dat['codusu']);
                             if ($datospartida) {
                                 $amigos[$index]['conectado'] = 3; //viendo una partida
                                 $amigos[$index]['codsala'] = $datospartida[0]['codsala'];
@@ -44,19 +45,23 @@ if (isset($_SESSION['login'])) {
                         }
                     }
                 }
-                $datos['amigos'] = $amigos;
             }
+            $datos['amigos'] = $amigos;
+            $datos['mis_solicitudes'] = UsuarioBD::obtieneMisSolicitudes($usuario->getCod());
+            $datos['solicitudes_a_mi'] = UsuarioBD::obtieneSolicitudesHaciaMi($usuario->getCod());
+
             //aquí obtendremos todos los usuarios y sus estados//
             $all_usu = UsuarioBD::obtieneJugadores();
             if($all_usu){
-                foreach($all_usu as $index => $datos) {
-                    if ($datos['conectado'] == 1) {
-                        $datospartida = UsuarioBD::usuarioJugando($datos['codusu']);
+                foreach($all_usu as $index => $dat) {
+                    $all_usu[$index]['conectado'] *= 1;
+                    if ($dat['conectado'] == 1) {
+                        $datospartida = UsuarioBD::usuarioJugando($dat['codusu']);
                         if ($datospartida) {
                             $all_usu[$index]['conectado'] = 2; //jugando una partida
                             $all_usu[$index]['codsala'] = $datospartida[0]['codsala'];
                         } else {
-                            $datospartida = UsuarioBD::usuarioEspectando($datos['codusu']);
+                            $datospartida = UsuarioBD::usuarioEspectando($dat['codusu']);
                             if ($datospartida) {
                                 $all_usu[$index]['conectado'] = 3; //viendo una partida
                                 $all_usu[$index]['codsala'] = $datospartida[0]['codsala'];

@@ -1,6 +1,7 @@
 /* LISTA DE SALAS */
 
-#lista_salas{
+#lista_salas,
+#ranking {
     overflow-x:auto;
 }
 #lista_salas table{
@@ -51,7 +52,8 @@
 @media all and (max-width:768px){
     #lista_salas table .pass,
     #lista_salas table .numsala,
-    #lista_salas table .espectadores{
+    #lista_salas table .espectadores,
+    #ranking table .totales {
         display:none;
     }
     #lista_salas table th, #lista_salas table td{
@@ -59,6 +61,13 @@
     }
     #lista_salas table .descripcion div{
         overflow-x:auto;
+    }
+}
+@media all and (max-width:640px){
+    #ranking table .tablas,
+    #ranking table .victorias,
+    #ranking table .derrotas {
+        display:none;
     }
 }
 @media all and (max-width:480px){

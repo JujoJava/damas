@@ -221,6 +221,30 @@ if(isset($_POST['modo'])){
                             $datos['ranking'] = array('puntuacion' => $jugador['puntos'], 'posicion' => $i+1);
                         }
                     }
+                    $datos['miperfil'] = false;
+                    $datos['amistad'] = false;
+                    if(isset($_SESSION['login'])){
+                        if($_SESSION['login'] instanceof Jugador){
+                            if($_SESSION['login']->getCod() == $perfil->getCod()){
+                                $datos['miperfil'] = true;
+                            }
+                            $amistad = UsuarioBD::obtenerAmigo($_SESSION['login']->getCod(), $perfil->getCod());
+                            if($amistad == false){
+                                $amistad = UsuarioBD::obtenerAmigo($perfil->getCod(), $_SESSION['login']->getCod());
+                                if($amistad == false) {
+                                    $datos['amistad'] = 'none'; //no somos amigos
+                                } else {
+                                    if($amistad[0]['estado'] == 'solicitud'){
+                                        $datos['amistad'] = 'solicitud'; //solicitud de ese usuario a MI
+                                    }
+                                }
+                            } else if($amistad[0]['estado'] == 'solicitud'){
+                                $datos['amistad'] = 'solicitado'; //solicitud MIA a ese usuario
+                            } else if($amistad[0]['estado'] == 'amigo'){
+                                $datos['amistad'] = 'amigo'; //somos amigos
+                            }
+                        }
+                    }
                 }
             } else {
                 $datos = false;
@@ -230,6 +254,7 @@ if(isset($_POST['modo'])){
             $ranking = PartidaBD::getRanking();
             foreach($ranking as $i => $jugador){
                 $ranking[$i]['nick'] = UsuarioBD::obtieneUsuario($jugador['codusu'])[0]['nick'];
+                $ranking[$i]['conectado'] *= 1;
             }
             $datos['ranking'] = $ranking;
             break;

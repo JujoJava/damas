@@ -300,7 +300,7 @@ $(document).ready(function(){
             dataType: 'json',
             url: 'ajax/delete.php',
             success: function(){
-                window.location.reload();
+                window.location = 'principal';
             },
             beforeSend: function(){
                 $('#modal_logout .modal-body .info').html("<i class='fas fa-spinner fa-spin'></i>");

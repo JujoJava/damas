@@ -28,34 +28,122 @@ function estaConectado(){
                 if (respuesta.conectado) {
                     if(respuesta.alljug){
                         if($('#ranking').length > 0){
+                            var elm;
+                            for(i = 0 ; i < respuesta.alljug.length ; i++){
+                                elm = $('#ranking table tr#usuario-'+respuesta.alljug[i].codusu).children('td.estado');
+                                elm.attr("class", "estado conexion-"+respuesta.alljug[i].conectado);
+                                switch(respuesta.alljug[i].conectado){
+                                    case 0:
+                                        elm.html("<span>Desconectado</span>");
+                                        break;
+                                    case 1:
+                                        elm.html("<span>Conectado</span>");
+                                        break;
+                                    case 2:
+                                        elm.html("<a class='"+respuesta.alljug[i].codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>");
+                                        break;
+                                    case 3:
+                                        elm.html("<a class='"+respuesta.alljug[i].codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>");
+                                        break;
+                                }
+                            }
+                            //botón para jugar partida
+                            $('#ranking table .estado a[name=jugar-sala]').on('click', function(){
+                                var boton = $(this);
+                                if(!boton.hasClass('desactivado')) {
+                                    var codsala = boton.attr('class');
+                                    $('#ranking table a[name=jugar-sala]').addClass('desactivado');
+                                    var textoBoton = boton.html();
+                                    $.ajax({
+                                        data: {
+                                            modo: 'logueado'
+                                        },
+                                        type: 'POST',
+                                        dataType: 'json',
+                                        url: 'ajax/get.php',
+                                        success: function (response) {
+                                            if (response.correcto) {
+                                                window.location = 'redirect/' + codsala + '/';
+                                            } else {
+                                                botonNormal(boton, textoBoton);
+                                                $('#modal_entrar_sala').modal();
+                                                $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                                                $('#ranking table a[name=jugar-sala]').removeClass('desactivado');
+                                            }
+                                        },
+                                        beforeSend: function () {
+                                            botonRueda(boton);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    }
+                    if(respuesta.amigos || respuesta.mis_solicitudes || respuesta.solicitudes_a_mi){
+                        var cadena = '';
+                        var k;
+                        if(respuesta.amigos) {
+                            for (k = 0; k < respuesta.amigos.length; k++) {
+                                if (respuesta.amigos[k].conectado === 1) {
+                                    cadena += "<div>";
+                                    cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
+                                    cadena += "<span class='estado conexion-1'>Conectado</span>";
+                                    cadena += "</div>";
+                                }
+                            }
+                            for (k = 0; k < respuesta.amigos.length; k++) {
+                                if (respuesta.amigos[k].conectado === 2) {
+                                    cadena += "<div>";
+                                    cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
+                                    cadena += "<span class='estado conexion-2'><a class='" + response.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Jugando</a></span>";
+                                    cadena += "</div>";
+                                }
+                            }
+                            for (k = 0; k < respuesta.amigos.length; k++) {
+                                if (respuesta.amigos[k].conectado === 3) {
+                                    cadena += "<div>";
+                                    cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
+                                    cadena += "<span class='estado conexion-3'><a class='" + response.amigos[k].codsala + "' name='jugar-sala' title='Entrar'>Viendo una partida</a></span>";
+                                    cadena += "</div>";
+                                }
+                            }
+                            for (k = 0; k < respuesta.amigos.length; k++) {
+                                if (respuesta.amigos[k].conectado === 0) {
+                                    cadena += "<div>";
+                                    cadena += "<span><a href='perfil/" + respuesta.amigos[k].codusu + "'>" + respuesta.amigos[k].nick + "</a></span>";
+                                    cadena += "<span class='estado conexion-0'>Desconectado</span>";
+                                    cadena += "</div>";
+                                }
+                            }
+                        }
+                        if(respuesta.mis_solicitudes) {
+                            for (k = 0; k < respuesta.mis_solicitudes.length; k++) {
+                                cadena += "<div>";
+                                cadena += "<span><a href='perfil/" + respuesta.mis_solicitudes[k].codusu + "'>" + respuesta.mis_solicitudes[k].nick + "</a></span>";
+                                cadena += "<span>Solicitud enviada</span>";
+                                cadena += "</div>";
+                            }
+                        }
+                        if(respuesta.solicitudes_a_mi) {
+                            for (k = 0; k < respuesta.solicitudes_a_mi.length; k++) {
+                                cadena += "<div>";
+                                cadena += "<span><a href='perfil/" + respuesta.solicitudes_a_mi[k].codusu + "'>" + respuesta.solicitudes_a_mi[k].nick + "</a></span>";
+                                cadena += "<span>Te ha enviado una solicitud</span>";
+                                cadena += "</div>";
+                            }
+                        }
+                        $('#menu-lateral #lista-amigos').html(cadena);
+                        if ($('#perfil .seccion-amistad .lista-amigos').length > 0){
+                            $('#perfil .seccion-amistad .lista-amigos').html(cadena);
+                        }
 
-                        }
-                    }
-                    if(respuesta.amigos){
-                        //amigos propios
-                    }
-                    if(respuesta.conexion_perfil){
-                        $('#perfil .estado').attr("class", "estado conexion-"+respuesta.conexion_perfil.conectado);
-                        switch(respuesta.conexion_perfil.conectado){
-                            case 0:
-                                $('#perfil .estado').html("<span>Desconectado</span>");
-                                break;
-                            case 1:
-                                $('#perfil .estado').html("<span>Conectado</span>");
-                                break;
-                            case 2:
-                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>");
-                                break;
-                            case 3:
-                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>");
-                                break;
-                        }
                         //botón para jugar partida
-                        $('#perfil .estado a[name=jugar-sala]').on('click', function(){
+                        $('#menu-lateral .lista-amigos .estado a[name=jugar-sala]').on('click', function(){
                             var boton = $(this);
                             if(!boton.hasClass('desactivado')) {
                                 var codsala = boton.attr('class');
                                 boton.addClass('desactivado');
+                                $('#menu-lateral .lista-amigos .estado a[name=jugar-sala]').addClass('desactivado');
                                 var textoBoton = boton.html();
                                 $.ajax({
                                     data: {
@@ -72,6 +160,7 @@ function estaConectado(){
                                             $('#modal_entrar_sala').modal();
                                             $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
                                             boton.removeClass('desactivado');
+                                            $('#menu-lateral .lista-amigos .estado a[name=jugar-sala]').removeClass('desactivado');
                                         }
                                     },
                                     beforeSend: function () {
@@ -80,7 +169,59 @@ function estaConectado(){
                                 });
                             }
                         });
+
                     }
+
+                    if(respuesta.conexion_perfil){
+                        $('#perfil > .zona-izq > .estado').attr("class", "estado conexion-"+respuesta.conexion_perfil.conectado);
+                        switch(respuesta.conexion_perfil.conectado){
+                            case 0:
+                                $('#perfil > .zona-izq > .estado').html("<span>Desconectado</span>");
+                                break;
+                            case 1:
+                                $('#perfil > .zona-izq > .estado').html("<span>Conectado</span>");
+                                break;
+                            case 2:
+                                $('#perfil > .zona-izq > .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>");
+                                break;
+                            case 3:
+                                $('#perfil > .zona-izq > .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>");
+                                break;
+                        }
+                    }
+
+                    //botón para jugar partida
+                    $('#perfil .estado a[name=jugar-sala]').on('click', function(){
+                        var boton = $(this);
+                        if(!boton.hasClass('desactivado')) {
+                            var codsala = boton.attr('class');
+                            boton.addClass('desactivado');
+                            $('#perfil .estado a[name=jugar-sala]').addClass('desactivado');
+                            var textoBoton = boton.html();
+                            $.ajax({
+                                data: {
+                                    modo: 'logueado'
+                                },
+                                type: 'POST',
+                                dataType: 'json',
+                                url: 'ajax/get.php',
+                                success: function (response) {
+                                    if (response.correcto) {
+                                        window.location = 'redirect/' + codsala + '/';
+                                    } else {
+                                        botonNormal(boton, textoBoton);
+                                        $('#modal_entrar_sala').modal();
+                                        $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                                        boton.removeClass('desactivado');
+                                        $('#perfil .estado a[name=jugar-sala]').removeClass('desactivado');
+                                    }
+                                },
+                                beforeSend: function () {
+                                    botonRueda(boton);
+                                }
+                            });
+                        }
+                    });
 
                     if (respuesta.partida) { //hay una partida activa
                         if ($('#juego').length > 0) { //esta en la sala de juego. Se actualizará el tablero

@@ -490,7 +490,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.anfitrion, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.anfitrion = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) AND jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE) AND jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -520,7 +520,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT s.visitante, s.codsala, s.codpartida FROM sala s
                               INNER JOIN usuario u ON (s.visitante = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND) AND s.jugandose = 1");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE) AND s.jugandose = 1");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();
@@ -550,7 +550,7 @@ class PartidaBD
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("SELECT e.codusu, e.codsala FROM espectador e
                               INNER JOIN usuario u ON (e.codusu = u.codusu)
-                              WHERE u.pulsacion < (NOW() - INTERVAL 10 SECOND)");
+                              WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE)");
         ManejoBBDD::ejecutar(array());
         if(ManejoBBDD::filasAfectadas() > 0){
             $datos = ManejoBBDD::getDatos();

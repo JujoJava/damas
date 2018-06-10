@@ -127,6 +127,10 @@ main #perfil {
 main #perfil > div {
     padding-top:20px;
 }
+#perfil > div.zona-izq > div,
+#perfil > div.zona-izq > h3 {
+    padding-bottom:5px;
+}
 #perfil #repeticiones a.ver_repeticion {
     color: #7886ff;
 }
@@ -137,24 +141,37 @@ main #perfil > div {
 #perfil #repeticiones th {
     text-align:center;
 }
-#perfil .estado a {
+.estado a {
     text-decoration:none;
 }
-#perfil .estado.conexion-0 {
+.estado.conexion-0 {
     color: #959595;
 }
-#perfil .estado.conexion-1 {
+.estado.conexion-1 {
     color:green;
 }
-#perfil .estado.conexion-2 {
+.estado.conexion-2 {
     color:#ab0000;
 }
-#perfil .estado.conexion-3 {
+.estado.conexion-3 {
     color: #d08800;
 }
-#perfil .estado.conexion-2 a {
+.estado.conexion-2 a {
     color:#ab0000;
 }
-#perfil .estado.conexion-3 a {
+.estado.conexion-3 a {
     color: #d08800;
+}
+#perfil .seccion-amistad .lista-amigos h3 {
+    padding-top:10px;
+}
+#perfil .seccion-amistad .lista-amigos > div {
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-start;
+}
+#perfil .seccion-amistad .lista-amigos span,
+#perfil .seccion-amistad .lista-amigos a {
+    font-size:12px;
+    padding-right:5px;
 }

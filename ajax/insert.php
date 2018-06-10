@@ -188,6 +188,46 @@ if(isset($_POST['modo'])){
                 }
             }
             break;
+        case 'amistad':
+            $datos = array(
+                'correcto' => false,
+                'texto_boton' => 'Agregar amigo',
+                'tipo_boton' => 'btn btn-primary btn-md'
+            );
+            $codusu = $_POST['codusu'];
+            if(isset($_SESSION['login'])){
+                $mi_usuario = $_SESSION['login'];
+                if($mi_usuario instanceof Jugador){
+                    if($mi_usuario->getCod() != $codusu){
+                        $amistad = UsuarioBD::obtenerAmigo($mi_usuario->getCod(), $codusu);
+                        if($amistad){
+                            if($amistad[0]['estado'] == 'amigo'){ //quiere borrarlo
+                                if(UsuarioBD::borraAmigos($mi_usuario->getCod(), $codusu)) {
+                                    $datos['correcto'] = true;
+                                }
+                            }
+                        } else {
+                            $amistad = UsuarioBD::obtenerAmigo($codusu, $mi_usuario->getCod());
+                            if($amistad){
+                                if($amistad[0]['estado'] == 'solicitud'){ //acepta solicitud de amistad
+                                    if(UsuarioBD::aceptarSolicitud($mi_usuario->getCod(), $codusu)) {
+                                        $datos['correcto'] = true;
+                                        $datos['texto_boton'] = 'Borrar amigo';
+                                        $datos['tipo_boton'] = 'btn btn-danger btn-md';
+                                    }
+                                }
+                            } else { //quiere enviar solicitud
+                                if(UsuarioBD::enviarSolicitud($mi_usuario->getCod(), $codusu)) {
+                                    $datos['correcto'] = true;
+                                    $datos['texto_boton'] = 'Solicitud de amistad enviada';
+                                    $datos['tipo_boton'] = 'btn btn-info btn-md';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            break;
         case 'privacidad':
             $privacidad = $_POST['privacidad'];
             $codpartida = $_POST['codpartida'];

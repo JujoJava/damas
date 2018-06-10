@@ -222,7 +222,7 @@ $(document).ready(function(){
                 if(response.ranking.length > 0) {
                     var cadena = '';
                     for (var i = 0; i < response.ranking.length; i++) {
-                        cadena += "<tr class='"+response.ranking[i].codusu+"'>";
+                        cadena += "<tr id='usuario-"+response.ranking[i].codusu+"'>";
                         cadena += "<td class='posicion'><span>#"+(i+1)+"</span></td>";
                         cadena += "<td class='jugador'><a href='perfil/"+response.ranking[i].codusu+"'>"+response.ranking[i].nick+"</a></td>";
                         cadena += "<td class='puntos'><span>"+response.ranking[i].puntos+"</span></td>";
@@ -230,8 +230,54 @@ $(document).ready(function(){
                         cadena += "<td class='victorias'><span>"+response.ranking[i].puntuaciones.victorias+"</span></td>";
                         cadena += "<td class='derrotas'><span>"+response.ranking[i].puntuaciones.derrotas+"</span></td>";
                         cadena += "<td class='tablas'><span>"+response.ranking[i].puntuaciones.tablas+"</span></td>";
-                        cadena += "<td class='estado'></td>"
+                        cadena += "<td class='estado conexion-"+response.ranking[i].conectado+"'>";
+                        switch(response.ranking[i].conectado){
+                            case 0:
+                                cadena += "<span>Desconectado</span>";
+                                break;
+                            case 1:
+                                cadena += "<span>Conectado</span>";
+                                break;
+                            case 2:
+                                cadena += "<a class='"+response.ranking[i].codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>";
+                                break;
+                            case 3:
+                                cadena += "<a class='"+response.ranking[i].codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>";
+                                break;
+                        }
+                        cadena += "</td></tr>";
                     }
+                    $('#ranking table tbody').html(cadena);
+                    //botón para jugar partida
+                    $('#ranking table .estado a[name=jugar-sala]').on('click', function(){
+                        var boton = $(this);
+                        if(!boton.hasClass('desactivado')) {
+                            var codsala = boton.attr('class');
+                            $('#ranking table a[name=jugar-sala]').addClass('desactivado');
+                            var textoBoton = boton.html();
+                            $.ajax({
+                                data: {
+                                    modo: 'logueado'
+                                },
+                                type: 'POST',
+                                dataType: 'json',
+                                url: 'ajax/get.php',
+                                success: function (response) {
+                                    if (response.correcto) {
+                                        window.location = 'redirect/' + codsala + '/';
+                                    } else {
+                                        botonNormal(boton, textoBoton);
+                                        $('#modal_entrar_sala').modal();
+                                        $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                                        $('#ranking table a[name=jugar-sala]').removeClass('desactivado');
+                                    }
+                                },
+                                beforeSend: function () {
+                                    botonRueda(boton);
+                                }
+                            });
+                        }
+                    });
                 } else {
                     $('#ranking table tbody').html('<tr><td colspan="8">No hay jugadores</td></tr>');
                 }
@@ -273,6 +319,52 @@ $(document).ready(function(){
                     $('#perfil .partidas-ganadas').html("<span>"+response.puntuaciones.victorias+" partidas ganadas</span>");
                     $('#perfil .partidas-perdidas').html("<span>"+response.puntuaciones.derrotas+" partidas perdidas</span>");
                     $('#perfil .partidas-tablas').html("<span>"+response.puntuaciones.tablas+" partidas en tablas</span>");
+                    if(response.miperfil) {
+                        $('#perfil .seccion-amistad').html("<h3>Lista de amigos</h3><div class='lista-amigos'></div>");
+                    } else {
+                        if(response.amistad) {
+                            if (response.amistad === 'none') {
+                                $('#perfil .seccion-amistad').html("<button id='" + response.codusu + "' class='btn btn-primary btn-md' name='agregar-amigo'>Agregar amigo</button>");
+                            } else if (response.amistad === 'solicitado') {
+                                $('#perfil .seccion-amistad').html("<button id='" + response.codusu + "' class='btn btn-info btn-md' name='agregar-amigo' disabled='disabled'>Solicitud de amistad enviada</button>");
+                            } else if (response.amistad === 'solicitud') {
+                                $('#perfil .seccion-amistad').html("<button id='" + response.codusu + "' class='btn btn-warning btn-md' name='agregar-amigo'>Aceptar solicitud de amistad</button>");
+                            } else if (response.amistad === 'amigo') {
+                                $('#perfil .-seccion-amistad').html("<button id='" + response.codusu + "' class='btn btn-danger btn-md' name='agregar-amigo'>Borrar amigo</button>");
+                            }
+                        }
+                    }
+
+                    $('#perfil button[name=agregar-amigo]').click(function(){
+                        var boton = $(this);
+                        var texto_anterior = boton.html();
+                        $.ajax({
+                            data:{
+                                modo : 'amistad',
+                                codusu : $(this).attr('id')
+                            },
+                            type: 'POST',
+                            dataType: 'json',
+                            url: 'ajax/insert.php',
+                            success: function(response){
+                                if(response.correcto){
+                                    botonNormal(boton, response.texto_boton);
+                                    boton.attr('class', response.tipo_boton);
+                                    if(response.texto_boton === 'Solicitud de amistad enviada'){
+                                        boton.attr('disabled', true);
+                                    } else {
+                                        boton.attr('disabled', false);
+                                    }
+                                } else {
+                                    botonNormal(boton, texto_anterior);
+                                }
+                            },
+                            beforeSend: function(){
+                                botonRueda(boton);
+                            }
+                        })
+                    });
+
                 } else {
                     window.location = 'principal';
                 }

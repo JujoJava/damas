@@ -30,7 +30,8 @@ ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 create table amigos
 (
 	codusu int NOT NULL, -- clave ajena de jugador
-	codamigo int NOT NULL -- clave ajena de jugador
+	codamigo int NOT NULL, -- clave ajena de jugador
+	estado enum('solicitud', 'amigo') NOT NULL
 )
 ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 

@@ -31,9 +31,14 @@ if(isset($_GET['page'])){
                     header('location:principal');
                 }
             } else {
-                if($user instanceof Invitado) {
+                if($_SESSION['login'] instanceof Invitado) {
                     header('location:principal');
                 }
+            }
+        }
+        else if($_GET['page'] == 'ranking') {
+            if(!$_SESSION['login'] instanceof Jugador){
+                header('location:principal');
             }
         }
     }

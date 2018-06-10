@@ -179,10 +179,47 @@ class UsuarioBD
         ManejoBBDD::preparar("SELECT j.codusu, u.nick, j.conectado FROM jugador j
                               INNER JOIN amigos a ON (a.codamigo = j.codusu)
                               INNER JOIN usuario u ON (a.codamigo = u.codusu)
-                              WHERE a.codusu = ?");
+                              WHERE a.codusu = ? AND a.estado = 'amigo'");
         ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
         ManejoBBDD::desconectar();
-        return ManejoBBDD::getDatos();
+        return false;
+    }
+
+    public static function obtieneSolicitudesHaciaMi($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT j.codusu, u.nick, j.conectado FROM jugador j
+                              INNER JOIN amigos a ON (a.codusu = j.codusu)
+                              INNER JOIN usuario u ON (a.codusu = u.codusu)
+                              WHERE a.codamigo = ? AND a.estado = 'solicitud'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function obtieneMisSolicitudes($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT j.codusu, u.nick, j.conectado FROM jugador j
+                              INNER JOIN amigos a ON (a.codamigo = j.codusu)
+                              INNER JOIN usuario u ON (a.codamigo = u.codusu)
+                              WHERE a.codusu = ? AND a.estado = 'solicitud'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $datos = ManejoBBDD::getDatos();
+            ManejoBBDD::desconectar();
+            return $datos;
+        }
+        ManejoBBDD::desconectar();
+        return false;
     }
 
     public static function obtieneJugador($codusu) {
@@ -258,6 +295,64 @@ class UsuarioBD
         }
         ManejoBBDD::desconectar();
         return null;
+    }
+
+    public static function obtenerAmigo($codusu, $codamigo){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM amigos WHERE codusu = ? AND codamigo = ?");
+        ManejoBBDD::ejecutar(array($codusu, $codamigo));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return ManejoBBDD::getDatos();
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function borraAmigos($codusu, $codamigo){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("DELETE FROM amigos WHERE (codusu = ? AND codamigo = ?) OR (codusu = ? AND codamigo = ?)");
+        ManejoBBDD::ejecutar(array($codusu, $codamigo, $codamigo, $codusu));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function aceptarSolicitud($codusu, $codamigo){
+        ManejoBBDD::conectar();
+        ManejoBBDD::iniTransaction();
+        try {
+            ManejoBBDD::preparar("INSERT INTO amigos VALUES(?,?,'amigo')");
+            ManejoBBDD::ejecutar(array($codusu, $codamigo));
+            ManejoBBDD::preparar("UPDATE amigos SET estado = 'amigo' WHERE (codusu = ? AND codamigo = ?)");
+            ManejoBBDD::ejecutar(array($codamigo, $codusu));
+        } catch(PDOException $e){
+            ManejoBBDD::rollback();
+            ManejoBBDD::desconectar();
+            return false;
+        }
+        ManejoBBDD::commit();
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
+    }
+
+    public static function enviarSolicitud($codusu, $codamigo){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("INSERT INTO amigos VALUES(?,?,'solicitud')");
+        ManejoBBDD::ejecutar(array($codusu, $codamigo));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            ManejoBBDD::desconectar();
+            return true;
+        }
+        ManejoBBDD::desconectar();
+        return false;
     }
 
     public static function obtieneIdDisponibleUsuario(){
