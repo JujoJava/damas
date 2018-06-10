@@ -43,18 +43,20 @@ class Repeticion extends Partida
             }
         }
         $datos = PartidaBD::getMovimientos($codPartida);
-        foreach($datos as $mov){
-            $color = 'blancas';
-            if ($codnegro == $mov['codusu']) $color = 'negras';
-            $this->movimientos[] = new Movimiento(
-                $mov['codmov'],
-                $mov['numficha'],
-                $mov['mov_dest'],
-                $mov['mov_orig'],
-                $mov['codusu'],
-                $color,
-                self::generaComidas(PartidaBD::getComidasMovimiento($mov['codmov'], $codPartida))
-            );
+        if($datos) {
+            foreach ($datos as $mov) {
+                $color = 'blancas';
+                if ($codnegro == $mov['codusu']) $color = 'negras';
+                $this->movimientos[] = new Movimiento(
+                    $mov['codmov'],
+                    $mov['numficha'],
+                    $mov['mov_dest'],
+                    $mov['mov_orig'],
+                    $mov['codusu'],
+                    $color,
+                    self::generaComidas(PartidaBD::getComidasMovimiento($mov['codmov'], $codPartida))
+                );
+            }
         }
     }
 

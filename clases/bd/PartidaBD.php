@@ -38,14 +38,6 @@ class PartidaBD
         ManejoBBDD::desconectar();
         return ManejoBBDD::getDatos();
     }
-   /* public static function getPuntuaciones(){
-        ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT j.codusu, count(j.codusu)")
-    }
-    public static function getRanking(){
-        ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT count(j.codusu)")
-    }*/
 
     public static function getPartidasRep($codusu){
         ManejoBBDD::conectar();
@@ -112,6 +104,96 @@ class PartidaBD
         }
         ManejoBBDD::desconectar();
         return false;
+    }
+
+    public static function getRanking(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT * FROM jugador");
+        ManejoBBDD::ejecutar(array());
+        $jugadores = ManejoBBDD::getDatos();
+        ManejoBBDD::desconectar();
+        foreach($jugadores as $index => $jugador){
+            $p = self::getPuntuaciones($jugador['codusu']);
+            $jugadores[$index]['puntuaciones'] = $p;
+            $jugadores[$index]['puntos'] = $p['victorias'] + ($p['tablas'] / 2) - $p['derrotas'];
+        }
+        //ordenación por el método de la burbuja//
+        $iteracion = 0;
+        $permutacion = true;
+        while($permutacion) {
+            $permutacion = false;
+            $iteracion++;
+            for($i = 0 ; $i < count($jugadores) - $iteracion ; $i++){
+                if($jugadores[$i]['puntos'] < $jugadores[$i+1]['puntos']){
+                    $permutacion = true;
+                    //intercambiamos los dos elementos
+                    $jugador = $jugadores[$i+1];
+                    $jugadores[$i+1] = $jugadores[$i];
+                    $jugadores[$i] = $jugador;
+                }
+            }
+        }
+        return $jugadores;
+    }
+
+    public static function getPuntuaciones($codusu){
+        $resultados = array(
+            'total' => 0,
+            'victorias' => 0,
+            'derrotas' => 0,
+            'tablas' => 0
+        );
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT count(j.codusu) AS totales
+                              FROM jugador j 
+                              INNER JOIN partida p ON (j.codusu = p.codblanco OR j.codusu = p.codnegro)
+                              WHERE j.codusu = ? AND p.ganador != ''");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0){
+            $resultados['total'] = ManejoBBDD::getDatos()[0]['totales']*1;
+        }
+        ManejoBBDD::preparar("SELECT count(p.codblanco) AS ganadasblanco
+                              FROM jugador j
+                              INNER JOIN partida p ON (j.codusu = p.codblanco)
+                              WHERE j.codusu = ? AND p.ganador = 'blancas'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $resultados['victorias'] += ManejoBBDD::getDatos()[0]['ganadasblanco']*1;
+        }
+        ManejoBBDD::preparar("SELECT count(p.codnegro) AS ganadasnegro
+                              FROM jugador j
+                              INNER JOIN partida p ON (j.codusu = p.codnegro)
+                              WHERE j.codusu = ? AND p.ganador = 'negras'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $resultados['victorias'] += ManejoBBDD::getDatos()[0]['ganadasnegro']*1;
+        }
+        ManejoBBDD::preparar("SELECT count(p.codblanco) AS perdidasblanco
+                              FROM jugador j
+                              INNER JOIN partida p ON (j.codusu = p.codblanco)
+                              WHERE j.codusu = ? AND p.ganador = 'negras'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $resultados['derrotas'] += ManejoBBDD::getDatos()[0]['perdidasblanco']*1;
+        }
+        ManejoBBDD::preparar("SELECT count(p.codnegro) AS perdidasnegro
+                              FROM jugador j
+                              INNER JOIN partida p ON (j.codusu = p.codnegro)
+                              WHERE j.codusu = ? AND p.ganador = 'blancas'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $resultados['derrotas'] += ManejoBBDD::getDatos()[0]['perdidasnegro']*1;
+        }
+        ManejoBBDD::preparar("SELECT count(j.codusu) AS tablas
+                              FROM jugador j
+                              INNER JOIN partida p ON (j.codusu = p.codblanco OR j.codusu = p.codnegro)
+                              WHERE j.codusu = ? AND p.ganador = 'tablas'");
+        ManejoBBDD::ejecutar(array($codusu));
+        if(ManejoBBDD::filasAfectadas() > 0) {
+            $resultados['tablas'] = ManejoBBDD::getDatos()[0]['tablas']*1;
+        }
+        ManejoBBDD::desconectar();
+        return $resultados;
     }
 
     public static function getNumEspectadores(){

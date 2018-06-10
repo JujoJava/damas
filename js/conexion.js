@@ -26,26 +26,60 @@ function estaConectado(){
                 }
 
                 if (respuesta.conectado) {
+                    if(respuesta.alljug){
+                        if($('#ranking').length > 0){
 
+                        }
+                    }
                     if(respuesta.amigos){
                         //amigos propios
                     }
                     if(respuesta.conexion_perfil){
-                        $('#perfil .estado').attr("class", "conexion-"+respuesta.conexion_perfil.conectado);
+                        $('#perfil .estado').attr("class", "estado conexion-"+respuesta.conexion_perfil.conectado);
                         switch(respuesta.conexion_perfil.conectado){
                             case 0:
-                                $('#perfil .estado').html("Desconectado");
+                                $('#perfil .estado').html("<span>Desconectado</span>");
                                 break;
                             case 1:
-                                $('#perfil .estado').html("Conectado");
+                                $('#perfil .estado').html("<span>Conectado</span>");
                                 break;
                             case 2:
-                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Ver partida'>Jugando</a>");
+                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>");
                                 break;
                             case 3:
-                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Ver partida'>Viendo una partida</a>");
+                                $('#perfil .estado').html("<a class='"+respuesta.conexion_perfil.codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>");
                                 break;
                         }
+                        //botón para jugar partida
+                        $('#perfil .estado a[name=jugar-sala]').on('click', function(){
+                            var boton = $(this);
+                            if(!boton.hasClass('desactivado')) {
+                                var codsala = boton.attr('class');
+                                boton.addClass('desactivado');
+                                var textoBoton = boton.html();
+                                $.ajax({
+                                    data: {
+                                        modo: 'logueado'
+                                    },
+                                    type: 'POST',
+                                    dataType: 'json',
+                                    url: 'ajax/get.php',
+                                    success: function (response) {
+                                        if (response.correcto) {
+                                            window.location = 'redirect/' + codsala + '/';
+                                        } else {
+                                            botonNormal(boton, textoBoton);
+                                            $('#modal_entrar_sala').modal();
+                                            $('#modal_entrar_sala button[name=entrar-sala]').attr('id', codsala);
+                                            boton.removeClass('desactivado');
+                                        }
+                                    },
+                                    beforeSend: function () {
+                                        botonRueda(boton);
+                                    }
+                                });
+                            }
+                        });
                     }
 
                     if (respuesta.partida) { //hay una partida activa

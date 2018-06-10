@@ -73,11 +73,13 @@ $(document).ready(function(){
                     if(response.correcto) {
                         window.location = 'juego';
                     } else {
-                        $('a.ver-repeticion').removeClass('desactivado');
+                        $('a.ver_repeticion').removeClass('desactivado');
                         botonNormal(pulsado, 'Ver');
                     }
                 },
-                beforeSend: function () {
+                beforeSend: function (a) {
+                    console.log(a);
+                    console.log($('a.ver_repeticion'))
                     $('a.ver-repeticion').addClass('desactivado');
                     botonRueda(pulsado);
                 }

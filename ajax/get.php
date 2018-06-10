@@ -182,6 +182,15 @@ if(isset($_POST['modo'])){
                         $datos['repeticiones'][$index]['nickblanco'] = 'desconocido';
                     }
                 }
+                if($datos['miperfil'] == true){
+                    if($usuario instanceof Jugador){
+                        if($usuario->getCod() == $dato['codblanco']){
+                            $datos['repeticiones'][$index]['mi_privacidad'] = $dato['rep_publica_codblanco'];
+                        } else if($usuario->getCod() == $dato['codnegro']){
+                            $datos['repeticiones'][$index]['mi_privacidad'] = $dato['rep_publica_codnegro'];
+                        }
+                    }
+                }
 
             }
             break;
@@ -189,6 +198,7 @@ if(isset($_POST['modo'])){
             $perfil = $_SESSION['perfil'];
             if($perfil instanceof Jugador){
                 $datos = UsuarioBD::obtieneJugador($perfil->getCod())[0];
+                $datos['conectado'] *= 1;
                 if($datos){
                     if($datos['conectado'] == 1){
                         $datospartida = UsuarioBD::usuarioJugando($perfil->getCod());
@@ -203,11 +213,25 @@ if(isset($_POST['modo'])){
                             }
                         }
                     }
-                    $datos_partidas = PartidaBD::getPartidas($perfil->getCod());
+                    $datos['puntuaciones'] = PartidaBD::getPuntuaciones($perfil->getCod());
+                    $ranking = PartidaBD::getRanking();
+                    $datos['ranking'] = false;
+                    foreach($ranking as $i => $jugador){
+                        if($jugador['codusu'] == $perfil->getCod()){
+                            $datos['ranking'] = array('puntuacion' => $jugador['puntos'], 'posicion' => $i+1);
+                        }
+                    }
                 }
             } else {
                 $datos = false;
             }
+            break;
+        case 'ranking':
+            $ranking = PartidaBD::getRanking();
+            foreach($ranking as $i => $jugador){
+                $ranking[$i]['nick'] = UsuarioBD::obtieneUsuario($jugador['codusu'])[0]['nick'];
+            }
+            $datos['ranking'] = $ranking;
             break;
         case 'login':
             $datos = array(

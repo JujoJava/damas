@@ -47,12 +47,31 @@ class UsuarioBD
         return $cantidad;
     }
 
+    public static function desconectaJugador($codusu){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("UPDATE jugador SET conectado = 0 WHERE codusu = ?");
+        ManejoBBDD::ejecutar(array($codusu));
+        ManejoBBDD::desconectar();
+    }
+
     public static function desconectaJugadoresNoConectados(){
         ManejoBBDD::conectar();
         ManejoBBDD::preparar("UPDATE jugador j
                               INNER JOIN usuario u ON (j.codusu = u.codusu)
                               SET j.conectado = 0
                               WHERE u.pulsacion < (NOW() - INTERVAL 1 MINUTE)");
+        ManejoBBDD::ejecutar(array());
+        $cantidad = ManejoBBDD::filasAfectadas();
+        ManejoBBDD::desconectar();
+        return $cantidad;
+    }
+
+    public static function conectaJugadoresConectados(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("UPDATE jugador j
+                              INNER JOIN usuario u ON (j.codusu = u.codusu)
+                              SET j.conectado = 1
+                              WHERE u.pulsacion >= (NOW() - INTERVAL 1 MINUTE)");
         ManejoBBDD::ejecutar(array());
         $cantidad = ManejoBBDD::filasAfectadas();
         ManejoBBDD::desconectar();
@@ -122,11 +141,11 @@ class UsuarioBD
 
     public static function usuarioJugando($codusu){
         ManejoBBDD::conectar();
-        ManejoBBDD::preparar("SELECT s.codsala FROM sala WHERE anfitrion = ? OR visitante = ?");
+        ManejoBBDD::preparar("SELECT codsala FROM sala WHERE (anfitrion = ? OR visitante = ?) and jugandose = 1");
         ManejoBBDD::ejecutar(array($codusu, $codusu));
         if(ManejoBBDD::filasAfectadas() > 0){
             ManejoBBDD::desconectar();
-            return true;
+            return ManejoBBDD::getDatos();
         }
         ManejoBBDD::desconectar();
         return false;
@@ -144,6 +163,15 @@ class UsuarioBD
         }
         ManejoBBDD::desconectar();
         return false;
+    }
+
+    public static function obtieneJugadores(){
+        ManejoBBDD::conectar();
+        ManejoBBDD::preparar("SELECT j.codusu, u.nick, j.conectado FROM jugador j
+                              INNER JOIN usuario u ON (j.codusu = u.codusu)");
+        ManejoBBDD::ejecutar(array());
+        ManejoBBDD::desconectar();
+        return ManejoBBDD::getDatos();
     }
 
     public static function obtieneAmigos($codusu){

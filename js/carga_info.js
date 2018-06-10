@@ -212,6 +212,36 @@ $(document).ready(function(){
         });
     }
 
+    if($('#ranking').length > 0){
+        $.ajax({
+            data: {modo:'ranking'},
+            type: 'POST',
+            dataType: 'json',
+            url: 'ajax/get.php',
+            success: function(response){
+                if(response.ranking.length > 0) {
+                    var cadena = '';
+                    for (var i = 0; i < response.ranking.length; i++) {
+                        cadena += "<tr class='"+response.ranking[i].codusu+"'>";
+                        cadena += "<td class='posicion'><span>#"+(i+1)+"</span></td>";
+                        cadena += "<td class='jugador'><a href='perfil/"+response.ranking[i].codusu+"'>"+response.ranking[i].nick+"</a></td>";
+                        cadena += "<td class='puntos'><span>"+response.ranking[i].puntos+"</span></td>";
+                        cadena += "<td class='totales'><span>"+response.ranking[i].puntuaciones.total+"</span></td>";
+                        cadena += "<td class='victorias'><span>"+response.ranking[i].puntuaciones.victorias+"</span></td>";
+                        cadena += "<td class='derrotas'><span>"+response.ranking[i].puntuaciones.derrotas+"</span></td>";
+                        cadena += "<td class='tablas'><span>"+response.ranking[i].puntuaciones.tablas+"</span></td>";
+                        cadena += "<td class='estado'></td>"
+                    }
+                } else {
+                    $('#ranking table tbody').html('<tr><td colspan="8">No hay jugadores</td></tr>');
+                }
+            },
+            beforeSend: function(){
+                $('#ranking table tbody').html('<tr><td colspan="8"><i class="fas fa-spinner fa-spin"></i></td></tr>');
+            }
+        });
+    }
+
     if($('#perfil').length > 0){
         $.ajax({
             data: { modo: 'perfil' },
@@ -221,7 +251,7 @@ $(document).ready(function(){
             success: function(response){
                 if(response !== false){
                     $('#perfil .titulo').html('Perfil de '+response.nick);
-                    $('#perfil .estado').attr("class", "conexion-"+response.conectado);
+                    $('#perfil .estado').attr("class", "estado conexion-"+response.conectado);
                     switch(response.conectado){
                         case 0:
                             $('#perfil .estado').html("Desconectado");
@@ -230,16 +260,19 @@ $(document).ready(function(){
                             $('#perfil .estado').html("Conectado");
                             break;
                         case 2:
-                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Ver partida'>Jugando</a>");
+                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Entrar'>Jugando</a>");
                             break;
                         case 3:
-                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Ver partida'>Viendo una partida</a>");
+                            $('#perfil .estado').html("<a class='"+response.codsala+"' name='jugar-sala' title='Entrar'>Viendo una partida</a>");
                             break;
                     }
-                    $('#perfil .posicion-ranking').html("<span>#"+response.posicion_ranking+" en el ranking</span>");
-                    $('#perfil .partidas-jugadas').html("<span>"+response.partidas_jugadas+" partidas jugadas</span>");
-                    $('#perfil .partidas-ganadas').html("<span>"+response.partidas_ganadas+" partidas ganadas</span>");
-                    $('#perfil .partidas-perdidas').html("<span>"+response.partidas_perdidas+" partidas perdidas</span>");
+                    if(response.ranking) {
+                        $('#perfil .posicion-ranking').html("<span>#" + response.ranking.posicion + " en el ranking</span>");
+                    }
+                    $('#perfil .partidas-jugadas').html("<span>"+response.puntuaciones.total+" partidas jugadas</span>");
+                    $('#perfil .partidas-ganadas').html("<span>"+response.puntuaciones.victorias+" partidas ganadas</span>");
+                    $('#perfil .partidas-perdidas').html("<span>"+response.puntuaciones.derrotas+" partidas perdidas</span>");
+                    $('#perfil .partidas-tablas').html("<span>"+response.puntuaciones.tablas+" partidas en tablas</span>");
                 } else {
                     window.location = 'principal';
                 }
@@ -306,8 +339,13 @@ $(document).ready(function(){
                         cadena += "<td><a class='ver_repeticion' id='" + data.repeticiones[i].codpartida + "'>Ver</a>";
                         if (data.miperfil) {
                             cadena += "<br><select name='privacidad' class='" + data.repeticiones[i].codpartida + "'>";
-                            cadena += "<option value='1'>Público</option>";
-                            cadena += "<option value='0'>Privado</option>";
+                            if(data.repeticiones[i].mi_privacidad == 1) {
+                                cadena += "<option selected value='1'>Público</option>";
+                                cadena += "<option value='0'>Privado</option>";
+                            } else {
+                                cadena += "<option value='1'>Público</option>";
+                                cadena += "<option selected value='0'>Privado</option>";
+                            }
                             cadena += "</select>";
                         }
                         cadena += "</td></tr>";
@@ -337,8 +375,7 @@ $(document).ready(function(){
                                     botonNormal(pulsado, 'Ver');
                                 }
                             },
-                            beforeSend: function (e) {
-                                console.log(e);
+                            beforeSend: function () {
                                 $('a.ver-repeticion').addClass('desactivado');
                                 botonRueda(pulsado);
                             }

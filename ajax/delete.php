@@ -68,13 +68,13 @@ if(isset($_POST['modo'])){
                             $tipo
                         )) {
                             $_SESSION['partida'] = null;
-                            $_SESSION['login'] = null;
                         }
                     } else {
                         $_SESSION['partida'] = null;
-                        $_SESSION['login'] = null;
                     }
                 }
+                UsuarioBD::desconectaJugador($_SESSION['login']->getCod());
+                $_SESSION['login'] = null;
             }
             break;
     }

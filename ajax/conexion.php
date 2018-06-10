@@ -24,6 +24,7 @@ if (isset($_SESSION['login'])) {
             PartidaBD::borraEspectadores();
             UsuarioBD::borraInvitadosNoConectados();
             UsuarioBD::desconectaJugadoresNoConectados();
+            UsuarioBD::conectaJugadoresConectados();
 
             //aqui obtendremos todos los amigos y sus estados//
             $amigos = UsuarioBD::obtieneAmigos($usuario->getCod());
@@ -43,11 +44,34 @@ if (isset($_SESSION['login'])) {
                         }
                     }
                 }
+                $datos['amigos'] = $amigos;
             }
+            //aquí obtendremos todos los usuarios y sus estados//
+            $all_usu = UsuarioBD::obtieneJugadores();
+            if($all_usu){
+                foreach($all_usu as $index => $datos) {
+                    if ($datos['conectado'] == 1) {
+                        $datospartida = UsuarioBD::usuarioJugando($datos['codusu']);
+                        if ($datospartida) {
+                            $all_usu[$index]['conectado'] = 2; //jugando una partida
+                            $all_usu[$index]['codsala'] = $datospartida[0]['codsala'];
+                        } else {
+                            $datospartida = UsuarioBD::usuarioEspectando($datos['codusu']);
+                            if ($datospartida) {
+                                $all_usu[$index]['conectado'] = 3; //viendo una partida
+                                $all_usu[$index]['codsala'] = $datospartida[0]['codsala'];
+                            }
+                        }
+                    }
+                }
+                $datos['alljug'] = $all_usu;
+            }
+            //aquí obtendremos el estado del perfil de usuario, si se estuviera//
             $conexion_perfil = false;
             if(isset($_SESSION['perfil'])){
                 if($_SESSION['perfil'] instanceof Jugador){
                     $conexion_perfil = UsuarioBD::obtieneJugador($_SESSION['perfil']->getCod())[0];
+                    $conexion_perfil['conectado'] *= 1;
                     if($conexion_perfil){
                         if($conexion_perfil['conectado'] == 1){
                             $datospartida = UsuarioBD::usuarioJugando($_SESSION['perfil']->getCod());
@@ -62,6 +86,7 @@ if (isset($_SESSION['login'])) {
                                 }
                             }
                         }
+                        $datos['conexion_perfil'] = $conexion_perfil;
                     }
                 }
             }
